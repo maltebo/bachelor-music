@@ -44,6 +44,8 @@ def process_file(m21_file: stream.Score, m21_stream: VanillaStream):
 
         temp_part.makeRests(fillGaps=True, inPlace=True)
 
+        temp_part.stripTies(inPlace=True)
+
         m21_stream.insert(temp_part)
 
 
@@ -96,11 +98,5 @@ def process_data(thread_id, file_name) -> VanillaStream:
     transpose_key(m21_stream)
 
     return m21_stream
-
-
-def make_chordified(m21_stream: VanillaStream):
-    temp_chord_stream = m21_stream.chordify(addPartIdAsGroup=True, removeRedundantPitches=False)
-    chord_stream = temp_chord_stream.stripTies()
-    return chord_stream
 
 

@@ -7,7 +7,6 @@ sys.path.append(os.path.abspath(".."))
 from preprocessing.constants import *
 from preprocessing.vanilla_stream import VanillaStream
 from preprocessing.create_modified_stream import process_data
-from preprocessing.create_modified_stream import make_chordified
 from preprocessing.find_melody import simple_skyline_algorithm
 import threading
 import queue
@@ -34,9 +33,7 @@ def run_all(thread_nr):
         if not file_name:
             continue
         m21_stream = process_data(thread_nr, file_name)
-        chord_stream = make_chordified(m21_stream)
-        melody_stream = simple_skyline_algorithm(chord_stream)
-        melody_stream.show('text')
+        melody_stream = simple_skyline_algorithm(m21_stream)
 
 
 class MyThread (threading.Thread):
@@ -59,6 +56,7 @@ class MyThread (threading.Thread):
 def add_statistics_to_json(m21_stream: VanillaStream):
     pass
 
+
 exit_flag = 0
 thread_number = 1
 
@@ -77,8 +75,8 @@ for root, dirs, files in os.walk(Test.TEST_DATA_FOLDER.value):
             # workQueue.put(os.path.join(root, file))
             pass
 
-# workQueue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/4_4/aquarson.mxl")
-# workQueue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/BA_forgive_me.mxl")
+workQueue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/4_4/aquarson.mxl")
+workQueue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/BA_forgive_me.mxl")
 workQueue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/test_file.mxl")
 
 # Create new threads

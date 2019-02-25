@@ -1,42 +1,21 @@
 from music21 import *
 from copy import deepcopy
-from sortedcontainers import SortedList
 from preprocessing.vanilla_stream import VanillaStream
 
 
-def get_highest_pitch_for_each_chord(chord_stream: stream.Stream):
-
-    note_stream = VanillaStream()
-
-    chord_list = list(chord_stream.flat.notes)
-
-    for temp_chord in chord_list:
-        temp_note = note.Note()
-        temp_note.offset = temp_chord.offset
-        temp_note.quarterLength = temp_chord.quarterLength
-        temp_pitches = [p for p in temp_chord.pitches if 48.0 < p.ps <= 84.0]
-
-        try:
-            temp_note.pitch.ps, temp_note.pitch.groups, temp_pitch = max([(p.ps, p.groups, p) for p in temp_pitches])
-            note_stream.insert(temp_note)
-        except ValueError:
-            pass
-
-    return note_stream
-
-
-def simple_skyline_algorithm(chord_stream: stream.Stream):
+def simple_skyline_algorithm(note_stream: stream.Stream, min_pitch: float = 49.0, max_pitch: float = 84.0):
 
     current_note = None
     current_note_pitch = None
     current_end = -1
     melody_stream = VanillaStream()
 
-    note_stream = get_highest_pitch_for_each_chord(chord_stream)
-
     for action_note in note_stream.flat.notes:
 
         action_pitch = action_note.pitch.ps
+
+        if not (min_pitch <= action_pitch <= max_pitch):
+            continue
 
         if current_end <= action_note.offset:
             if current_note is not None:
@@ -60,9 +39,10 @@ def simple_skyline_algorithm(chord_stream: stream.Stream):
         new_note = deepcopy(current_note)
         melody_stream.insert(new_note)
 
-    # melody_stream.show()
     return melody_stream
 
+
+# Todo: include volume information, lyrics information, maybe entropy
 
 # def skyline_algorithm(note_stream):
 #     # note_stream.show()
