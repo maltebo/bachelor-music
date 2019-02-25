@@ -27,7 +27,7 @@ class VanillaPart(stream.Part):
     def insert_note(self, elem: note.Note):
         start = elem.offset
         end = start + elem.quarterLength
-        temp_volume = elem.volume.cachedRealized
+        temp_volume = elem.volume.velocity
         temp_lyrics = elem.lyrics
         temp_pitch = elem.pitch.ps
 
@@ -54,7 +54,7 @@ class VanillaPart(stream.Part):
     def insert_chord(self, elem: chord.Chord):
         start = elem.offset
         end = start + elem.quarterLength
-        temp_volume = elem.volume.cachedRealized
+        temp_volume = elem.volume.velocity
         temp_lyrics = elem.lyrics
 
         for temp_full_pitch in elem.pitches:
@@ -77,7 +77,7 @@ class VanillaPart(stream.Part):
             self.lyrics_number += 1
 
     @staticmethod
-    def create_note(start, end, temp_volume, temp_lyrics, temp_pitch):
+    def create_note(start, end, temp_volume: int, temp_lyrics, temp_pitch):
         if end - start < 0.2:
             return None
 
@@ -91,7 +91,7 @@ class VanillaPart(stream.Part):
 
         temp_note.quarterLength = new_duration
 
-        temp_note.volume = temp_volume
+        temp_note.volume.velocity = temp_volume
         if temp_lyrics:
             temp_note.lyrics = temp_lyrics
 

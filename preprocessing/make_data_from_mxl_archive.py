@@ -35,7 +35,6 @@ def run_all(thread_nr):
         m21_stream = process_data(thread_nr, file_name)
         melody_stream = simple_skyline_algorithm(m21_stream)
 
-
 class MyThread (threading.Thread):
     def __init__(self, thread_id, q):
         threading.Thread.__init__(self)
@@ -75,9 +74,9 @@ for root, dirs, files in os.walk(Test.TEST_DATA_FOLDER.value):
             # workQueue.put(os.path.join(root, file))
             pass
 
-workQueue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/4_4/aquarson.mxl")
-workQueue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/BA_forgive_me.mxl")
-workQueue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/test_file.mxl")
+# workQueue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/4_4/aquarson.mxl")
+# workQueue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/BA_forgive_me.mxl")
+workQueue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/4_4/alliwant.mxl")
 
 # Create new threads
 for tName in range(thread_number - 1):
