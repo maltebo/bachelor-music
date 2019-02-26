@@ -27,8 +27,10 @@ def process_file(m21_file: stream.Score, m21_stream: VanillaStream):
         delete = False
 
         for instr in part.getInstruments(recurse=True):
+            if instr.midiChannel == 9:
+                delete = True
+                break
             if "drum" in instr.bestName().lower():
-                m21_file.remove(part, recurse=True)
                 delete = True
                 break
 
@@ -38,6 +40,7 @@ def process_file(m21_file: stream.Score, m21_stream: VanillaStream):
         part.toSoundingPitch(inPlace=True)
 
         temp_part = VanillaPart()
+        temp_part.partName = part.partName
 
         for elem in part.flat.getElementsByClass(('Note', 'Chord')):
             temp_part.insert_local(elem)

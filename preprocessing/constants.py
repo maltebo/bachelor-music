@@ -2,6 +2,9 @@
 
 from enum import Enum
 import os
+import threading
+import json
+
 
 class Test(Enum):
 
@@ -9,8 +12,13 @@ class Test(Enum):
     DELETED_TEST_DATA_FOLDER = "/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/deleted"
 
 
-class Info(Enum):
-    time_sig = 1
-
-
 JSON_FILE_PATH = os.path.abspath("../data/mxl_info.json")
+
+json_lock = threading.Lock()
+json_dict = {"count": 0}
+try:
+    with open(JSON_FILE_PATH, 'r') as fp:
+        json_dict = json.load(fp)
+        json_dict["count"] = 0
+except:
+    pass
