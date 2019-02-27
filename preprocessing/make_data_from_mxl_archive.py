@@ -60,11 +60,6 @@ class MyThread (threading.Thread):
         print("Exiting", self.threadID)
 
 
-# Todo: Throw out parts with low correlation!
-# Todo: Make rests and measures!
-# Todo: Save modified file
-
-
 exit_flag = 0
 thread_number = 5
 
