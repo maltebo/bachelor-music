@@ -1,11 +1,11 @@
-from music21 import *
+import music21 as m21
 from preprocessing.helper import round_to_quarter
 
 
-class VanillaPart(stream.Part):
+class VanillaPart(m21.stream.Part):
 
     def __init__(self):
-        stream.Part.__init__(self)
+        m21.stream.Part.__init__(self)
         self.pitch_list = []
         self.volume_list = []
         self.note_number = 0
@@ -17,14 +17,14 @@ class VanillaPart(stream.Part):
         self.key_correlation = None
 
     def insert_local(self, elem):
-        if type(elem) == note.Note:
+        if type(elem) == m21.note.Note:
             self.insert_note(elem)
-        elif type(elem) == chord.Chord:
+        elif type(elem) == m21.chord.Chord:
             self.insert_chord(elem)
         else:
             raise ValueError("That was not the thing we expected you to do...")
 
-    def insert_note(self, elem: note.Note):
+    def insert_note(self, elem: m21.note.Note):
         start = elem.offset
         end = start + elem.quarterLength
         temp_volume = elem.volume.velocity
@@ -43,7 +43,7 @@ class VanillaPart(stream.Part):
         self.total_pitches += 1
         try:
             self.note_lengths.append(elem.seconds)
-        except exceptions21.Music21Exception:
+        except m21.exceptions21.Music21Exception:
             pass
 
         if temp_lyrics:
@@ -51,7 +51,7 @@ class VanillaPart(stream.Part):
 
         super().insert(temp_note)
 
-    def insert_chord(self, elem: chord.Chord):
+    def insert_chord(self, elem: m21.chord.Chord):
         start = elem.offset
         end = start + elem.quarterLength
         temp_volume = elem.volume.velocity
@@ -81,7 +81,7 @@ class VanillaPart(stream.Part):
         if end - start < 0.2:
             return None
 
-        temp_note = note.Note()
+        temp_note = m21.note.Note()
 
         temp_note.offset = round_to_quarter(start)
         new_end = round_to_quarter(end)

@@ -1,11 +1,11 @@
-from music21 import *
+import music21 as m21
 from preprocessing.vanilla_stream import VanillaStream
 from preprocessing.vanilla_part import VanillaPart
 from preprocessing.helper import round_to_quarter
 import sys
 
 
-def make_file_container(m21_file: stream.Score, file_name: str) -> VanillaStream:
+def make_file_container(m21_file: m21.stream.Score, file_name: str) -> VanillaStream:
     m21_stream = VanillaStream()
 
     m21_stream.id = file_name
@@ -20,7 +20,7 @@ def make_file_container(m21_file: stream.Score, file_name: str) -> VanillaStream
     return m21_stream
 
 
-def process_file(m21_file: stream.Score, m21_stream: VanillaStream):
+def process_file(m21_file: m21.stream.Score, m21_stream: VanillaStream):
 
     part_name_list = []
     number = 2
@@ -61,7 +61,7 @@ def process_file(m21_file: stream.Score, m21_stream: VanillaStream):
         m21_stream.insert(temp_part)
 
 
-def transpose_key(mxl_file: stream.Score) -> bool:
+def transpose_key(mxl_file: m21.stream.Score) -> bool:
 
     try:
         key = mxl_file.analyze('key')
@@ -73,10 +73,10 @@ def transpose_key(mxl_file: stream.Score) -> bool:
         return False
 
     if key.type == "major":
-        interval_ = interval.Interval(key.tonic, pitch.Pitch('C'))
+        interval_ = m21.interval.Interval(key.tonic, m21.pitch.Pitch('C'))
         mxl_file.transpose(interval_, inPlace=True)
     else:
-        interval_ = interval.Interval(key.tonic, pitch.Pitch('A'))
+        interval_ = m21.interval.Interval(key.tonic, m21.pitch.Pitch('A'))
         mxl_file.transpose(interval_, inPlace=True)
     return True
 
@@ -96,7 +96,7 @@ def check_valid_time_and_bpm(m21_stream: VanillaStream) -> bool:
 
 def process_data(thread_id, file_name) -> VanillaStream:
     print("%s processing %s" % (thread_id, file_name))
-    m21_file = converter.parse(file_name)
+    m21_file = m21.converter.parse(file_name)
 
     m21_stream = make_file_container(m21_file, file_name)
 

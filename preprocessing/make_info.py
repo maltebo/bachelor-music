@@ -1,4 +1,4 @@
-from preprocessing.constants import *
+import preprocessing.constants as c
 from statistics import mean
 from preprocessing.vanilla_stream import VanillaStream
 import sys
@@ -50,31 +50,31 @@ def make_stream_dict(m21_stream: VanillaStream):
 
 
 def put_in_json_dict(id: str, stream_info: dict, force: bool = False):
-    json_lock.acquire()
+    c.json_lock.acquire()
     try:
         if not force and valid_entry_exists(id):
-            json_lock.release()
+            c.json_lock.release()
             return
-        json_dict["count"] += 1
+        c.c.json_dict["count"] += 1
 
-        json_dict[id] = stream_info
+        c.c.json_dict[id] = stream_info
 
-        if json_dict["count"] >= 5:
+        if c.c.json_dict["count"] >= 5:
             print("write json dict")
-            with open(JSON_FILE_PATH, 'w') as fp:
-                fp.write(json.dumps(json_dict, indent=2))
-            json_dict["count"] = 0
-        json_lock.release()
+            with open(c.JSON_FILE_PATH, 'w') as fp:
+                fp.write(c.json.dumps(c.c.json_dict, indent=2))
+            c.c.json_dict["count"] = 0
+        c.json_lock.release()
     except:
         print(sys.exc_info())
-        json_lock.release()
+        c.json_lock.release()
 
 
 def valid_entry_exists(id: str) -> bool:
-    if not id in json_dict:
+    if not id in c.c.json_dict:
         return False
 
-    stream_dict = json_dict[id]
+    stream_dict = c.c.json_dict[id]
     if not ("metronome_range" in stream_dict and "time_signature" in stream_dict and
             "key_and_correlation" in stream_dict and "parts" in stream_dict):
         return False

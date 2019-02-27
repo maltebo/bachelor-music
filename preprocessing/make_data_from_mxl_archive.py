@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
-from music21 import *
-import sys
 import os
+import sys
+
 sys.path.append(os.path.abspath(".."))
-from preprocessing.constants import *
-from preprocessing.vanilla_stream import VanillaStream
+import preprocessing.constants as c
 from preprocessing.create_modified_stream import process_data
 from preprocessing.find_melody import simple_skyline_algorithm
 from preprocessing.make_info import make_stream_dict
@@ -75,10 +74,10 @@ work_queue = queue.Queue(0)
 
 threads = []
 
-for root, dirs, files in os.walk(Test.TEST_DATA_FOLDER.value):
+for root, dirs, files in c.os.walk(c.Test.TEST_DATA_FOLDER.value):
     for file in files:
         if file.endswith(".mxl"):
-            work_queue.put(os.path.join(root, file))
+            work_queue.put(c.os.path.join(root, file))
             pass
 
 # work_queue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/4_4/aquarson.mxl")

@@ -1,9 +1,9 @@
-from music21 import *
+import music21 as m21
 from copy import deepcopy
 from preprocessing.vanilla_stream import VanillaStream
 
 
-def simple_skyline_algorithm(note_stream: stream.Stream, min_pitch: float = 49.0, max_pitch: float = 84.0):
+def simple_skyline_algorithm(note_stream: m21.stream.Stream, min_pitch: float = 49.0, max_pitch: float = 84.0):
 
     current_note = None
     current_note_pitch = None
