@@ -74,10 +74,10 @@ work_queue = queue.Queue(0)
 
 threads = []
 
-for root, dirs, files in c.os.walk(c.Test.TEST_DATA_FOLDER.value):
+for root, dirs, files in os.walk(c.Test.TEST_DATA_FOLDER.value):
     for file in files:
         if file.endswith(".mxl"):
-            work_queue.put(c.os.path.join(root, file))
+            work_queue.put(os.path.join(root, file))
             pass
 
 # work_queue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/4_4/aquarson.mxl")
