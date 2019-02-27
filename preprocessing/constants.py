@@ -4,6 +4,7 @@ from enum import Enum
 import os
 import threading
 import json
+import traceback
 
 
 class Test(Enum):
@@ -20,5 +21,6 @@ try:
     with open(JSON_FILE_PATH, 'r') as fp:
         json_dict = json.load(fp)
         json_dict["count"] = 0
-except:
+except Exception:
+    traceback.print_exc()
     pass

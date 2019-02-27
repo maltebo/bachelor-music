@@ -2,7 +2,7 @@ import music21 as m21
 from preprocessing.vanilla_stream import VanillaStream
 from preprocessing.vanilla_part import VanillaPart
 from preprocessing.helper import round_to_quarter
-import sys
+import traceback
 
 
 def make_file_container(m21_file: m21.stream.Score, file_name: str) -> VanillaStream:
@@ -66,7 +66,7 @@ def transpose_key(mxl_file: m21.stream.Score) -> bool:
     try:
         key = mxl_file.analyze('key')
     except:
-        print(sys.exc_info())
+        traceback.print_exc()
         return False
 
     if key.mode != 'major' and key.mode != 'minor':

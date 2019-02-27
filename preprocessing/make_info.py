@@ -1,7 +1,7 @@
 import preprocessing.constants as c
 from statistics import mean
 from preprocessing.vanilla_stream import VanillaStream
-import sys
+import traceback
 from copy import deepcopy
 import json
 
@@ -64,7 +64,7 @@ def put_in_json_dict(dict_id: str, stream_info: dict, force: bool = False):
             c.json_dict["count"] = 0
         c.json_lock.release()
     except:
-        print(sys.exc_info())
+        traceback.print_exc()
         c.json_lock.release()
 
 
