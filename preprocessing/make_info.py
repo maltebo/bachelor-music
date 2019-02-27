@@ -1,35 +1,24 @@
-import preprocessing.constants as c
-from statistics import mean
-from preprocessing.vanilla_stream import VanillaStream
-import traceback
-from copy import deepcopy
 import json
+import traceback
+from statistics import mean
+
+import preprocessing.constants as c
+from preprocessing.vanilla_stream import VanillaStream
 
 
 def make_stream_dict(m21_stream: VanillaStream):
+
     stream_info = {"metronome_range": (m21_stream.metronome_mark_min, m21_stream.metronome_mark_max),
-                   "time_signature": m21_stream.time_signature}
-    stream_key = m21_stream.analyze('key')
-    stream_info["key_and_correlation"] = (stream_key.name, stream_key.correlationCoefficient)
+                   "time_signature": m21_stream.time_signature,
+                   "key_and_correlation": (m21_stream.key, m21_stream.key_correlation)}
+
     parts_info = {}
     number = 2
+
     for p in m21_stream.parts:
-        part_info = {"average_pitch": mean(p.pitch_list), "average_volume": mean(p.volume_list)}
-        part_key = p.analyze('key')
+        part_info = {"average_pitch": mean(p.pitch_list), "average_volume": mean(p.volume_list),
+                     "key_and_correlation": (p.key, p.key_correlation)}
 
-        if stream_key.name != part_key.name:
-            for k in part_key.alternateInterpretations:
-                if k.name == stream_key.name:
-                    part_key = k
-                    break
-
-        if stream_key.name != part_key.name:
-            part_key = deepcopy(stream_key)
-            part_key.correlationCoefficient = -1.0
-
-        assert stream_key.name == part_key.name
-
-        part_info["key_and_correlation"] = (part_key.name, part_key.correlationCoefficient)
         if p.total_notes_or_chords:
             part_info["note_percentage"] = p.note_number / p.total_notes_or_chords
             part_info["lyrics_percentage"] = p.lyrics_number / p.total_notes_or_chords
@@ -69,7 +58,7 @@ def put_in_json_dict(dict_id: str, stream_info: dict, force: bool = False):
 
 
 def valid_entry_exists(id: str) -> bool:
-    if not id in c.json_dict:
+    if id not in c.json_dict:
         return False
 
     stream_dict = c.json_dict[id]

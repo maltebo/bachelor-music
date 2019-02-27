@@ -6,6 +6,7 @@ import sys
 sys.path.append(os.path.abspath(".."))
 import preprocessing.constants as c
 from preprocessing.create_modified_stream import process_data
+from preprocessing.create_modified_stream import make_key_and_correlations
 from preprocessing.find_melody import simple_skyline_algorithm
 from preprocessing.make_info import make_stream_dict
 from preprocessing.make_info import put_in_json_dict
@@ -41,6 +42,7 @@ def run_all(thread_nr):
             continue
 
         m21_stream = process_data(thread_nr, file_name)
+        make_key_and_correlations(m21_stream)
         stream_info = make_stream_dict(m21_stream)
 
         if update:

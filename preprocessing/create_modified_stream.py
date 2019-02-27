@@ -1,8 +1,11 @@
-import music21 as m21
-from preprocessing.vanilla_stream import VanillaStream
-from preprocessing.vanilla_part import VanillaPart
-from preprocessing.helper import round_to_quarter
 import traceback
+from copy import deepcopy
+
+import music21 as m21
+
+from preprocessing.helper import round_to_quarter
+from preprocessing.vanilla_part import VanillaPart
+from preprocessing.vanilla_stream import VanillaStream
 
 
 def make_file_container(m21_file: m21.stream.Score, file_name: str) -> VanillaStream:
@@ -107,8 +110,49 @@ def process_data(thread_id, file_name) -> VanillaStream:
 
     process_file(m21_file, m21_stream)
 
-    transpose_key(m21_stream)
-
     return m21_stream
 
 
+def make_key_and_correlations(m21_stream: VanillaStream,
+                              part_threshold: float = 0.65,
+                              file_threshold: float = 0.8):
+    if not transpose_key(m21_stream):
+        raise ValueError("No transposition possible")
+
+    stream_key = m21_stream.analyze('key')
+
+    for p in list(m21_stream.parts):
+
+        part_key = p.analyze('key')
+
+        if stream_key.name != part_key.name:
+            for k in part_key.alternateInterpretations:
+                if k.name == stream_key.name:
+                    part_key = k
+                    break
+
+        if stream_key.name != part_key.name:
+            part_key = deepcopy(stream_key)
+            part_key.correlationCoefficient = -1.0
+
+        if part_key.correlationCoefficient < part_threshold:
+            m21_stream.remove(p, recurse=True)
+
+        else:
+            p.key = part_key.name
+            p.key_correlation = part_key.correlationCoefficient
+
+    if len(m21_stream.parts) == 0:
+        m21_stream.key = "invalid"
+        m21_stream.key_correlation = "invalid"
+        return
+
+    new_stream_key = m21_stream.analyze('key')
+    if new_stream_key.name != stream_key.name or new_stream_key.correlationCoefficient < file_threshold:
+        m21_stream.key = "invalid"
+        m21_stream.key_correlation = "invalid"
+        return
+
+    m21_stream.key = new_stream_key.name
+    m21_stream.key_correlation = new_stream_key.correlationCoefficient
+    return

@@ -9,6 +9,8 @@ class VanillaStream(m21.stream.Score):
         # we want to adjust the times so that one beat is approx. 0.5 seconds - 120bpm
         self.metronome_mark_min = None
         self.metronome_mark_max = None
+        self.key = None
+        self.key_correlation = None
 
     def insert_local(self, elem):
         if type(elem) == m21.meter.TimeSignature:
