@@ -71,7 +71,7 @@ work_queue = queue.Queue(0)
 
 threads = []
 
-for root, dirs, files in os.walk(c.Test.TEST_DATA_FOLDER.value):
+for root, dirs, files in os.walk(c.TEST_DATA_FOLDER):
     for file in files:
         if file.endswith(".mxl"):
             work_queue.put(os.path.join(root, file))

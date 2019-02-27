@@ -37,4 +37,3 @@ class VanillaStream(m21.stream.Score):
                 self.metronome_mark_max = elem.number
             elif elem.number < self.metronome_mark_max:
                 self.metronome_mark_min = elem.number
-

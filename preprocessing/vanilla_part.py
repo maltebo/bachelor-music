@@ -1,4 +1,5 @@
 import music21 as m21
+
 from preprocessing.helper import round_to_quarter
 
 
@@ -98,4 +99,3 @@ class VanillaPart(m21.stream.Part):
         temp_note.pitch.ps = temp_pitch
 
         return temp_note
-

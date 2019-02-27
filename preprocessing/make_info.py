@@ -57,11 +57,11 @@ def put_in_json_dict(dict_id: str, stream_info: dict, force: bool = False):
         c.json_lock.release()
 
 
-def valid_entry_exists(id: str) -> bool:
-    if id not in c.json_dict:
+def valid_entry_exists(dict_id: str) -> bool:
+    if dict_id not in c.json_dict:
         return False
 
-    stream_dict = c.json_dict[id]
+    stream_dict = c.json_dict[dict_id]
     if not ("metronome_range" in stream_dict and "time_signature" in stream_dict and
             "key_and_correlation" in stream_dict and "parts" in stream_dict):
         return False
