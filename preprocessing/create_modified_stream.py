@@ -3,6 +3,7 @@ from copy import deepcopy
 
 import music21 as m21
 
+import preprocessing.constants as c
 from preprocessing.helper import round_to_quarter
 from preprocessing.vanilla_part import VanillaPart
 from preprocessing.vanilla_stream import VanillaStream
@@ -56,8 +57,6 @@ def process_file(m21_file: m21.stream.Score, m21_stream: VanillaStream):
 
         for elem in part.flat.getElementsByClass(('Note', 'Chord')):
             temp_part.insert_local(elem)
-
-        temp_part.makeRests(fillGaps=True, inPlace=True)
 
         temp_part.stripTies(inPlace=True)
 
@@ -113,9 +112,7 @@ def process_data(thread_id, file_name) -> VanillaStream:
     return m21_stream
 
 
-def make_key_and_correlations(m21_stream: VanillaStream,
-                              part_threshold: float = 0.65,
-                              file_threshold: float = 0.8):
+def make_key_and_correlations(m21_stream: VanillaStream):
     if not transpose_key(m21_stream):
         raise ValueError("No transposition possible")
 
@@ -135,7 +132,7 @@ def make_key_and_correlations(m21_stream: VanillaStream,
             part_key = deepcopy(stream_key)
             part_key.correlationCoefficient = -1.0
 
-        if part_key.correlationCoefficient < part_threshold:
+        if part_key.correlationCoefficient < c.PREP_SETTINGS["DELETE_PART_THRESHOLD"]:
             m21_stream.remove(p, recurse=True)
 
         else:
@@ -148,7 +145,8 @@ def make_key_and_correlations(m21_stream: VanillaStream,
         return
 
     new_stream_key = m21_stream.analyze('key')
-    if new_stream_key.name != stream_key.name or new_stream_key.correlationCoefficient < file_threshold:
+    if new_stream_key.name != stream_key.name or (new_stream_key.correlationCoefficient <
+                                                  c.PREP_SETTINGS["DELETE_STREAM_THRESHOLD"]):
         m21_stream.key = "invalid"
         m21_stream.key_correlation = "invalid"
         return

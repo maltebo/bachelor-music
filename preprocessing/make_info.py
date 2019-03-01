@@ -36,10 +36,10 @@ def make_stream_dict(m21_stream: VanillaStream):
     return stream_info
 
 
-def put_in_json_dict(dict_id: str, stream_info: dict, force: bool = False):
+def put_in_json_dict(dict_id: str, stream_info: dict):
     c.json_lock.acquire()
     try:
-        if not force and valid_entry_exists(dict_id):
+        if not c.FORCE and valid_entry_exists(dict_id):
             c.json_lock.release()
             return
         c.json_dict["count"] += 1

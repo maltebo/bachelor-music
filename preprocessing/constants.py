@@ -30,7 +30,8 @@ if not settings_dict:
             "MIN_PITCH": 49.0,
             "MAX_PITCH": 84.0,
             "DELETE_PART_THRESHOLD": 0.65,
-            "DELETE_STREAM_THRESHOLD": 0.8
+            "DELETE_STREAM_THRESHOLD": 0.8,
+            "ACCEPTED_KEY": "C major"
         }
     }
 

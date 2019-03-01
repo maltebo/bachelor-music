@@ -2,10 +2,11 @@ from copy import deepcopy
 
 import music21 as m21
 
+import preprocessing.constants as c
 from preprocessing.vanilla_stream import VanillaStream
 
 
-def simple_skyline_algorithm(note_stream: m21.stream.Stream, min_pitch: float = 49.0, max_pitch: float = 84.0):
+def simple_skyline_algorithm(note_stream: m21.stream.Stream):
 
     current_note = None
     current_note_pitch = None
@@ -16,7 +17,7 @@ def simple_skyline_algorithm(note_stream: m21.stream.Stream, min_pitch: float = 
 
         action_pitch = action_note.pitch.ps
 
-        if not (min_pitch <= action_pitch <= max_pitch):
+        if not (c.PREP_SETTINGS["MIN_PITCH"] <= action_pitch <= c.PREP_SETTINGS["MAX_PITCH"]):
             continue
 
         if current_end <= action_note.offset:
@@ -41,7 +42,9 @@ def simple_skyline_algorithm(note_stream: m21.stream.Stream, min_pitch: float = 
         new_note = deepcopy(current_note)
         melody_stream.insert(new_note)
 
-    melody_stream.makeNotation(inPlace=True)
+    melody_stream.makeMeasures(inPlace=True)
+    # not necessary, but nicer for looking at the notes
+    melody_stream.makeAccidentals(inPlace=True)
 
     return melody_stream
 

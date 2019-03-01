@@ -31,22 +31,24 @@ def get_job(temp_queue):
 
 def run_all(thread_nr):
     while not work_queue.empty():
-        force_dict = True
-        update = True
-        # Todo change value
         file_name = get_job(work_queue)
 
         if not file_name:
             continue
-        if not force_dict and valid_entry_exists(file_name):
+        if not c.FORCE and valid_entry_exists(file_name):
             continue
 
         m21_stream = process_data(thread_nr, file_name)
+
+        # Todo
+        for n in m21_stream.parts[0].flat.notes:
+            print(n.offset, n.quarterLength, n.lyrics, n)
+
         make_key_and_correlations(m21_stream)
         stream_info = make_stream_dict(m21_stream)
 
-        if update:
-            put_in_json_dict(file_name, stream_info, force=force_dict)
+        if c.UPDATE:
+            put_in_json_dict(file_name, stream_info)
         melody_stream = simple_skyline_algorithm(m21_stream)
 
 
@@ -63,7 +65,7 @@ class MyThread (threading.Thread):
 
 
 exit_flag = 0
-thread_number = 5
+thread_number = 1
 
 queue_lock = threading.Lock()
 work_queue = queue.Queue(0)
@@ -74,13 +76,10 @@ threads = []
 for root, dirs, files in os.walk(c.TEST_DATA_FOLDER):
     for file in files:
         if file.endswith(".mxl"):
-            work_queue.put(os.path.join(root, file))
+            # work_queue.put(os.path.join(root, file))
             pass
 
-# work_queue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/4_4/aquarson.mxl")
-# work_queue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/BA_forgive_me.mxl")
-# work_queue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/4_4/Cant_Live_Without_You.mxl")
-# work_queue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL_raw/4_4/bwv861.mxl")
+work_queue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL/TestData/Affairs1.mxl")
 
 # Create new threads
 for tName in range(thread_number - 1):
