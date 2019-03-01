@@ -52,12 +52,10 @@ UPDATE = settings_dict["updates"]["UPDATE"]
 PREP_SETTINGS = settings_dict["preprocessing"]
 
 json_lock = threading.Lock()
-json_dict = {"count": 0}
 
 try:
     with open(JSON_FILE_PATH, 'r') as fp:
         json_dict = json.load(fp)
         json_dict["count"] = 0
 except FileNotFoundError:
-    traceback.print_exc()
-    pass
+    json_dict = {"count": 0}
