@@ -31,8 +31,9 @@ class VanillaPart(m21.stream.Part):
         temp_volume = elem.volume.velocity
         temp_lyrics = elem.lyrics
         temp_pitch = elem.pitch.ps
+        temp_tie = elem.tie
 
-        temp_note = self.create_note(start, end, temp_volume, temp_lyrics, temp_pitch)
+        temp_note = self.create_note(start, end, temp_volume, temp_lyrics, temp_pitch, temp_tie)
 
         if not temp_note:
             return
@@ -57,12 +58,13 @@ class VanillaPart(m21.stream.Part):
         end = start + elem.quarterLength
         temp_volume = elem.volume.velocity
         temp_lyrics = elem.lyrics
+        temp_tie = elem.tie
 
         for temp_full_pitch in elem.pitches:
 
             temp_pitch = temp_full_pitch.ps
 
-            temp_note = self.create_note(start, end, temp_volume, temp_lyrics, temp_pitch)
+            temp_note = self.create_note(start, end, temp_volume, temp_lyrics, temp_pitch, temp_tie)
 
             if not temp_note:
                 return
@@ -78,7 +80,7 @@ class VanillaPart(m21.stream.Part):
             self.lyrics_number += 1
 
     @staticmethod
-    def create_note(start, end, temp_volume: int, temp_lyrics, temp_pitch):
+    def create_note(start, end, temp_volume: int, temp_lyrics, temp_pitch, temp_tie: m21.tie.Tie):
         if end - start < 0.2:
             return None
 
@@ -95,6 +97,9 @@ class VanillaPart(m21.stream.Part):
         temp_note.volume.velocity = temp_volume
         if temp_lyrics:
             temp_note.lyrics = temp_lyrics
+
+        if temp_tie:
+            temp_note.tie = temp_tie
 
         temp_note.pitch.ps = temp_pitch
 
