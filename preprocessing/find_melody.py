@@ -1,5 +1,7 @@
-import music21 as m21
 from copy import deepcopy
+
+import music21 as m21
+
 from preprocessing.vanilla_stream import VanillaStream
 
 
@@ -38,6 +40,8 @@ def simple_skyline_algorithm(note_stream: m21.stream.Stream, min_pitch: float = 
     if current_note is not None:
         new_note = deepcopy(current_note)
         melody_stream.insert(new_note)
+
+    melody_stream.makeNotation(inPlace=True)
 
     return melody_stream
 
