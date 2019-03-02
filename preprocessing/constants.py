@@ -5,12 +5,12 @@ import os
 import threading
 import traceback
 
-_SETTINGS_LOCATION = os.path.abspath("../data/.settings.json")
+__SETTINGS_LOCATION = os.path.abspath("../data/.settings.json")
 
 settings_dict = None
 
 try:
-    with open(_SETTINGS_LOCATION, 'r') as fp:
+    with open(__SETTINGS_LOCATION, 'r') as fp:
         settings_dict = json.load(fp)
 except FileNotFoundError:
     pass
@@ -36,7 +36,7 @@ if not settings_dict:
     }
 
     try:
-        with open(_SETTINGS_LOCATION, 'x') as fp:
+        with open(__SETTINGS_LOCATION, 'x') as fp:
             fp.write(json.dumps(settings_dict, indent=2))
     except:
         traceback.print_exc()
@@ -59,3 +59,57 @@ try:
         json_dict["count"] = 0
 except FileNotFoundError:
     json_dict = {"count": 0}
+
+
+def make_chord_dict() -> dict:
+    import music21 as m21
+
+    maj = m21.chord.Chord(['C', 'E', 'G'])
+    min = m21.chord.Chord(['C', 'E-', 'G'])
+    dim = m21.chord.Chord(['C', 'E-', 'G-'])
+    maj7 = m21.chord.Chord(['C', 'E', 'G', 'B'])
+    min7 = m21.chord.Chord(['C', 'E-', 'G', 'B-'])
+
+    base_note = m21.note.Note('C')
+
+    chord_dict = {}
+
+    for _ in range(12):
+        chord_dict[base_note.name + " major"] = [p.ps % 12 for p in maj.pitches]
+        maj = maj.transpose(1)
+        chord_dict[base_note.name + " minor"] = [p.ps % 12 for p in min.pitches]
+        min = min.transpose(1)
+        chord_dict[base_note.name + " diminished"] = [p.ps % 12 for p in dim.pitches]
+        dim = dim.transpose(1)
+        chord_dict[base_note.name + " major 7"] = [p.ps % 12 for p in maj7.pitches]
+        maj7 = maj7.transpose(1)
+        chord_dict[base_note.name + " minor 7"] = [p.ps % 12 for p in min7.pitches]
+        min7 = min7.transpose(1)
+
+        base_note = base_note.transpose(1)
+
+    note_dict = {}
+    for i in range(12):
+        note_dict[str(i)] = []
+
+    for key in chord_dict:
+        for pitch in chord_dict[key]:
+            note_dict[str(int(pitch))].append(key)
+
+    full_dict = {
+        "note_to_chords": note_dict,
+        "chord_to_notes": chord_dict
+    }
+
+    with open("/home/malte/PycharmProjects/BachelorMusic/data/chord_data.json", 'x') as fp:
+        fp.write(json.dumps(full_dict, indent=2))
+
+    return full_dict
+
+
+__CHORD_DATA_LOCATION = "../data/chord_data.json"
+try:
+    with open(__CHORD_DATA_LOCATION, 'r') as fp:
+        chord_data = json.load(fp)
+except FileNotFoundError:
+    chord_data = make_chord_dict()
