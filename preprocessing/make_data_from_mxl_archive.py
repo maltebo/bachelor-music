@@ -8,6 +8,7 @@ import preprocessing.constants as c
 from preprocessing.create_modified_stream import process_data
 from preprocessing.create_modified_stream import make_key_and_correlations
 from preprocessing.find_melody import simple_skyline_algorithm
+from preprocessing.find_chords import find_chords
 from preprocessing.make_info import make_stream_dict
 from preprocessing.make_info import put_in_json_dict
 from preprocessing.make_info import valid_entry_exists
@@ -39,17 +40,14 @@ def run_all(thread_nr):
             continue
 
         m21_stream = process_data(thread_nr, file_name)
-
-        # Todo
-        for n in m21_stream.parts[0].flat.notes:
-            print(n.offset, n.quarterLength, n.lyrics, n)
-
         make_key_and_correlations(m21_stream)
         stream_info = make_stream_dict(m21_stream)
 
         if c.UPDATE:
             put_in_json_dict(file_name, stream_info)
+
         melody_stream = simple_skyline_algorithm(m21_stream)
+        full_stream = find_chords(m21_stream, melody_stream)
 
 
 class MyThread (threading.Thread):
@@ -76,10 +74,11 @@ threads = []
 for root, dirs, files in os.walk(c.TEST_DATA_FOLDER):
     for file in files:
         if file.endswith(".mxl"):
-            # work_queue.put(os.path.join(root, file))
+            work_queue.put(os.path.join(root, file))
             pass
 
-work_queue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL/TestData/Affairs1.mxl")
+# work_queue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL/TestData/Affairs1.mxl")
+# work_queue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL/TestData/Bwv0540_Toccata_and_Fugue.mxl")
 
 # Create new threads
 for tName in range(thread_number - 1):

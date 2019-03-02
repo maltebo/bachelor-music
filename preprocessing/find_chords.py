@@ -1,10 +1,27 @@
-import music21 as m21
-
+import preprocessing.constants as c
+from preprocessing.vanilla_part import VanillaPart
 from preprocessing.vanilla_stream import VanillaStream
 
 
+def get_max_values(probable_chords: dict) -> list:
+    max_value = -1
+    max_list = []
+
+    for chord in probable_chords:
+        if probable_chords[chord] > max_value:
+            max_value = probable_chords[chord]
+            max_list = [(max_value, chord)]
+        elif probable_chords[chord] == max_value:
+            max_list.append((max_value, chord))
+
+    return max_list
+
+
 def find_chords(note_stream: VanillaStream, melody_stream: VanillaStream) -> VanillaStream:
-    assert melody_stream.isSequence()
+    # Todo: Issue 10
+    # assert melody_stream.isSequence()
+
+    chord_and_melody_stream = VanillaStream()
 
     note_stream_list = list(note_stream.flat.notes)
     melody_stream_list = list(melody_stream.flat.notes)
@@ -35,46 +52,33 @@ def find_chords(note_stream: VanillaStream, melody_stream: VanillaStream) -> Van
         for note_id in melody_notes:
             notes_per_melody_note_dict[note_id].append(note.pitch.ps)
 
+    chord_and_melody_stream.insert(melody_stream.parts[0:])
 
-def make_chord_dict():
-    import json
+    chord_part = VanillaPart()
+    chord_part.id = "Chords"
 
-    maj = m21.chord.Chord(['C', 'E', 'G'])
-    min = m21.chord.Chord(['C', 'E-', 'G'])
-    dim = m21.chord.Chord(['C', 'E-', 'G-'])
-    maj7 = m21.chord.Chord(['C', 'E', 'G', 'B'])
-    min7 = m21.chord.Chord(['C', 'E-', 'G', 'B-'])
+    for note_id in notes_per_melody_note_dict:
 
-    base_note = m21.note.Note('C')
+        current_note = melody_stream.flat.getElementById(note_id)
 
-    chord_dict = {}
+        assert current_note is not None
 
-    for _ in range(12):
-        chord_dict[base_note.name + " major"] = [p.ps % 12 for p in maj.pitches]
-        maj = maj.transpose(1)
-        chord_dict[base_note.name + " minor"] = [p.ps % 12 for p in min.pitches]
-        min = min.transpose(1)
-        chord_dict[base_note.name + " diminished"] = [p.ps % 12 for p in dim.pitches]
-        dim = dim.transpose(1)
-        chord_dict[base_note.name + " major 7"] = [p.ps % 12 for p in maj7.pitches]
-        maj7 = maj7.transpose(1)
-        chord_dict[base_note.name + " minor 7"] = [p.ps % 12 for p in min7.pitches]
-        min7 = min7.transpose(1)
+        probable_chords = dict((elem, 0.0) for elem in c.chord_data["chord_to_notes"].keys())
 
-        base_note = base_note.transpose(1)
+        for pitch in notes_per_melody_note_dict[note_id]:
 
-    note_dict = {}
-    for i in range(12):
-        note_dict[i] = []
+            str_pitch = str(int(pitch % 12))
 
-    for key in chord_dict:
-        for pitch in chord_dict[key]:
-            note_dict[int(pitch)].append(key)
+            for temp_chord in c.chord_data["note_to_chords"][str_pitch]:
+                probable_chords[temp_chord] += 1
 
-    full_dict = {
-        "note_to_chords": note_dict,
-        "chord_to_notes": chord_dict
-    }
+        for chord in probable_chords:
+            probable_chords[chord] /= len(c.chord_data["chord_to_notes"][chord])
 
-    with open("/home/malte/PycharmProjects/BachelorMusic/data/chord_data.json", 'x') as fp:
-        fp.write(json.dumps(full_dict, indent=2))
+        max_list = get_max_values(probable_chords)
+
+        print(max_list)
+
+
+def most_probable_chord(pitch_list):
+    pass

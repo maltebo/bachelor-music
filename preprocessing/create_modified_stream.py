@@ -29,6 +29,7 @@ def process_file(m21_file: m21.stream.Score, m21_stream: VanillaStream):
     part_name_list = []
     number = 2
 
+    part: m21.stream.Part
     for part in list(m21_file.parts):
 
         delete = False
@@ -45,6 +46,7 @@ def process_file(m21_file: m21.stream.Score, m21_stream: VanillaStream):
             continue
 
         part.toSoundingPitch(inPlace=True)
+        part.stripTies(inPlace=True)
 
         temp_part = VanillaPart()
 
@@ -58,6 +60,7 @@ def process_file(m21_file: m21.stream.Score, m21_stream: VanillaStream):
         for elem in part.flat.getElementsByClass(('Note', 'Chord')):
             temp_part.insert_local(elem)
 
+        # Todo: check if this works correctly
         temp_part.stripTies(inPlace=True)
 
         m21_stream.insert(temp_part)
