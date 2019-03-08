@@ -17,23 +17,24 @@ class VanillaPart(m21.stream.Part):
         self.key = None
         self.key_correlation = None
 
-    def insert_local(self, elem):
+    def insert_local(self, elem, new_duration=None):
         if type(elem) == m21.note.Note:
-            self.insert_note(elem)
+            self.insert_note(elem, new_duration)
         elif type(elem) == m21.chord.Chord:
-            self.insert_chord(elem)
+            self.insert_chord(elem, new_duration)
         else:
             raise ValueError("That was not the thing we expected you to do...")
 
-    def insert_note(self, elem: m21.note.Note):
+    def insert_note(self, elem: m21.note.Note, new_duration: float):
         start = elem.offset
         end = start + elem.quarterLength
+        if new_duration:
+            end = start + new_duration
         temp_volume = elem.volume.velocity
         temp_lyrics = elem.lyrics
         temp_pitch = elem.pitch.ps
-        temp_tie = elem.tie
 
-        temp_note = self.create_note(start, end, temp_volume, temp_lyrics, temp_pitch, temp_tie)
+        temp_note = self.create_note(start, end, temp_volume, temp_lyrics, temp_pitch)
 
         if not temp_note:
             return
@@ -53,18 +54,19 @@ class VanillaPart(m21.stream.Part):
 
         super().insert(temp_note)
 
-    def insert_chord(self, elem: m21.chord.Chord):
+    def insert_chord(self, elem: m21.chord.Chord, new_duration: float):
         start = elem.offset
         end = start + elem.quarterLength
+        if new_duration:
+            end = start + new_duration
         temp_volume = elem.volume.velocity
         temp_lyrics = elem.lyrics
-        temp_tie = elem.tie
 
         for temp_full_pitch in elem.pitches:
 
             temp_pitch = temp_full_pitch.ps
 
-            temp_note = self.create_note(start, end, temp_volume, temp_lyrics, temp_pitch, temp_tie)
+            temp_note = self.create_note(start, end, temp_volume, temp_lyrics, temp_pitch)
 
             if not temp_note:
                 return
@@ -80,9 +82,13 @@ class VanillaPart(m21.stream.Part):
             self.lyrics_number += 1
 
     @staticmethod
-    def create_note(start, end, temp_volume: int, temp_lyrics, temp_pitch, temp_tie: m21.tie.Tie):
+    def create_note(start, end, temp_volume: int, temp_lyrics, temp_pitch):
         if end - start < 0.2:
             return None
+
+        # maximum note length is 4
+        if end - start > 4:
+            end = start + 4
 
         temp_note = m21.note.Note()
 
@@ -97,9 +103,6 @@ class VanillaPart(m21.stream.Part):
         temp_note.volume.velocity = temp_volume
         if temp_lyrics:
             temp_note.lyrics = temp_lyrics
-
-        if temp_tie:
-            temp_note.tie = temp_tie
 
         temp_note.pitch.ps = temp_pitch
 
