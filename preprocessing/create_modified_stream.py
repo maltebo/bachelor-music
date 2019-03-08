@@ -4,6 +4,7 @@ from copy import deepcopy
 import music21 as m21
 
 import preprocessing.constants as c
+from preprocessing.helper import FileNotFittingSettingsError
 from preprocessing.helper import round_to_quarter
 from preprocessing.vanilla_part import VanillaPart
 from preprocessing.vanilla_stream import VanillaStream
@@ -116,16 +117,17 @@ def transpose_key(mxl_file: m21.stream.Score) -> bool:
     return True
 
 
-def check_valid_time_and_bpm(m21_stream: VanillaStream) -> bool:
+def check_valid_time(m21_stream: VanillaStream):
+    valid_time = c.PREP_SETTINGS["VALID_TIME"]
 
-    valid_time = "4_4"
+    if m21_stream.time_signature != valid_time:
+        raise FileNotFittingSettingsError("Time doesnt't fit")
 
-    try:
-        return (m21_stream.metronome_mark_max <= c.PREP_SETTINGS["MAX_BPM"] and
-                m21_stream.metronome_mark_min >= c.PREP_SETTINGS["MIN_BPM"] and
-                m21_stream.time_signature == valid_time)
-    except TypeError:
-        return False
+
+def check_valid_bpm(m21_stream: VanillaStream):
+    if not (m21_stream.metronome_mark_max <= c.PREP_SETTINGS["MAX_BPM"] and
+            m21_stream.metronome_mark_min >= c.PREP_SETTINGS["MIN_BPM"]):
+        raise FileNotFittingSettingsError("Beats per minute don't fit")
 
 
 def process_data(thread_id, file_name) -> VanillaStream:
@@ -134,10 +136,9 @@ def process_data(thread_id, file_name) -> VanillaStream:
 
     m21_stream = make_file_container(m21_file, file_name)
 
-    # valid = check_valid_time_and_bpm(m21_stream)
-    #
-    # if not valid:
-    #     return None
+    check_valid_time(m21_stream)
+
+    check_valid_bpm(m21_stream)
 
     process_file(m21_file, m21_stream)
 
