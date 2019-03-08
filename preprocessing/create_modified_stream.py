@@ -117,13 +117,12 @@ def transpose_key(mxl_file: m21.stream.Score) -> bool:
 
 
 def check_valid_time_and_bpm(m21_stream: VanillaStream) -> bool:
-    max_bpm = 140
-    min_bpm = 100
+
     valid_time = "4_4"
 
     try:
-        return (m21_stream.metronome_mark_max <= max_bpm and
-                m21_stream.metronome_mark_min >= min_bpm and
+        return (m21_stream.metronome_mark_max <= c.PREP_SETTINGS["MAX_BPM"] and
+                m21_stream.metronome_mark_min >= c.PREP_SETTINGS["MIN_BPM"] and
                 m21_stream.time_signature == valid_time)
     except TypeError:
         return False
