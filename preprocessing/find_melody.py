@@ -42,8 +42,10 @@ def simple_skyline_algorithm(note_stream: m21.stream.Stream):
         new_note = deepcopy(current_note)
         melody_stream.insert(new_note)
 
+    assert melody_stream.isSequence()
+
     melody_stream.makeMeasures(inPlace=True)
-    # not necessary, but nicer for looking at the notes
+    # # not necessary, but nicer for looking at the notes
     melody_stream.makeAccidentals(inPlace=True)
 
     return melody_stream
