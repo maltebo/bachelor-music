@@ -3,15 +3,16 @@
 import os
 import sys
 
+
 sys.path.append(os.path.abspath(".."))
 import preprocessing.constants as c
 from preprocessing.create_modified_stream import process_data
 from preprocessing.create_modified_stream import make_key_and_correlations
 from preprocessing.find_melody import simple_skyline_algorithm
-from preprocessing.find_chords import find_chords
 from preprocessing.make_info import make_stream_dict
 from preprocessing.make_info import put_in_json_dict
 from preprocessing.make_info import valid_entry_exists
+from preprocessing.make_tf_structure import make_tf_structure
 import threading
 import queue
 import time
@@ -30,7 +31,12 @@ def get_job(temp_queue):
         return None
 
 
-def run_all(thread_nr):
+def run_all(thread_nr: int):
+    """
+    runs all implemented steps for preprocessing as long as there is something to do
+    :param thread_nr: For printing status information
+    :return:
+    """
     while not work_queue.empty():
         file_name = get_job(work_queue)
 
@@ -46,8 +52,48 @@ def run_all(thread_nr):
         if c.UPDATE:
             put_in_json_dict(file_name, stream_info)
 
+        # in the skyline algorithm it is asserted that the melody is a sequence
         melody_stream = simple_skyline_algorithm(m21_stream)
-        full_stream = find_chords(m21_stream, melody_stream)
+
+        tf_structure = make_tf_structure(melody_stream)
+
+        melody_stream.show('midi')
+
+        # full_stream = find_chords(m21_stream, melody_stream)
+
+
+def analyze_note_lengths(thread_nr: int):
+    while not work_queue.empty():
+        file_name = get_job(work_queue)
+
+        if not file_name:
+            continue
+        if not c.FORCE and valid_entry_exists(file_name):
+            continue
+
+        m21_stream = process_data(thread_nr, file_name)
+        make_key_and_correlations(m21_stream)
+        stream_info = make_stream_dict(m21_stream)
+
+        # in the skyline algorithm it is asserted that the melody is a sequence
+        melody_stream = simple_skyline_algorithm(m21_stream)
+        local_dict = {}
+
+        for n in melody_stream.flat.notes:
+            if n.quarterLength in local_dict:
+                local_dict[n.quarterLength] += 1
+            else:
+                local_dict[n.quarterLength] = 1
+
+        note_lengths_lock.acquire()
+        for key in local_dict:
+            if key in note_lengths_dict:
+                note_lengths_dict[key] += local_dict[key]
+            else:
+                note_lengths_dict[key] = local_dict[key]
+        if thread_nr == 1:
+            print(note_lengths_dict)
+        note_lengths_lock.release()
 
 
 class MyThread (threading.Thread):
@@ -58,16 +104,17 @@ class MyThread (threading.Thread):
 
     def run(self):
         print("Starting", self.threadID)
-        run_all(self.threadID)
+        current_job(self.threadID)
         print("Exiting", self.threadID)
 
 
 exit_flag = 0
 thread_number = 1
 
+current_job = run_all
+
 queue_lock = threading.Lock()
 work_queue = queue.Queue(0)
-
 
 threads = []
 
@@ -86,8 +133,11 @@ for tName in range(thread_number - 1):
     threads.append(thread)
     thread.start()
 
+note_lengths_dict = {}
+note_lengths_lock = threading.Lock()
+
 # Wait for queue to empty
-run_all(thread_number)
+current_job(thread_number)
 
 # Notify threads it's time to exit
 exit_flag = 1
