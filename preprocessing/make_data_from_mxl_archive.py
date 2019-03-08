@@ -6,6 +6,7 @@ import sys
 
 sys.path.append(os.path.abspath(".."))
 import preprocessing.constants as c
+from preprocessing.helper import FileNotFittingSettingsError
 from preprocessing.create_modified_stream import process_data
 from preprocessing.create_modified_stream import make_key_and_correlations
 from preprocessing.find_melody import simple_skyline_algorithm
@@ -45,21 +46,24 @@ def run_all(thread_nr: int):
         if not c.FORCE and valid_entry_exists(file_name):
             continue
 
-        m21_stream = process_data(thread_nr, file_name)
-        make_key_and_correlations(m21_stream)
-        stream_info = make_stream_dict(m21_stream)
+        try:
+            m21_stream = process_data(thread_nr, file_name)
+            make_key_and_correlations(m21_stream)
+            stream_info = make_stream_dict(m21_stream)
 
-        if c.UPDATE:
-            put_in_json_dict(file_name, stream_info)
+            if c.UPDATE:
+                put_in_json_dict(file_name, stream_info)
 
-        # in the skyline algorithm it is asserted that the melody is a sequence
-        melody_stream = simple_skyline_algorithm(m21_stream)
+            # in the skyline algorithm it is asserted that the melody is a sequence
+            melody_stream = simple_skyline_algorithm(m21_stream)
 
-        tf_structure = make_tf_structure(melody_stream)
+            tf_structure = make_tf_structure(melody_stream)
 
-        melody_stream.show('midi')
+            # melody_stream.show('midi')
 
-        # full_stream = find_chords(m21_stream, melody_stream)
+            # full_stream = find_chords(m21_stream, melody_stream)
+        except FileNotFittingSettingsError:
+            print(sys.exc_info()[1])
 
 
 def analyze_note_lengths(thread_nr: int):

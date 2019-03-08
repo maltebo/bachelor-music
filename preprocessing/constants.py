@@ -20,7 +20,8 @@ if not settings_dict:
         "locations": {
             "TEST_DATA_FOLDER": os.path.abspath("../data/MXL/TestData"),
             "DELETED_TEST_DATA_FOLDER": os.path.abspath("../data/MXL/deleted"),
-            "JSON_FILE_PATH": os.path.abspath("../data/mxl_info.json")
+            "JSON_FILE_PATH": os.path.abspath("../data/mxl_info.json"),
+            "MELODY_INFORMATION": os.path.abspath("../data/melody_info.json")
         },
         "updates": {
             "FORCE": True,
@@ -33,7 +34,8 @@ if not settings_dict:
             "DELETE_STREAM_THRESHOLD": 0.8,
             "ACCEPTED_KEY": "C major",
             "MAX_BPM": 140,
-            "MIN_BPM": 100
+            "MIN_BPM": 100,
+            "VALID_TIME": "4/4"
         }
     }
 
@@ -47,6 +49,7 @@ TEST_DATA_FOLDER = settings_dict["locations"]["TEST_DATA_FOLDER"]
 DELETED_TEST_DATA_FOLDER = settings_dict["locations"]["DELETED_TEST_DATA_FOLDER"]
 
 JSON_FILE_PATH = settings_dict["locations"]["JSON_FILE_PATH"]
+MELODY_FILE_PATH = settings_dict["locations"]["MELODY_INFORMATION"]
 
 FORCE = settings_dict["updates"]["FORCE"]
 UPDATE = settings_dict["updates"]["UPDATE"]
@@ -54,6 +57,7 @@ UPDATE = settings_dict["updates"]["UPDATE"]
 PREP_SETTINGS = settings_dict["preprocessing"]
 
 json_lock = threading.Lock()
+melody_lock = threading.Lock()
 
 try:
     with open(JSON_FILE_PATH, 'r') as fp:

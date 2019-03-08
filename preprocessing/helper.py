@@ -1,10 +1,11 @@
 import os
 import threading
+
 import preprocessing.constants as c
 
 
 def remove(file_path, reason):
-    new_dir = os.path.join(c.Test.DELETED_TEST_DATA_FOLDER.value, reason)
+    new_dir = os.path.join(c.DELETED_TEST_DATA_FOLDER.value, reason)
     if not os.path.exists(new_dir):
         os.makedirs(new_dir, exist_ok=True)
     new_file_path = os.path.join(new_dir, os.path.basename(file_path))
@@ -26,3 +27,9 @@ def _show_in_musescore(m21_object):
 
 def round_to_quarter(value):
     return round(value * 4) / 4
+
+
+class FileNotFittingSettingsError(BaseException):
+
+    def __init__(self, *args):
+        super().__init__(*args)

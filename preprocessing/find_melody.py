@@ -12,6 +12,7 @@ def simple_skyline_algorithm(note_stream: m21.stream.Stream):
     current_note_pitch = None
     current_end = -1
     melody_stream = VanillaStream()
+    melody_stream.id = note_stream.id
 
     for action_note in note_stream.flat.notes:
 

@@ -20,7 +20,7 @@ class VanillaStream(m21.stream.Score):
 
     def insert_time_signature(self, elem: m21.meter.TimeSignature):
         super().insert(elem)
-        temp_time = elem.ratioString.replace("/", "_")
+        temp_time = elem.ratioString
         if self.time_signature:
             if self.time_signature != "changing" and self.time_signature != temp_time:
                 self.time_signature = "changing"
