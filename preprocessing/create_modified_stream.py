@@ -46,7 +46,6 @@ def process_file(m21_file: m21.stream.Score, m21_stream: VanillaStream):
             continue
 
         part.toSoundingPitch(inPlace=True)
-        part.stripTies(inPlace=True)
 
         temp_part = VanillaPart()
 
@@ -57,13 +56,44 @@ def process_file(m21_file: m21.stream.Score, m21_stream: VanillaStream):
             part_name_list.append(part.partName)
             temp_part.partName = part.partName
 
-        for elem in part.flat.getElementsByClass(('Note', 'Chord')):
-            temp_part.insert_local(elem)
+        tie_list = []
 
-        # Todo: check if this works correctly
-        temp_part.stripTies(inPlace=True)
+        for elem in part.flat.getElementsByClass(('Note', 'Chord')):
+            elem: m21.chord.Chord
+
+            if elem.tie is None:
+                temp_part.insert_local(elem)
+                continue
+
+            if elem.tie.type == 'start':
+                tie_list.append([elem, elem.quarterLength, elem.offset + elem.quarterLength, pitch_set(elem)])
+            elif elem.tie.type == 'continue':
+                for tied_elem in list(tie_list):
+                    if round(tied_elem[2], 4) < round(elem.offset, 4):
+                        temp_part.insert_local(tied_elem[0], tied_elem[1])
+                        tie_list.remove(tied_elem)
+                    elif round(tied_elem[2], 4) == round(elem.offset, 4) and tied_elem[3] == pitch_set(elem):
+                        tied_elem[1] += elem.quarterLength
+                        tied_elem[2] += elem.quarterLength
+                        break
+            elif elem.tie.type == 'stop':
+                for tied_elem in list(tie_list):
+                    if round(tied_elem[2], 4) < round(elem.offset, 4):
+                        temp_part.insert_local(tied_elem[0], tied_elem[1])
+                        tie_list.remove(tied_elem)
+                    elif round(tied_elem[2], 4) == round(elem.offset, 4) and tied_elem[3] == pitch_set(elem):
+                        temp_part.insert_local(tied_elem[0], tied_elem[1] + elem.offset)
+                        tie_list.remove(tied_elem)
+                        break
 
         m21_stream.insert(temp_part)
+
+
+def pitch_set(elem: m21.note.GeneralNote) -> set:
+    return_set = set()
+    for pitch in elem.pitches:
+        return_set.add(pitch.ps)
+    return return_set
 
 
 def transpose_key(mxl_file: m21.stream.Score) -> bool:
