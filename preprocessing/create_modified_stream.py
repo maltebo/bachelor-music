@@ -125,9 +125,14 @@ def check_valid_time(m21_stream: VanillaStream):
 
 
 def check_valid_bpm(m21_stream: VanillaStream):
-    if not (m21_stream.metronome_mark_max <= c.PREP_SETTINGS["MAX_BPM"] and
-            m21_stream.metronome_mark_min >= c.PREP_SETTINGS["MIN_BPM"]):
-        raise FileNotFittingSettingsError("Beats per minute don't fit")
+    try:
+        if not (m21_stream.metronome_mark_max <= c.PREP_SETTINGS["MAX_BPM"] and
+                m21_stream.metronome_mark_min >= c.PREP_SETTINGS["MIN_BPM"]):
+            raise FileNotFittingSettingsError("Beats per minute don't fit")
+    except TypeError:
+        # this happens if there are no beats per minute specified. We then expect them to be 120,
+        # as this is usually the standard value.
+        pass
 
 
 def process_data(thread_id, file_name) -> VanillaStream:
@@ -149,11 +154,21 @@ def make_key_and_correlations(m21_stream: VanillaStream):
     if not transpose_key(m21_stream):
         raise ValueError("No transposition possible")
 
-    stream_key = m21_stream.analyze('key')
+    try:
+        stream_key = m21_stream.analyze('key')
+    except m21.analysis.discrete.DiscreteAnalysisException:
+        raise FileNotFittingSettingsError("Key can not be analysed")
+
+    if stream_key.name != c.PREP_SETTINGS["ACCEPTED_KEY"]:
+        raise FileNotFittingSettingsError("Key is not as specified in Settings. Expected key: " +
+                                          c.PREP_SETTINGS["ACCEPTED_KEY"] + ", actual key: " + stream_key.name)
 
     for p in list(m21_stream.parts):
-
-        part_key = p.analyze('key')
+        try:
+            part_key = p.analyze('key')
+        except m21.analysis.discrete.DiscreteAnalysisException:
+            part_key = deepcopy(stream_key)
+            part_key.correlationCoefficient = -1.0
 
         if stream_key.name != part_key.name:
             for k in part_key.alternateInterpretations:
@@ -175,14 +190,18 @@ def make_key_and_correlations(m21_stream: VanillaStream):
     if len(m21_stream.parts) == 0:
         m21_stream.key = "invalid"
         m21_stream.key_correlation = "invalid"
-        return
+        raise FileNotFittingSettingsError("No significant part found")
 
-    new_stream_key = m21_stream.analyze('key')
+    try:
+        new_stream_key = m21_stream.analyze('key')
+    except m21.analysis.discrete.DiscreteAnalysisException:
+        raise FileNotFittingSettingsError("Key can not be analysed")
+
     if new_stream_key.name != stream_key.name or (new_stream_key.correlationCoefficient <
                                                   c.PREP_SETTINGS["DELETE_STREAM_THRESHOLD"]):
         m21_stream.key = "invalid"
         m21_stream.key_correlation = "invalid"
-        return
+        raise FileNotFittingSettingsError("Stream Key correlation is lower than the threshold")
 
     m21_stream.key = new_stream_key.name
     m21_stream.key_correlation = new_stream_key.correlationCoefficient
