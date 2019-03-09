@@ -13,7 +13,7 @@ from preprocessing.find_melody import simple_skyline_algorithm
 from preprocessing.make_info import make_stream_dict
 from preprocessing.make_info import put_in_json_dict
 from preprocessing.make_info import valid_entry_exists
-from preprocessing.make_tf_structure import make_tf_structure
+from preprocessing.make_tf_structure import get_tf_structure, save_melody_struct
 import threading
 import queue
 import time
@@ -57,13 +57,14 @@ def run_all(thread_nr: int):
             # in the skyline algorithm it is asserted that the melody is a sequence
             melody_stream = simple_skyline_algorithm(m21_stream)
 
-            tf_structure = make_tf_structure(melody_stream)
+            melody_struct = get_tf_structure(melody_stream)
+            save_melody_struct(file_name, melody_struct)
 
             # melody_stream.show('midi')
 
             # full_stream = find_chords(m21_stream, melody_stream)
         except FileNotFittingSettingsError:
-            print(sys.exc_info()[1])
+            print(file_name, sys.exc_info()[1])
 
 
 def analyze_note_lengths(thread_nr: int):
@@ -113,7 +114,7 @@ class MyThread (threading.Thread):
 
 
 exit_flag = 0
-thread_number = 1
+thread_number = 8
 
 current_job = run_all
 
