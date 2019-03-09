@@ -1,10 +1,11 @@
 import json
 
 import preprocessing.constants as c
+from preprocessing.helper import FileNotFittingSettingsError
 from preprocessing.vanilla_stream import VanillaStream
 
 
-def make_tf_structure(vanilla_stream: VanillaStream):
+def get_tf_structure(vanilla_stream: VanillaStream):
     if len(vanilla_stream.parts) <= 1:
         return make_tf_melody(vanilla_stream)
     else:
@@ -14,13 +15,16 @@ def make_tf_structure(vanilla_stream: VanillaStream):
 def make_tf_melody(vanilla_stream: VanillaStream):
     melody_array = MelodyStructure(vanilla_stream).value_array
 
+    if not melody_array:
+        raise FileNotFittingSettingsError("No melody found")
+
     melody_struct = {}
     melody_struct["PREP_SETTINGS"] = c.PREP_SETTINGS
     # Todo: make this algorithm variable!
     melody_struct["algorithm"] = "simple_skyline_algorithm"
     melody_struct["data"] = melody_array
 
-    save_melody_struct(vanilla_stream.id, melody_struct)
+    return melody_struct
 
 
 def save_melody_struct(file_name: str, melody_struct: dict):
@@ -114,7 +118,3 @@ def int_to_values(value: int) -> (int, float):
         pitch += min_pitch - 1
 
     return pitch, length
-
-
-print(values_to_int(84, 0.5))
-print(int_to_values(73))
