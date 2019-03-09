@@ -5,7 +5,9 @@ import os
 import threading
 import traceback
 
-__SETTINGS_LOCATION = os.path.abspath("../data/.settings.json")
+os.chdir("/home/malte/PycharmProjects/BachelorMusic")
+
+__SETTINGS_LOCATION = os.path.abspath("data/.settings.json")
 
 settings_dict = None
 
@@ -18,10 +20,10 @@ except FileNotFoundError:
 if not settings_dict:
     settings_dict = {
         "locations": {
-            "TEST_DATA_FOLDER": os.path.abspath("../data/MXL/TestData"),
-            "DELETED_TEST_DATA_FOLDER": os.path.abspath("../data/MXL/deleted"),
-            "JSON_FILE_PATH": os.path.abspath("../data/mxl_info.json"),
-            "MELODY_INFORMATION": os.path.abspath("../data/melody_info.json")
+            "TEST_DATA_FOLDER": os.path.abspath("data/MXL/TestData"),
+            "DELETED_TEST_DATA_FOLDER": os.path.abspath("data/MXL/deleted"),
+            "JSON_FILE_PATH": os.path.abspath("data/mxl_info.json"),
+            "MELODY_INFORMATION": os.path.abspath("data/melody_info.json")
         },
         "updates": {
             "FORCE": True,
@@ -107,13 +109,13 @@ def make_chord_dict() -> dict:
         "chord_to_notes": chord_dict
     }
 
-    with open("/home/malte/PycharmProjects/BachelorMusic/data/chord_data.json", 'x') as fp:
+    with open(__CHORD_DATA_LOCATION, 'x') as fp:
         fp.write(json.dumps(full_dict, indent=2))
 
     return full_dict
 
 
-__CHORD_DATA_LOCATION = "../data/chord_data.json"
+__CHORD_DATA_LOCATION = os.path.abspath("data/chord_data.json")
 try:
     with open(__CHORD_DATA_LOCATION, 'r') as fp:
         chord_data = json.load(fp)
