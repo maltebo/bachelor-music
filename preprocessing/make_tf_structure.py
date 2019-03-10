@@ -55,6 +55,7 @@ class MelodyStructure:
     def __init__(self, vanilla_stream: VanillaStream):
         self.__value_array = []
         self.last_end = 0.0
+        self.__melody_stream = None
 
         for note in vanilla_stream.flat.notes:
             self._insert(note.pitch.ps, note.offset, note.quarterLength)
@@ -74,6 +75,11 @@ class MelodyStructure:
             raise ValueError("Something went wrong")
 
         self.last_end = start + length
+
+    @property
+    def melody_stream(self):
+        if self.__melody_stream:
+            return self.__melody_stream
 
     @property
     def value_array(self):
