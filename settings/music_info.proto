@@ -29,6 +29,15 @@ message PieceOfMusic {
         optional float key_correlation = 5;
         optional float note_percentage = 6;
         optional float lyrics_percentage = 7;
+
+        repeated Note notes = 8;
+
+        message Note {
+            required float offset = 1;
+            required float length = 2;
+            required int32 pitch = 3;
+            optional int32 volume = 4;
+        }
     }
 }
 
