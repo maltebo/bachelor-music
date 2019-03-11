@@ -54,34 +54,46 @@ def process_file(m21_file: m21.stream.Score, m21_stream: VanillaStream):
         tie_list = []
 
         for elem in part.flat.getElementsByClass(('Note', 'Chord')):
-            elem: m21.chord.Chord
-
-            if elem.tie is None:
-                temp_part.insert_local(elem)
-                continue
-
-            if elem.tie.type == 'start':
-                tie_list.append([elem, elem.quarterLength, elem.offset + elem.quarterLength, pitch_set(elem)])
-            elif elem.tie.type == 'continue':
-                for tied_elem in list(tie_list):
-                    if round(tied_elem[2], 4) < round(elem.offset, 4):
-                        temp_part.insert_local(tied_elem[0], tied_elem[1])
-                        tie_list.remove(tied_elem)
-                    elif round(tied_elem[2], 4) == round(elem.offset, 4) and tied_elem[3] == pitch_set(elem):
-                        tied_elem[1] += elem.quarterLength
-                        tied_elem[2] += elem.quarterLength
-                        break
-            elif elem.tie.type == 'stop':
-                for tied_elem in list(tie_list):
-                    if round(tied_elem[2], 4) < round(elem.offset, 4):
-                        temp_part.insert_local(tied_elem[0], tied_elem[1])
-                        tie_list.remove(tied_elem)
-                    elif round(tied_elem[2], 4) == round(elem.offset, 4) and tied_elem[3] == pitch_set(elem):
-                        temp_part.insert_local(tied_elem[0], tied_elem[1] + elem.offset)
-                        tie_list.remove(tied_elem)
-                        break
+            insert_elem_to_part(elem, temp_part, tie_list)
 
         m21_stream.insert(temp_part)
+
+
+def insert_elem_to_part(elem: m21.chord.Chord, temp_part: VanillaPart, tie_list: list):
+    if elem.tie is None:
+
+        for tied_elem in list(tie_list):
+            if round(tied_elem[2], 4) < round(elem.offset, 4):
+                temp_part.insert_local(tied_elem[0], tied_elem[1])
+                tie_list.remove(tied_elem)
+            elif round(tied_elem[2], 4) == round(elem.offset, 4) and tied_elem[3] == pitch_set(elem):
+                temp_part.insert_local(tied_elem[0], tied_elem[1] + elem.offset)
+                tie_list.remove(tied_elem)
+                return
+
+        temp_part.insert_local(elem)
+        return
+
+    if elem.tie.type == 'start':
+        tie_list.append([elem, elem.quarterLength, elem.offset + elem.quarterLength, pitch_set(elem)])
+    elif elem.tie.type == 'continue':
+        for tied_elem in list(tie_list):
+            if round(tied_elem[2], 4) < round(elem.offset, 4):
+                temp_part.insert_local(tied_elem[0], tied_elem[1])
+                tie_list.remove(tied_elem)
+            elif round(tied_elem[2], 4) == round(elem.offset, 4) and tied_elem[3] == pitch_set(elem):
+                tied_elem[1] += elem.quarterLength
+                tied_elem[2] += elem.quarterLength
+                return
+    elif elem.tie.type == 'stop':
+        for tied_elem in list(tie_list):
+            if round(tied_elem[2], 4) < round(elem.offset, 4):
+                temp_part.insert_local(tied_elem[0], tied_elem[1])
+                tie_list.remove(tied_elem)
+            elif round(tied_elem[2], 4) == round(elem.offset, 4) and tied_elem[3] == pitch_set(elem):
+                temp_part.insert_local(tied_elem[0], tied_elem[1] + elem.offset)
+                tie_list.remove(tied_elem)
+                return
 
 
 def pitch_set(elem: m21.note.GeneralNote) -> set:
