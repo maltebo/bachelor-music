@@ -1,4 +1,3 @@
-import traceback
 from copy import deepcopy
 
 import music21 as m21
@@ -10,10 +9,7 @@ from preprocessing.vanilla_part import VanillaPart
 from preprocessing.vanilla_stream import VanillaStream
 
 
-def make_file_container(m21_file: m21.stream.Score, file_name: str) -> VanillaStream:
-    m21_stream = VanillaStream()
-
-    m21_stream.id = file_name
+def make_file_container(m21_file: m21.stream.Score, m21_stream: VanillaStream):
 
     metronome_time_sig_stream = list(m21_file.flat.getElementsByClass(('MetronomeMark',
                                                                       'TimeSignature')))
@@ -21,8 +17,6 @@ def make_file_container(m21_file: m21.stream.Score, file_name: str) -> VanillaSt
     for elem in metronome_time_sig_stream:
         elem.offset = round_to_quarter(elem.offset)
         m21_stream.insert_local(elem)
-
-    return m21_stream
 
 
 def process_file(m21_file: m21.stream.Score, m21_stream: VanillaStream):
@@ -101,9 +95,8 @@ def transpose_key(mxl_file: m21.stream.Score) -> bool:
 
     try:
         key = mxl_file.analyze('key')
-    except:
-        traceback.print_exc()
-        return False
+    except m21.analysis.discrete.DiscreteAnalysisException:
+        raise FileNotFittingSettingsError("Key can not be analysed")
 
     if key.mode != 'major' and key.mode != 'minor':
         return False
@@ -118,16 +111,16 @@ def transpose_key(mxl_file: m21.stream.Score) -> bool:
 
 
 def check_valid_time(m21_stream: VanillaStream):
-    valid_time = c.PREP_SETTINGS["VALID_TIME"]
+    valid_time = c.music_settings.valid_time
 
-    if m21_stream.time_signature != valid_time:
+    if m21_stream.time_signature.replace("/", "_") != valid_time:
         raise FileNotFittingSettingsError("Time doesnt't fit")
 
 
 def check_valid_bpm(m21_stream: VanillaStream):
     try:
-        if not (m21_stream.metronome_mark_max <= c.PREP_SETTINGS["MAX_BPM"] and
-                m21_stream.metronome_mark_min >= c.PREP_SETTINGS["MIN_BPM"]):
+        if not (m21_stream.max_metronome <= c.music_settings.max_bpm and
+                m21_stream.min_metronome >= c.music_settings.min_bpm):
             raise FileNotFittingSettingsError("Beats per minute don't fit")
     except TypeError:
         # this happens if there are no beats per minute specified. We then expect them to be 120,
@@ -135,11 +128,11 @@ def check_valid_bpm(m21_stream: VanillaStream):
         pass
 
 
-def process_data(thread_id, file_name) -> VanillaStream:
-    print("%s processing %s" % (thread_id, file_name))
-    m21_file = m21.converter.parse(file_name)
+def process_data(thread_id, m21_stream):
+    print("%s processing %s" % (thread_id, m21_stream.id))
+    m21_file = m21.converter.parse(m21_stream.id)
 
-    m21_stream = make_file_container(m21_file, file_name)
+    make_file_container(m21_file, m21_stream)
 
     check_valid_time(m21_stream)
 
@@ -152,16 +145,16 @@ def process_data(thread_id, file_name) -> VanillaStream:
 
 def make_key_and_correlations(m21_stream: VanillaStream):
     if not transpose_key(m21_stream):
-        raise ValueError("No transposition possible")
+        raise FileNotFittingSettingsError("No transposition possible")
 
     try:
         stream_key = m21_stream.analyze('key')
     except m21.analysis.discrete.DiscreteAnalysisException:
         raise FileNotFittingSettingsError("Key can not be analysed")
 
-    if stream_key.name != c.PREP_SETTINGS["ACCEPTED_KEY"]:
+    if stream_key.name != c.music_settings.accepted_key:
         raise FileNotFittingSettingsError("Key is not as specified in Settings. Expected key: " +
-                                          c.PREP_SETTINGS["ACCEPTED_KEY"] + ", actual key: " + stream_key.name)
+                                          c.music_settings.accepted_key + ", actual key: " + stream_key.name)
 
     for p in list(m21_stream.parts):
         try:
@@ -180,7 +173,7 @@ def make_key_and_correlations(m21_stream: VanillaStream):
             part_key = deepcopy(stream_key)
             part_key.correlationCoefficient = -1.0
 
-        if part_key.correlationCoefficient < c.PREP_SETTINGS["DELETE_PART_THRESHOLD"]:
+        if part_key.correlationCoefficient < c.music_settings.delete_part_threshold:
             m21_stream.remove(p, recurse=True)
 
         else:
@@ -189,7 +182,7 @@ def make_key_and_correlations(m21_stream: VanillaStream):
 
     if len(m21_stream.parts) == 0:
         m21_stream.key = "invalid"
-        m21_stream.key_correlation = "invalid"
+        m21_stream.key_correlation = -1.0
         raise FileNotFittingSettingsError("No significant part found")
 
     try:
@@ -198,9 +191,9 @@ def make_key_and_correlations(m21_stream: VanillaStream):
         raise FileNotFittingSettingsError("Key can not be analysed")
 
     if new_stream_key.name != stream_key.name or (new_stream_key.correlationCoefficient <
-                                                  c.PREP_SETTINGS["DELETE_STREAM_THRESHOLD"]):
+                                                  c.music_settings.delete_part_threshold):
         m21_stream.key = "invalid"
-        m21_stream.key_correlation = "invalid"
+        m21_stream.key_correlation = -1.0
         raise FileNotFittingSettingsError("Stream Key correlation is lower than the threshold")
 
     m21_stream.key = new_stream_key.name

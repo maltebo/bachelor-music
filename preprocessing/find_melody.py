@@ -18,7 +18,7 @@ def simple_skyline_algorithm(note_stream: m21.stream.Stream):
 
         action_pitch = action_note.pitch.ps
 
-        if not (c.PREP_SETTINGS["MIN_PITCH"] <= action_pitch <= c.PREP_SETTINGS["MAX_PITCH"]):
+        if not (c.music_settings.min_pitch <= action_pitch <= c.music_settings.max_pitch):
             continue
 
         if current_end <= action_note.offset:

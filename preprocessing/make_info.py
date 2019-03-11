@@ -1,4 +1,3 @@
-import json
 import traceback
 from statistics import mean
 
@@ -6,80 +5,65 @@ import preprocessing.constants as c
 from preprocessing.vanilla_stream import VanillaStream
 
 
-def make_stream_dict(m21_stream: VanillaStream):
-
-    stream_info = {"metronome_range": (m21_stream.metronome_mark_min, m21_stream.metronome_mark_max),
-                   "time_signature": m21_stream.time_signature,
-                   "key_and_correlation": (m21_stream.key, m21_stream.key_correlation)}
-
-    parts_info = {}
-    number = 2
+def make_protocol_buffer_entry(m21_stream: VanillaStream, error_message):
+    c.music_protocol_buffer.counter = c.music_protocol_buffer.counter + 1
+    music_file = c.music_protocol_buffer.music_data.add(filepath=m21_stream.id, valid=m21_stream.valid)
+    if m21_stream.time_signature:
+        music_file.time_signature = m21_stream.time_signature
+    if m21_stream.min_metronome:
+        music_file.min_metronome = int(m21_stream.min_metronome)
+    if m21_stream.max_metronome:
+        music_file.max_metronome = int(m21_stream.max_metronome)
+    if m21_stream.key:
+        music_file.key = m21_stream.key
+        music_file.key_correlation = m21_stream.key_correlation
+    if error_message:
+        music_file.error_message = str(error_message)
 
     for p in m21_stream.parts:
-        part_info = {"average_pitch": mean(p.pitch_list), "average_volume": mean(p.volume_list),
-                     "key_and_correlation": (p.key, p.key_correlation)}
+
+        temp_part = music_file.parts.add(name=p.partName)
+        temp_part.average_pitch = mean(p.pitch_list)
+        temp_part.average_volume = mean(p.volume_list)
+        if p.key:
+            temp_part.key = p.key
+            temp_part.key_correlation = p.key_correlation
 
         if p.total_notes_or_chords:
-            part_info["note_percentage"] = p.note_number / p.total_notes_or_chords
-            part_info["lyrics_percentage"] = p.lyrics_number / p.total_notes_or_chords
+            temp_part.note_percentage = p.note_number / p.total_notes_or_chords
+            temp_part.lyrics_percentage = p.lyrics_number / p.total_notes_or_chords
         else:
-            part_info["note_percentage"] = 0.0
-            part_info["lyrics_percentage"] = 0.0
-        if p.partName in parts_info:
-            parts_info[p.partName + "_" + str(number)] = part_info
-            number += 1
-        else:
-            parts_info[p.partName] = part_info
-
-    stream_info["parts"] = parts_info
-
-    return stream_info
+            temp_part.note_percentage = 0.0
+            temp_part.lyrics_percentage = 0.0
 
 
-def put_in_json_dict(dict_id: str, stream_info: dict):
-    c.json_lock.acquire()
+def put_in_protocol_buffer(m21_stream: VanillaStream, error_message=None):
+    c.music_info_dict_lock.acquire()
     try:
-        if not c.FORCE and valid_entry_exists(dict_id):
-            c.json_lock.release()
+        if valid_entry_exists(m21_stream.id):
+            c.music_info_dict_lock.release()
             return
-        c.json_dict["count"] += 1
 
-        c.json_dict[dict_id] = stream_info
+        make_protocol_buffer_entry(m21_stream, error_message)
+        c.existing_files[m21_stream.id] = m21_stream.valid
 
-        if c.json_dict["count"] >= 5:
-            print("write json dict")
-            with open(c.JSON_FILE_PATH, 'w') as fp:
-                fp.write(json.dumps(c.json_dict, indent=2))
-            c.json_dict["count"] = 0
-        c.json_lock.release()
+        if c.music_protocol_buffer.counter >= 10:
+            print("write protocol buffer")
+            with open(c.PROTOCOL_BUFFER_LOCATION, 'wb') as fp:
+                fp.write(c.music_protocol_buffer.SerializeToString())
+            c.music_protocol_buffer.counter = 0
+        c.music_info_dict_lock.release()
+
     except:
         traceback.print_exc()
-        c.json_lock.release()
+        c.music_info_dict_lock.release()
 
 
-def valid_entry_exists(dict_id: str) -> bool:
-    if dict_id not in c.json_dict:
-        return False
+def valid_entry_exists(filename: str) -> bool:
+    """
+    tests if the file is already in our database for the current settings
+    :param filename: name of the (complete) filepath
+    :return: True if the entry exists, False if it doesn't
+    """
 
-    stream_dict = c.json_dict[dict_id]
-    if not ("metronome_range" in stream_dict and "time_signature" in stream_dict and
-            "key_and_correlation" in stream_dict and "parts" in stream_dict):
-        return False
-
-    for part_dict in stream_dict["parts"]:
-        if not _is_valid_part_entry(stream_dict["parts"][part_dict], stream_dict["key_and_correlation"]):
-            return False
-
-    return True
-
-
-def _is_valid_part_entry(part_dict: dict, key_and_correlation: tuple):
-    if not ("average_pitch" in part_dict and "average_volume" in part_dict and
-            "key_and_correlation" in part_dict and "note_percentage" in part_dict and
-            "lyrics_percentage" in part_dict):
-        return False
-
-    if part_dict["key_and_correlation"][0] != key_and_correlation[0]:
-        return False
-
-    return True
+    return filename in c.existing_files.keys()

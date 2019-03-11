@@ -3,17 +3,15 @@
 import os
 import sys
 
-
 sys.path.append(os.path.abspath(".."))
 import preprocessing.constants as c
 from preprocessing.helper import FileNotFittingSettingsError
 from preprocessing.create_modified_stream import process_data
 from preprocessing.create_modified_stream import make_key_and_correlations
 from preprocessing.find_melody import simple_skyline_algorithm
-from preprocessing.make_info import make_stream_dict
-from preprocessing.make_info import put_in_json_dict
+from preprocessing.make_info import put_in_protocol_buffer
 from preprocessing.make_info import valid_entry_exists
-from preprocessing.make_tf_structure import get_tf_structure, save_melody_struct
+from preprocessing.vanilla_stream import VanillaStream
 import threading
 import queue
 import time
@@ -39,32 +37,36 @@ def run_all(thread_nr: int):
     :return:
     """
     while not work_queue.empty():
-        file_name = get_job(work_queue)
+        filename = get_job(work_queue)
 
-        if not file_name:
+        if not filename:
             continue
-        if not c.FORCE and valid_entry_exists(file_name):
+        if valid_entry_exists(filename):
             continue
+
+        m21_stream = VanillaStream(filename)
 
         try:
-            m21_stream = process_data(thread_nr, file_name)
+            process_data(thread_nr, m21_stream)
             make_key_and_correlations(m21_stream)
-            stream_info = make_stream_dict(m21_stream)
+            m21_stream.valid = True
 
             if c.UPDATE:
-                put_in_json_dict(file_name, stream_info)
+                put_in_protocol_buffer(m21_stream)
 
             # in the skyline algorithm it is asserted that the melody is a sequence
-            melody_stream = simple_skyline_algorithm(m21_stream)
-
-            melody_struct = get_tf_structure(melody_stream)
-            save_melody_struct(file_name, melody_struct)
+            # melody_stream = simple_skyline_algorithm(m21_stream)
+            #
+            # melody_struct = get_tf_structure(melody_stream)
+            # save_melody_struct(filename, melody_struct)
 
             # melody_stream.show('midi')
 
             # full_stream = find_chords(m21_stream, melody_stream)
         except FileNotFittingSettingsError:
-            print(file_name, sys.exc_info()[1])
+            if c.UPDATE:
+                put_in_protocol_buffer(m21_stream, error_message=sys.exc_info()[1])
+            print(filename, sys.exc_info()[1])
 
 
 def analyze_note_lengths(thread_nr: int):
@@ -73,12 +75,12 @@ def analyze_note_lengths(thread_nr: int):
 
         if not file_name:
             continue
-        if not c.FORCE and valid_entry_exists(file_name):
+        if valid_entry_exists(file_name):
             continue
 
         m21_stream = process_data(thread_nr, file_name)
         make_key_and_correlations(m21_stream)
-        stream_info = make_stream_dict(m21_stream)
+        put_in_protocol_buffer(m21_stream)
 
         # in the skyline algorithm it is asserted that the melody is a sequence
         melody_stream = simple_skyline_algorithm(m21_stream)

@@ -1,0 +1,52 @@
+syntax = "proto2";
+
+package music_info;
+
+
+message PieceOfMusic {
+    required string filepath = 1;
+    required bool valid = 2;
+
+    optional string time_signature = 3;
+    optional int32 min_metronome = 4;
+    optional int32 max_metronome = 5;
+
+    optional string key = 6;
+    optional float key_correlation = 7;
+
+    repeated Part parts = 8;
+
+    repeated int32 melody = 9;
+    repeated int32 note_length = 10;
+
+    optional string error_message = 11;
+
+    message Part {
+        required string name = 1;
+        optional float average_pitch = 2;
+        optional float average_volume = 3;
+        optional string key = 4;
+        optional float key_correlation = 5;
+        optional float note_percentage = 6;
+        optional float lyrics_percentage = 7;
+    }
+}
+
+
+message Settings {
+    required float min_pitch = 1;
+    required float max_pitch = 2;
+    required float delete_part_threshold = 3;
+    required float delete_stream_threshold = 4;
+    required string accepted_key = 5;
+    required int32 max_bpm = 6;
+    required int32 min_bpm = 7;
+    required string valid_time = 8;
+}
+
+
+message MusicList {
+    required Settings settings = 1;
+    repeated PieceOfMusic music_data = 2;
+    required int32 counter = 3;
+}
