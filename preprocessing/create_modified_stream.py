@@ -2,7 +2,7 @@ from copy import deepcopy
 
 import music21 as m21
 
-import preprocessing.constants as c
+import settings.constants as c
 from preprocessing.helper import FileNotFittingSettingsError
 from preprocessing.helper import round_to_quarter
 from preprocessing.vanilla_part import VanillaPart
@@ -10,8 +10,7 @@ from preprocessing.vanilla_stream import VanillaStream
 
 
 def make_file_container(m21_file: m21.stream.Score, m21_stream: VanillaStream):
-
-    metronome_time_sig_stream = list(m21_file.flat.getElementsByClass(('MetronomeMark',
+    metronome_time_sig_stream = set(m21_file.flat.getElementsByClass(('MetronomeMark',
                                                                       'TimeSignature')))
 
     for elem in metronome_time_sig_stream:
@@ -125,8 +124,13 @@ def transpose_key(mxl_file: m21.stream.Score) -> bool:
 def check_valid_time(m21_stream: VanillaStream):
     valid_time = c.music_settings.valid_time
 
-    if m21_stream.time_signature.replace("/", "_") != valid_time:
-        raise FileNotFittingSettingsError("Time doesnt't fit")
+    try:
+        if m21_stream.time_signature and m21_stream.time_signature.replace("/", "_") != valid_time:
+            raise FileNotFittingSettingsError("Time doesnt't fit")
+    except AttributeError:
+        # This happens if no time signature is specified - we then assume it to be 4/4,
+        # which is the standard value
+        pass
 
 
 def check_valid_bpm(m21_stream: VanillaStream):
@@ -144,7 +148,7 @@ def process_data(thread_id, m21_stream):
     print("%s processing %s" % (thread_id, m21_stream.id))
     m21_file = m21.converter.parse(m21_stream.id)
 
-    make_file_container(m21_file, m21_stream)
+    make_file_container(m21_file=m21_file, m21_stream=m21_stream)
 
     check_valid_time(m21_stream)
 

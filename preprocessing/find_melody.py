@@ -2,7 +2,7 @@ from copy import deepcopy
 
 import music21 as m21
 
-import preprocessing.constants as c
+import settings.constants as c
 from preprocessing.vanilla_stream import VanillaStream
 
 

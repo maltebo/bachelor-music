@@ -3,7 +3,7 @@ import json
 import numpy as np
 import tensorflow as tf
 
-import preprocessing.constants as c
+import settings.constants as c
 
 tf.enable_eager_execution()
 

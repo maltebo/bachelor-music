@@ -20,9 +20,10 @@ class VanillaPart(m21.stream.Part):
     def insert_local(self, elem, new_duration=None):
         if type(elem) == m21.note.Note:
             self.insert_note(elem, new_duration)
-        elif type(elem) == m21.chord.Chord:
+        elif type(elem) == m21.chord.Chord or type(elem) == m21.harmony.ChordSymbol:
             self.insert_chord(elem, new_duration)
         else:
+            print(type(elem))
             raise ValueError("That was not the thing we expected you to do...")
 
     def insert_note(self, elem: m21.note.Note, new_duration: float):

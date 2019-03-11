@@ -4,7 +4,7 @@ import os
 import sys
 
 sys.path.append(os.path.abspath(".."))
-import preprocessing.constants as c
+import settings.constants as c
 from preprocessing.helper import FileNotFittingSettingsError
 from preprocessing.create_modified_stream import process_data
 from preprocessing.create_modified_stream import make_key_and_correlations

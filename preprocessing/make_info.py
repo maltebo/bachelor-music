@@ -1,7 +1,7 @@
 import traceback
 from statistics import mean
 
-import preprocessing.constants as c
+import settings.constants as c
 from preprocessing.vanilla_stream import VanillaStream
 
 
