@@ -1,5 +1,4 @@
 import json
-import sys
 
 import numpy as np
 import tensorflow as tf
@@ -54,30 +53,38 @@ model.add(tf.keras.layers.LSTM(256, input_shape=(X.shape[1], X.shape[2])))
 model.add(tf.keras.layers.Dropout(0.2))
 model.add(tf.keras.layers.Dense(y.shape[1], activation='softmax'))
 
-filename = "weights-improvement-37-0.5823.hdf5"
+filename = "/home/malte/PycharmProjects/BachelorMusic/weights-improvement-49-0.2333.hdf5"
 model.load_weights(filename)
 model.compile(loss='categorical_crossentropy', optimizer=tf.train.AdamOptimizer())
 
 int_to_char = dict((i, c) for i, c in enumerate(notes))
 
-start = np.random.randint(0, len(dataX) - 1)
-pattern = dataX[start]
+for melody_nr in range(10):
+    start = np.random.randint(0, len(dataX) - 1)
+    pattern = dataX[start]
 
-print("Seed:")
-print("\"" + ' '.join([str(int_to_char[value]) for value in pattern]) + "\"")
+    # print("Seed:")
+    # print("\"" + ' '.join([str(int_to_char[value]) for value in pattern]) + "\"")
 
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
 
-for i in range(1000):
-    x = np.reshape(pattern, (1, len(pattern), 1))
-    x = x / float(nr_vocab)
-    prediction = model.predict(x, verbose=0)
-    index = np.argmax(prediction)
-    result = int_to_char[index]
-    seq_in = [int_to_char[value] for value in pattern]
-    sys.stdout.write(str(result) + " ")
-    pattern.append(index)
-    pattern = pattern[1:len(pattern)]
+    melody_string_list = []
+
+    melody_file_name = "/home/malte/PycharmProjects/BachelorMusic/data/generated_melodies/melody_"
+
+    for i in range(100):
+        x = np.reshape(pattern, (1, len(pattern), 1))
+        x = x / float(nr_vocab)
+        prediction = model.predict(x, verbose=0)
+        index = np.argmax(prediction)
+        result = int_to_char[index]
+        seq_in = [int_to_char[value] for value in pattern]
+        melody_string_list.append(str(result))
+        pattern.append(index)
+        pattern = pattern[1:len(pattern)]
+
+    with open(melody_file_name + str(melody_nr), 'x') as fp:
+        fp.write(' '.join(melody_string_list))
 
 print("\nDone")
