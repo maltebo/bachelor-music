@@ -55,6 +55,8 @@ def process_file(m21_file: m21.stream.Score, m21_stream: VanillaStream):
         for elem in part.flat.getElementsByClass(('Note', 'Chord')):
             insert_elem_to_part(elem, temp_part, tie_list)
 
+        temp_part.makeRests(fillGaps=True, inPlace=True)
+
         m21_stream.insert(temp_part)
 
 

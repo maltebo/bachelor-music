@@ -87,6 +87,9 @@ class VanillaPart(m21.stream.Part):
         if end - start < 0.2:
             return None
 
+        if 0 > temp_pitch > 128:
+            return None
+
         # maximum note length is 4
         if end - start > 4:
             end = start + 4

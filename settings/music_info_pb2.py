@@ -8,7 +8,6 @@ from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
-
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
@@ -19,7 +18,58 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     syntax='proto2',
     serialized_options=None,
     serialized_pb=_b(
-        '\n\x10music_info.proto\x12\nmusic_info\"\xa5\x03\n\x0cPieceOfMusic\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12\r\n\x05valid\x18\x02 \x02(\x08\x12\x16\n\x0etime_signature\x18\x03 \x01(\t\x12\x15\n\rmin_metronome\x18\x04 \x01(\x05\x12\x15\n\rmax_metronome\x18\x05 \x01(\x05\x12\x0b\n\x03key\x18\x06 \x01(\t\x12\x17\n\x0fkey_correlation\x18\x07 \x01(\x02\x12,\n\x05parts\x18\x08 \x03(\x0b\x32\x1d.music_info.PieceOfMusic.Part\x12\x0e\n\x06melody\x18\t \x03(\x05\x12\x13\n\x0bnote_length\x18\n \x03(\x05\x12\x15\n\rerror_message\x18\x0b \x01(\t\x1a\x9d\x01\n\x04Part\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x15\n\raverage_pitch\x18\x02 \x01(\x02\x12\x16\n\x0e\x61verage_volume\x18\x03 \x01(\x02\x12\x0b\n\x03key\x18\x04 \x01(\t\x12\x17\n\x0fkey_correlation\x18\x05 \x01(\x02\x12\x17\n\x0fnote_percentage\x18\x06 \x01(\x02\x12\x19\n\x11lyrics_percentage\x18\x07 \x01(\x02\"\xbc\x01\n\x08Settings\x12\x11\n\tmin_pitch\x18\x01 \x02(\x02\x12\x11\n\tmax_pitch\x18\x02 \x02(\x02\x12\x1d\n\x15\x64\x65lete_part_threshold\x18\x03 \x02(\x02\x12\x1f\n\x17\x64\x65lete_stream_threshold\x18\x04 \x02(\x02\x12\x14\n\x0c\x61\x63\x63\x65pted_key\x18\x05 \x02(\t\x12\x0f\n\x07max_bpm\x18\x06 \x02(\x05\x12\x0f\n\x07min_bpm\x18\x07 \x02(\x05\x12\x12\n\nvalid_time\x18\x08 \x02(\t\"r\n\tMusicList\x12&\n\x08settings\x18\x01 \x02(\x0b\x32\x14.music_info.Settings\x12,\n\nmusic_data\x18\x02 \x03(\x0b\x32\x18.music_info.PieceOfMusic\x12\x0f\n\x07\x63ounter\x18\x03 \x02(\x05')
+        '\n\x10music_info.proto\x12\nmusic_info\"\x9f\x04\n\x0cPieceOfMusic\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12\r\n\x05valid\x18\x02 \x02(\x08\x12\x16\n\x0etime_signature\x18\x03 \x01(\t\x12\x15\n\rmin_metronome\x18\x04 \x01(\x05\x12\x15\n\rmax_metronome\x18\x05 \x01(\x05\x12\x0b\n\x03key\x18\x06 \x01(\t\x12\x17\n\x0fkey_correlation\x18\x07 \x01(\x02\x12,\n\x05parts\x18\x08 \x03(\x0b\x32\x1d.music_info.PieceOfMusic.Part\x12\x0e\n\x06melody\x18\t \x03(\x05\x12\x13\n\x0bnote_length\x18\n \x03(\x05\x12\x15\n\rerror_message\x18\x0b \x01(\t\x1a\x97\x02\n\x04Part\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x15\n\raverage_pitch\x18\x02 \x01(\x02\x12\x16\n\x0e\x61verage_volume\x18\x03 \x01(\x02\x12\x0b\n\x03key\x18\x04 \x01(\t\x12\x17\n\x0fkey_correlation\x18\x05 \x01(\x02\x12\x17\n\x0fnote_percentage\x18\x06 \x01(\x02\x12\x19\n\x11lyrics_percentage\x18\x07 \x01(\x02\x12\x31\n\x05notes\x18\x08 \x03(\x0b\x32\".music_info.PieceOfMusic.Part.Note\x1a\x45\n\x04Note\x12\x0e\n\x06offset\x18\x01 \x02(\x02\x12\x0e\n\x06length\x18\x02 \x02(\x02\x12\r\n\x05pitch\x18\x03 \x02(\x05\x12\x0e\n\x06volume\x18\x04 \x01(\x05\"\xbc\x01\n\x08Settings\x12\x11\n\tmin_pitch\x18\x01 \x02(\x02\x12\x11\n\tmax_pitch\x18\x02 \x02(\x02\x12\x1d\n\x15\x64\x65lete_part_threshold\x18\x03 \x02(\x02\x12\x1f\n\x17\x64\x65lete_stream_threshold\x18\x04 \x02(\x02\x12\x14\n\x0c\x61\x63\x63\x65pted_key\x18\x05 \x02(\t\x12\x0f\n\x07max_bpm\x18\x06 \x02(\x05\x12\x0f\n\x07min_bpm\x18\x07 \x02(\x05\x12\x12\n\nvalid_time\x18\x08 \x02(\t\"r\n\tMusicList\x12&\n\x08settings\x18\x01 \x02(\x0b\x32\x14.music_info.Settings\x12,\n\nmusic_data\x18\x02 \x03(\x0b\x32\x18.music_info.PieceOfMusic\x12\x0f\n\x07\x63ounter\x18\x03 \x02(\x05')
+)
+
+_PIECEOFMUSIC_PART_NOTE = _descriptor.Descriptor(
+    name='Note',
+    full_name='music_info.PieceOfMusic.Part.Note',
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name='offset', full_name='music_info.PieceOfMusic.Part.Note.offset', index=0,
+            number=1, type=2, cpp_type=6, label=2,
+            has_default_value=False, default_value=float(0),
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='length', full_name='music_info.PieceOfMusic.Part.Note.length', index=1,
+            number=2, type=2, cpp_type=6, label=2,
+            has_default_value=False, default_value=float(0),
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='pitch', full_name='music_info.PieceOfMusic.Part.Note.pitch', index=2,
+            number=3, type=5, cpp_type=1, label=2,
+            has_default_value=False, default_value=0,
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='volume', full_name='music_info.PieceOfMusic.Part.Note.volume', index=3,
+            number=4, type=5, cpp_type=1, label=1,
+            has_default_value=False, default_value=0,
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+    ],
+    extensions=[
+    ],
+    nested_types=[],
+    enum_types=[
+    ],
+    serialized_options=None,
+    is_extendable=False,
+    syntax='proto2',
+    extension_ranges=[],
+    oneofs=[
+    ],
+    serialized_start=507,
+    serialized_end=576,
 )
 
 _PIECEOFMUSIC_PART = _descriptor.Descriptor(
@@ -78,10 +128,17 @@ _PIECEOFMUSIC_PART = _descriptor.Descriptor(
             message_type=None, enum_type=None, containing_type=None,
             is_extension=False, extension_scope=None,
             serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='notes', full_name='music_info.PieceOfMusic.Part.notes', index=7,
+            number=8, type=11, cpp_type=10, label=3,
+            has_default_value=False, default_value=[],
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
     ],
     extensions=[
     ],
-    nested_types=[],
+    nested_types=[_PIECEOFMUSIC_PART_NOTE, ],
     enum_types=[
     ],
     serialized_options=None,
@@ -91,7 +148,7 @@ _PIECEOFMUSIC_PART = _descriptor.Descriptor(
     oneofs=[
     ],
     serialized_start=297,
-    serialized_end=454,
+    serialized_end=576,
 )
 
 _PIECEOFMUSIC = _descriptor.Descriptor(
@@ -191,8 +248,9 @@ _PIECEOFMUSIC = _descriptor.Descriptor(
     oneofs=[
     ],
     serialized_start=33,
-    serialized_end=454,
+    serialized_end=576,
 )
+
 
 _SETTINGS = _descriptor.Descriptor(
     name='Settings',
@@ -269,9 +327,10 @@ _SETTINGS = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=457,
-    serialized_end=645,
+    serialized_start=579,
+    serialized_end=767,
 )
+
 
 _MUSICLIST = _descriptor.Descriptor(
     name='MusicList',
@@ -313,10 +372,12 @@ _MUSICLIST = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=647,
-    serialized_end=761,
+    serialized_start=769,
+    serialized_end=883,
 )
 
+_PIECEOFMUSIC_PART_NOTE.containing_type = _PIECEOFMUSIC_PART
+_PIECEOFMUSIC_PART.fields_by_name['notes'].message_type = _PIECEOFMUSIC_PART_NOTE
 _PIECEOFMUSIC_PART.containing_type = _PIECEOFMUSIC
 _PIECEOFMUSIC.fields_by_name['parts'].message_type = _PIECEOFMUSIC_PART
 _MUSICLIST.fields_by_name['settings'].message_type = _SETTINGS
@@ -329,6 +390,13 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 PieceOfMusic = _reflection.GeneratedProtocolMessageType('PieceOfMusic', (_message.Message,), dict(
 
     Part=_reflection.GeneratedProtocolMessageType('Part', (_message.Message,), dict(
+
+        Note=_reflection.GeneratedProtocolMessageType('Note', (_message.Message,), dict(
+            DESCRIPTOR=_PIECEOFMUSIC_PART_NOTE,
+            __module__='music_info_pb2'
+            # @@protoc_insertion_point(class_scope:music_info.PieceOfMusic.Part.Note)
+        ))
+        ,
         DESCRIPTOR=_PIECEOFMUSIC_PART,
         __module__='music_info_pb2'
         # @@protoc_insertion_point(class_scope:music_info.PieceOfMusic.Part)
@@ -340,6 +408,7 @@ PieceOfMusic = _reflection.GeneratedProtocolMessageType('PieceOfMusic', (_messag
 ))
 _sym_db.RegisterMessage(PieceOfMusic)
 _sym_db.RegisterMessage(PieceOfMusic.Part)
+_sym_db.RegisterMessage(PieceOfMusic.Part.Note)
 
 Settings = _reflection.GeneratedProtocolMessageType('Settings', (_message.Message,), dict(
     DESCRIPTOR=_SETTINGS,

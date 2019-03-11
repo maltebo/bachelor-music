@@ -8,9 +8,8 @@ import settings.constants as c
 from preprocessing.helper import FileNotFittingSettingsError
 from preprocessing.create_modified_stream import process_data
 from preprocessing.create_modified_stream import make_key_and_correlations
-from preprocessing.find_melody import simple_skyline_algorithm
-from preprocessing.make_info import put_in_protocol_buffer
-from preprocessing.make_info import valid_entry_exists
+from preprocessing.make_info import put_in_protocol_buffer, add_notes_to_protocol_buffer
+from preprocessing.make_info import proto_buffer_entry_exists
 from preprocessing.vanilla_stream import VanillaStream
 import threading
 import queue
@@ -41,7 +40,7 @@ def run_all(thread_nr: int):
 
         if not filename:
             continue
-        if valid_entry_exists(filename):
+        if proto_buffer_entry_exists(filename):
             continue
 
         m21_stream = VanillaStream(filename)
@@ -69,38 +68,54 @@ def run_all(thread_nr: int):
             print(filename, sys.exc_info()[1])
 
 
-def analyze_note_lengths(thread_nr: int):
+def add_missing_note_info(thread_nr: int):
+    """
+    adds notes to all parts of valid files that are missing the note information.
+    might not need to be used in the future
+    :param thread_nr: For printing status information
+    :return:
+    """
     while not work_queue.empty():
-        file_name = get_job(work_queue)
+        piece_of_music = get_job(work_queue)
 
-        if not file_name:
-            continue
-        if valid_entry_exists(file_name):
+        if not piece_of_music:
             continue
 
-        m21_stream = process_data(thread_nr, file_name)
-        make_key_and_correlations(m21_stream)
-        put_in_protocol_buffer(m21_stream)
+        if not piece_of_music.valid:
+            continue
 
-        # in the skyline algorithm it is asserted that the melody is a sequence
-        melody_stream = simple_skyline_algorithm(m21_stream)
-        local_dict = {}
+        if piece_of_music.parts[0].notes:
+            continue
 
-        for n in melody_stream.flat.notes:
-            if n.quarterLength in local_dict:
-                local_dict[n.quarterLength] += 1
-            else:
-                local_dict[n.quarterLength] = 1
+        try:
+            m21_stream = VanillaStream(piece_of_music.filepath)
 
-        note_lengths_lock.acquire()
-        for key in local_dict:
-            if key in note_lengths_dict:
-                note_lengths_dict[key] += local_dict[key]
-            else:
-                note_lengths_dict[key] = local_dict[key]
-        if thread_nr == 1:
-            print(note_lengths_dict)
-        note_lengths_lock.release()
+            process_data(thread_nr, m21_stream)
+            make_key_and_correlations(m21_stream)
+        except FileNotFittingSettingsError:
+            piece_of_music.valid = False
+            piece_of_music.error_message = str(sys.exc_info()[1])
+            continue
+
+        c.music_info_dict_lock.acquire()
+
+        for part in piece_of_music.parts:
+            stop = False
+            for p in m21_stream.parts:
+                if p.partName == part.name:
+                    add_notes_to_protocol_buffer(part, p)
+                    stop = True
+            assert stop
+
+        c.music_protocol_buffer.counter += 1
+
+        if c.music_protocol_buffer.counter >= 1:
+            print("write protocol buffer")
+            with open(c.PROTOCOL_BUFFER_LOCATION, 'wb') as fp:
+                fp.write(c.music_protocol_buffer.SerializeToString())
+            c.music_protocol_buffer.counter = 0
+
+        c.music_info_dict_lock.release()
 
 
 class MyThread (threading.Thread):
@@ -125,11 +140,13 @@ work_queue = queue.Queue(0)
 
 threads = []
 
-for root, dirs, files in os.walk(c.TEST_DATA_FOLDER):
-    for file in files:
-        if file.endswith(".mxl"):
-            work_queue.put(os.path.join(root, file))
-            pass
+# for root, dirs, files in os.walk(c.TEST_DATA_FOLDER):
+#     for file in files:
+#         if file.endswith(".mxl"):
+#             work_queue.put(os.path.join(root, file))
+#             pass
+for value in c.music_protocol_buffer.music_data:
+    work_queue.put(value)
 
 # work_queue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL/TestData/Affairs1.mxl")
 # work_queue.put("/home/malte/PycharmProjects/BachelorMusic/data/MXL/TestData/Bwv0540_Toccata_and_Fugue.mxl")
