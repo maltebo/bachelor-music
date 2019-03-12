@@ -22,12 +22,15 @@ os.chdir("/home/malte/PycharmProjects/BachelorMusic")
 #     except:
 #         traceback.print_exc()
 
-TEST_DATA_FOLDER = "/home/malte/Documents/WS201819/Bachelor/Midi/lmd_matched_mxl"
+MXL_DATA_FOLDER = "/home/malte/PycharmProjects/BachelorMusic/data/MXL/lmd_matched_mxl"
 
 MUSIC_INFO_FOLDER_PATH = "/home/malte/PycharmProjects/BachelorMusic/data/music_info_pb"
 MELODY_FILE_PATH = "/home/malte/PycharmProjects/BachelorMusic/data/melody_files/melody_info.json"
 
 UPDATE = True
+UPDATE_FREQUENCY = 10
+
+DRAFT = False
 
 
 def make_settings() -> Settings:
@@ -37,18 +40,29 @@ def make_settings() -> Settings:
     settings.delete_part_threshold = 0.65
     settings.delete_stream_threshold = 0.8
     settings.accepted_key = "C major"
-    settings.max_bpm = 140
     settings.min_bpm = 100
+    settings.max_bpm = 140
     settings.valid_time = "4_4"
     return settings
 
 
 music_settings = make_settings()
 
-settings_filename = '_'.join([str(getattr(music_settings, field.name)) for field in music_settings.DESCRIPTOR.fields])
-settings_filename += '.txt'
+if DRAFT:
+    settings_filename = 'DRAFT_'
+else:
+    settings_filename = ''
+settings_filename += str(round(music_settings.delete_part_threshold, 2))
+settings_filename += '_' + str(round(music_settings.delete_stream_threshold, 2))
+settings_filename += '_' + music_settings.accepted_key
+settings_filename += '_' + str(music_settings.min_bpm)
+settings_filename += '_' + str(music_settings.max_bpm)
+settings_filename += '_' + music_settings.valid_time
+
+settings_filename += '.pb'
 
 music_info_dict_lock = threading.Lock()
+music_info_file_lock = threading.Lock()
 melody_lock = threading.Lock()
 
 music_protocol_buffer = None
@@ -58,10 +72,14 @@ for dirpath, _, filenames in os.walk(MUSIC_INFO_FOLDER_PATH):
     for filename in filenames:
 
         if filename == settings_filename:
+            if os.path.getsize(os.path.join(dirpath, filename)) == 0:
+                os.remove(os.path.join(dirpath, filename))
+                break
             with open(os.path.join(dirpath, filename), 'rb') as fp:
                 music_protocol_buffer = music_info.MusicList()
                 music_protocol_buffer.ParseFromString(fp.read())
                 music_protocol_buffer.counter = 0
+            break
 
 existing_files = {}
 
@@ -75,7 +93,7 @@ PROTOCOL_BUFFER_LOCATION = os.path.join(MUSIC_INFO_FOLDER_PATH, settings_filenam
 
 make_data_work_queue_lock = threading.Lock()
 make_data_work_queue = queue.Queue(0)
-for root, dirs, files in os.walk(TEST_DATA_FOLDER):
+for root, dirs, files in os.walk(MXL_DATA_FOLDER):
     for file in files:
         if file.endswith(".mxl"):
             make_data_work_queue.put(os.path.join(root, file))
@@ -145,3 +163,5 @@ else:
 #         chord_data = json.load(fp)
 # except FileNotFoundError:
 #     raise FileNotFoundError("no chord data found, please run the setup method") # Todo
+
+print("finished setup")

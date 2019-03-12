@@ -1,8 +1,8 @@
 import music21 as m21
 
 import settings.constants as c
-from m21_utils.vanilla_part import VanillaPart
-from m21_utils.vanilla_stream import VanillaStream
+from music_utils.vanilla_part import VanillaPart
+from music_utils.vanilla_stream import VanillaStream
 
 
 def stream_from_pb(pb_instance):
@@ -28,10 +28,6 @@ def stream_from_pb(pb_instance):
         temp_part = VanillaPart()
         temp_part.autoSort = False
         temp_part.partName = part.name
-        temp_part.average_pitch = part.average_pitch
-        temp_part.average_volume = part.average_volume
-        temp_part.key = part.key
-        temp_part.key_correlation = part.key_correlation
         temp_part.note_percentage = part.note_percentage
         temp_part.lyrics_percentage = part.lyrics_percentage
 

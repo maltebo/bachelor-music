@@ -2,7 +2,7 @@ import json
 
 import converter.melody_converter as mc
 import settings.constants as c
-from m21_utils.vanilla_stream import VanillaStream
+from music_utils.vanilla_stream import VanillaStream
 from preprocessing.helper import FileNotFittingSettingsError
 
 

@@ -3,41 +3,61 @@ syntax = "proto2";
 package music_info;
 
 
+enum ErrorEnum {
+    WRONG_TIME_SIGNATURE = 0;
+    WRONG_BPM = 1;
+    WRONG_KEY = 2;
+    INVALID_KEY = 3;
+    LOW_CORRELATION_KEY = 4;
+    NO_PARTS = 5;
+}
+
+
+message VanillaStreamPB {
+    optional string filepath = 1;
+    repeated VanillaPartPB parts = 2;
+
+    message VanillaPartPB {
+
+        required string name = 1;
+
+        repeated float offsets = 2;
+        repeated float lengths = 3;
+        repeated int32 pitches = 4;
+        repeated int32 volumes = 5;
+
+    }
+}
+
+
 message PieceOfMusic {
+    /* highest used number: error(12) */
+    // filepath from starting directory:
+    // settings.constants.MXL_DATA_FOLDER
     required string filepath = 1;
     required bool valid = 2;
 
-    optional string time_signature = 3;
+    // optional string time_signature = 3;
     optional int32 min_metronome = 4;
     optional int32 max_metronome = 5;
 
+    // usually not set, because it should be clear from settings
     optional string key = 6;
     optional float key_correlation = 7;
 
     repeated Part parts = 8;
 
-    repeated int32 melody = 9;
-    repeated int32 note_length = 10;
-
-    optional string error_message = 11;
+    optional ErrorEnum error = 12;
 
     message Part {
+
         required string name = 1;
         optional float average_pitch = 2;
         optional float average_volume = 3;
-        optional string key = 4;
         optional float key_correlation = 5;
         optional float note_percentage = 6;
         optional float lyrics_percentage = 7;
 
-        repeated Note notes = 8;
-
-        message Note {
-            required float offset = 1;
-            required float length = 2;
-            required int32 pitch = 3;
-            optional int32 volume = 4;
-        }
     }
 }
 

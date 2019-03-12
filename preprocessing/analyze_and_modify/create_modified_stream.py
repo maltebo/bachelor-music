@@ -3,8 +3,8 @@ from copy import deepcopy
 import music21 as m21
 
 import settings.constants as c
-from m21_utils.vanilla_part import VanillaPart
-from m21_utils.vanilla_stream import VanillaStream
+from music_utils.vanilla_part import VanillaPart
+from music_utils.vanilla_stream import VanillaStream
 from preprocessing.helper import FileNotFittingSettingsError
 from preprocessing.helper import round_to_quarter
 
@@ -109,7 +109,7 @@ def transpose_key(mxl_file: m21.stream.Score) -> bool:
     try:
         key = mxl_file.analyze('key')
     except m21.analysis.discrete.DiscreteAnalysisException:
-        raise FileNotFittingSettingsError("Key can not be analysed")
+        raise FileNotFittingSettingsError("INVALID_KEY")
 
     if key.mode != 'major' and key.mode != 'minor':
         return False
@@ -128,7 +128,7 @@ def check_valid_time(m21_stream: VanillaStream):
 
     try:
         if m21_stream.time_signature and m21_stream.time_signature.replace("/", "_") != valid_time:
-            raise FileNotFittingSettingsError("Time doesnt't fit")
+            raise FileNotFittingSettingsError("WRONG_TIME_SIGNATURE")
     except AttributeError:
         # This happens if no time signature is specified - we then assume it to be 4/4,
         # which is the standard value
@@ -139,7 +139,7 @@ def check_valid_bpm(m21_stream: VanillaStream):
     try:
         if not (m21_stream.max_metronome <= c.music_settings.max_bpm and
                 m21_stream.min_metronome >= c.music_settings.min_bpm):
-            raise FileNotFittingSettingsError("Beats per minute don't fit")
+            raise FileNotFittingSettingsError("WRONG_BPM")
     except TypeError:
         # this happens if there are no beats per minute specified. We then expect them to be 120,
         # as this is usually the standard value.
@@ -163,16 +163,15 @@ def process_data(thread_id, m21_stream):
 
 def make_key_and_correlations(m21_stream: VanillaStream):
     if not transpose_key(m21_stream):
-        raise FileNotFittingSettingsError("No transposition possible")
+        raise FileNotFittingSettingsError("INVALID_KEY")
 
     try:
         stream_key = m21_stream.analyze('key')
     except m21.analysis.discrete.DiscreteAnalysisException:
-        raise FileNotFittingSettingsError("Key can not be analysed")
+        raise FileNotFittingSettingsError("INVALID_KEY")
 
     if stream_key.name != c.music_settings.accepted_key:
-        raise FileNotFittingSettingsError("Key is not as specified in Settings. Expected key: " +
-                                          c.music_settings.accepted_key + ", actual key: " + stream_key.name)
+        raise FileNotFittingSettingsError("WRONG_KEY")
 
     for p in list(m21_stream.parts):
         try:
@@ -194,25 +193,21 @@ def make_key_and_correlations(m21_stream: VanillaStream):
         if part_key.correlationCoefficient < c.music_settings.delete_part_threshold:
             m21_stream.remove(p, recurse=True)
 
-        else:
-            p.key = part_key.name
-            p.key_correlation = part_key.correlationCoefficient
-
     if len(m21_stream.parts) == 0:
         m21_stream.key = "invalid"
         m21_stream.key_correlation = -1.0
-        raise FileNotFittingSettingsError("No significant part found")
+        raise FileNotFittingSettingsError("NO_PARTS")
 
     try:
         new_stream_key = m21_stream.analyze('key')
     except m21.analysis.discrete.DiscreteAnalysisException:
-        raise FileNotFittingSettingsError("Key can not be analysed")
+        raise FileNotFittingSettingsError("INVALID_KEY")
 
     if new_stream_key.name != stream_key.name or (new_stream_key.correlationCoefficient <
                                                   c.music_settings.delete_part_threshold):
         m21_stream.key = "invalid"
         m21_stream.key_correlation = -1.0
-        raise FileNotFittingSettingsError("Stream Key correlation is lower than the threshold")
+        raise FileNotFittingSettingsError("LOW_CORRELATION_KEY")
 
     m21_stream.key = new_stream_key.name
     m21_stream.key_correlation = new_stream_key.correlationCoefficient

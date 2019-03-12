@@ -1,12 +1,17 @@
 from copy import deepcopy
 
-import music21 as m21
-
 import settings.constants as c
-from m21_utils.vanilla_stream import VanillaStream
+import settings.music_info_pb2 as mi
+from music_utils.vanilla_stream import VanillaStream
 
 
-def simple_skyline_algorithm(note_stream: m21.stream.Stream):
+def simple_skyline_algorithm(note_stream: VanillaStream):
+    """
+    finds a melody by applying a simple skyline algorithm to the stream
+    :param note_stream:
+    :return:
+    """
+
 
     current_note = None
     current_note_pitch = None
@@ -50,6 +55,33 @@ def simple_skyline_algorithm(note_stream: m21.stream.Stream):
     melody_stream.makeAccidentals(inPlace=True)
 
     return melody_stream
+
+
+def skyline_with_parts_info(piece_of_music: mi.PieceOfMusic):
+    """
+    throws out parts that are unlikely to be the melody (very low pitched parts, very quiet parts)
+    takes the lyrics parts, if there is one
+    :param piece_of_music:
+    :return:
+    """
+
+    assert piece_of_music.valid
+
+    parts = piece_of_music.parts
+    possible_melody_parts = []
+    lyrics_parts = []
+
+    for part in parts:
+        # throw out very high parts
+        if part.average_pitch < c.music_settings.min_pitch:
+            continue
+
+        # throw out very low pitched parts
+        if part.average_pitch > c.music_settings.max_pitch:
+            continue
+
+        if part.lyrics_percentage > 0.4:
+            lyrics_parts.append(part)
 
 
 # Todo: include volume information, lyrics information, maybe entropy
