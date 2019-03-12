@@ -3,10 +3,10 @@ from copy import deepcopy
 import music21 as m21
 
 import settings.constants as c
+from m21_utils.vanilla_part import VanillaPart
+from m21_utils.vanilla_stream import VanillaStream
 from preprocessing.helper import FileNotFittingSettingsError
 from preprocessing.helper import round_to_quarter
-from preprocessing.vanilla_part import VanillaPart
-from preprocessing.vanilla_stream import VanillaStream
 
 
 def make_file_container(m21_file: m21.stream.Score, m21_stream: VanillaStream):

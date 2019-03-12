@@ -3,7 +3,7 @@ import os
 import music21 as m21
 
 import settings.constants as c
-from preprocessing.vanilla_stream import VanillaStream
+from m21_utils.vanilla_stream import VanillaStream
 
 
 def values_to_int(pitch: int, length: float) -> int:

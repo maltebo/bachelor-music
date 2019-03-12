@@ -2,8 +2,8 @@ import traceback
 from statistics import mean
 
 import settings.constants as c
-from preprocessing.vanilla_stream import VanillaStream
-from vanilla_part import VanillaPart
+from m21_utils.vanilla_part import VanillaPart
+from m21_utils.vanilla_stream import VanillaStream
 
 
 def make_protocol_buffer_entry(m21_stream: VanillaStream, error_message):

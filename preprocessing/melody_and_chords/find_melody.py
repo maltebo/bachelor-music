@@ -3,7 +3,7 @@ from copy import deepcopy
 import music21 as m21
 
 import settings.constants as c
-from preprocessing.vanilla_stream import VanillaStream
+from m21_utils.vanilla_stream import VanillaStream
 
 
 def simple_skyline_algorithm(note_stream: m21.stream.Stream):

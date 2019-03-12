@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import queue
 import threading
 
 import settings.music_info_pb2 as music_info
@@ -71,6 +72,13 @@ def make_music_list():
 
 
 PROTOCOL_BUFFER_LOCATION = os.path.join(MUSIC_INFO_FOLDER_PATH, settings_filename)
+
+make_data_work_queue_lock = threading.Lock()
+make_data_work_queue = queue.Queue(0)
+for root, dirs, files in os.walk(TEST_DATA_FOLDER):
+    for file in files:
+        if file.endswith(".mxl"):
+            make_data_work_queue.put(os.path.join(root, file))
 
 if not music_protocol_buffer:
 
