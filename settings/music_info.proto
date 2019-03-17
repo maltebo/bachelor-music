@@ -10,23 +10,60 @@ enum ErrorEnum {
     INVALID_KEY = 3;
     LOW_CORRELATION_KEY = 4;
     NO_PARTS = 5;
+    INVALID_FILE = 6;
+}
+
+
+enum MelodyAlgorithm {
+    SKYLINE_SIMPLE = 0;
+    SKYLINE_ADVANCED = 1;
+    TF_SKYLINE = 2;
+}
+
+
+message MelodyList {
+
+    required string filepath = 1;
+
+    optional string extra_info = 2;
+
+    optional MelodyAlgorithm algorithm = 3;
+
+    repeated MelodyPartPB melodies = 4;
+
+}
+
+
+message MelodyPartPB {
+
+    required float actual_start = 1;
+
+    repeated float offsets = 2;
+    repeated float lengths = 3;
+    repeated int32 pitches = 4;
+
 }
 
 
 message VanillaStreamPB {
-    optional string filepath = 1;
+    required string filepath = 1;
+
     repeated VanillaPartPB parts = 2;
 
-    message VanillaPartPB {
+    required PieceOfMusic info = 3;
 
-        required string name = 1;
+}
 
-        repeated float offsets = 2;
-        repeated float lengths = 3;
-        repeated int32 pitches = 4;
-        repeated int32 volumes = 5;
 
-    }
+message VanillaPartPB {
+
+    required string name = 1;
+
+    repeated float offsets = 2;
+    repeated float lengths = 3;
+    repeated int32 pitches = 4;
+    repeated int32 volumes = 5;
+
 }
 
 

@@ -97,6 +97,17 @@ class VanillaPart(m21.stream.Part):
 
         return self._key.name
 
+    def key_by_name(self, key_name: str) -> m21.key.Key:
+
+        if self.key == key_name:
+            return self._key
+
+        for k in self._key.alternateInterpretations:
+            if k.name == key_name:
+                return k
+
+        raise ValueError("No key matching your key name {n} was found".format(n=key_name))
+
     @property
     def key_correlation(self):
         if (not self._key) or self._changed:
@@ -137,10 +148,10 @@ class VanillaPart(m21.stream.Part):
 
     @property
     def average_volume(self):
-        if (not self._average_pitch) or self._changed:
+        if (not self._average_volume) or self._changed:
             self.calculate_attributes()
 
-        return self._average_pitch
+        return self._average_volume
 
     def calculate_attributes(self):
         if self._total_notes_or_chords:

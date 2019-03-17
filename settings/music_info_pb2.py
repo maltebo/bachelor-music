@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     syntax='proto2',
     serialized_options=None,
     serialized_pb=_b(
-        '\n\x10music_info.proto\x12\nmusic_info\"\xc0\x01\n\x0fVanillaStreamPB\x12\x10\n\x08\x66ilepath\x18\x01 \x01(\t\x12\x38\n\x05parts\x18\x02 \x03(\x0b\x32).music_info.VanillaStreamPB.VanillaPartPB\x1a\x61\n\rVanillaPartPB\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0f\n\x07offsets\x18\x02 \x03(\x02\x12\x0f\n\x07lengths\x18\x03 \x03(\x02\x12\x0f\n\x07pitches\x18\x04 \x03(\x05\x12\x0f\n\x07volumes\x18\x05 \x03(\x05\"\xea\x02\n\x0cPieceOfMusic\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12\r\n\x05valid\x18\x02 \x02(\x08\x12\x15\n\rmin_metronome\x18\x04 \x01(\x05\x12\x15\n\rmax_metronome\x18\x05 \x01(\x05\x12\x0b\n\x03key\x18\x06 \x01(\t\x12\x17\n\x0fkey_correlation\x18\x07 \x01(\x02\x12,\n\x05parts\x18\x08 \x03(\x0b\x32\x1d.music_info.PieceOfMusic.Part\x12$\n\x05\x65rror\x18\x0c \x01(\x0e\x32\x15.music_info.ErrorEnum\x1a\x90\x01\n\x04Part\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x15\n\raverage_pitch\x18\x02 \x01(\x02\x12\x16\n\x0e\x61verage_volume\x18\x03 \x01(\x02\x12\x17\n\x0fkey_correlation\x18\x05 \x01(\x02\x12\x17\n\x0fnote_percentage\x18\x06 \x01(\x02\x12\x19\n\x11lyrics_percentage\x18\x07 \x01(\x02\"\xbc\x01\n\x08Settings\x12\x11\n\tmin_pitch\x18\x01 \x02(\x02\x12\x11\n\tmax_pitch\x18\x02 \x02(\x02\x12\x1d\n\x15\x64\x65lete_part_threshold\x18\x03 \x02(\x02\x12\x1f\n\x17\x64\x65lete_stream_threshold\x18\x04 \x02(\x02\x12\x14\n\x0c\x61\x63\x63\x65pted_key\x18\x05 \x02(\t\x12\x0f\n\x07max_bpm\x18\x06 \x02(\x05\x12\x0f\n\x07min_bpm\x18\x07 \x02(\x05\x12\x12\n\nvalid_time\x18\x08 \x02(\t\"r\n\tMusicList\x12&\n\x08settings\x18\x01 \x02(\x0b\x32\x14.music_info.Settings\x12,\n\nmusic_data\x18\x02 \x03(\x0b\x32\x18.music_info.PieceOfMusic\x12\x0f\n\x07\x63ounter\x18\x03 \x02(\x05*{\n\tErrorEnum\x12\x18\n\x14WRONG_TIME_SIGNATURE\x10\x00\x12\r\n\tWRONG_BPM\x10\x01\x12\r\n\tWRONG_KEY\x10\x02\x12\x0f\n\x0bINVALID_KEY\x10\x03\x12\x17\n\x13LOW_CORRELATION_KEY\x10\x04\x12\x0c\n\x08NO_PARTS\x10\x05')
+        '\n\x10music_info.proto\x12\nmusic_info\"\x8e\x01\n\nMelodyList\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12\x12\n\nextra_info\x18\x02 \x01(\t\x12.\n\talgorithm\x18\x03 \x01(\x0e\x32\x1b.music_info.MelodyAlgorithm\x12*\n\x08melodies\x18\x04 \x03(\x0b\x32\x18.music_info.MelodyPartPB\"W\n\x0cMelodyPartPB\x12\x14\n\x0c\x61\x63tual_start\x18\x01 \x02(\x02\x12\x0f\n\x07offsets\x18\x02 \x03(\x02\x12\x0f\n\x07lengths\x18\x03 \x03(\x02\x12\x0f\n\x07pitches\x18\x04 \x03(\x05\"u\n\x0fVanillaStreamPB\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12(\n\x05parts\x18\x02 \x03(\x0b\x32\x19.music_info.VanillaPartPB\x12&\n\x04info\x18\x03 \x02(\x0b\x32\x18.music_info.PieceOfMusic\"a\n\rVanillaPartPB\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0f\n\x07offsets\x18\x02 \x03(\x02\x12\x0f\n\x07lengths\x18\x03 \x03(\x02\x12\x0f\n\x07pitches\x18\x04 \x03(\x05\x12\x0f\n\x07volumes\x18\x05 \x03(\x05\"\xea\x02\n\x0cPieceOfMusic\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12\r\n\x05valid\x18\x02 \x02(\x08\x12\x15\n\rmin_metronome\x18\x04 \x01(\x05\x12\x15\n\rmax_metronome\x18\x05 \x01(\x05\x12\x0b\n\x03key\x18\x06 \x01(\t\x12\x17\n\x0fkey_correlation\x18\x07 \x01(\x02\x12,\n\x05parts\x18\x08 \x03(\x0b\x32\x1d.music_info.PieceOfMusic.Part\x12$\n\x05\x65rror\x18\x0c \x01(\x0e\x32\x15.music_info.ErrorEnum\x1a\x90\x01\n\x04Part\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x15\n\raverage_pitch\x18\x02 \x01(\x02\x12\x16\n\x0e\x61verage_volume\x18\x03 \x01(\x02\x12\x17\n\x0fkey_correlation\x18\x05 \x01(\x02\x12\x17\n\x0fnote_percentage\x18\x06 \x01(\x02\x12\x19\n\x11lyrics_percentage\x18\x07 \x01(\x02\"\xbc\x01\n\x08Settings\x12\x11\n\tmin_pitch\x18\x01 \x02(\x02\x12\x11\n\tmax_pitch\x18\x02 \x02(\x02\x12\x1d\n\x15\x64\x65lete_part_threshold\x18\x03 \x02(\x02\x12\x1f\n\x17\x64\x65lete_stream_threshold\x18\x04 \x02(\x02\x12\x14\n\x0c\x61\x63\x63\x65pted_key\x18\x05 \x02(\t\x12\x0f\n\x07max_bpm\x18\x06 \x02(\x05\x12\x0f\n\x07min_bpm\x18\x07 \x02(\x05\x12\x12\n\nvalid_time\x18\x08 \x02(\t\"r\n\tMusicList\x12&\n\x08settings\x18\x01 \x02(\x0b\x32\x14.music_info.Settings\x12,\n\nmusic_data\x18\x02 \x03(\x0b\x32\x18.music_info.PieceOfMusic\x12\x0f\n\x07\x63ounter\x18\x03 \x02(\x05*\x8d\x01\n\tErrorEnum\x12\x18\n\x14WRONG_TIME_SIGNATURE\x10\x00\x12\r\n\tWRONG_BPM\x10\x01\x12\r\n\tWRONG_KEY\x10\x02\x12\x0f\n\x0bINVALID_KEY\x10\x03\x12\x17\n\x13LOW_CORRELATION_KEY\x10\x04\x12\x0c\n\x08NO_PARTS\x10\x05\x12\x10\n\x0cINVALID_FILE\x10\x06*K\n\x0fMelodyAlgorithm\x12\x12\n\x0eSKYLINE_SIMPLE\x10\x00\x12\x14\n\x10SKYLINE_ADVANCED\x10\x01\x12\x0e\n\nTF_SKYLINE\x10\x02')
 )
 
 _ERRORENUM = _descriptor.EnumDescriptor(
@@ -52,59 +52,241 @@ _ERRORENUM = _descriptor.EnumDescriptor(
             name='NO_PARTS', index=5, number=5,
             serialized_options=None,
             type=None),
+        _descriptor.EnumValueDescriptor(
+            name='INVALID_FILE', index=6, number=6,
+            serialized_options=None,
+            type=None),
     ],
     containing_type=None,
     serialized_options=None,
-    serialized_start=899,
-    serialized_end=1022,
+    serialized_start=1157,
+    serialized_end=1298,
 )
 _sym_db.RegisterEnumDescriptor(_ERRORENUM)
 
 ErrorEnum = enum_type_wrapper.EnumTypeWrapper(_ERRORENUM)
+_MELODYALGORITHM = _descriptor.EnumDescriptor(
+    name='MelodyAlgorithm',
+    full_name='music_info.MelodyAlgorithm',
+    filename=None,
+    file=DESCRIPTOR,
+    values=[
+        _descriptor.EnumValueDescriptor(
+            name='SKYLINE_SIMPLE', index=0, number=0,
+            serialized_options=None,
+            type=None),
+        _descriptor.EnumValueDescriptor(
+            name='SKYLINE_ADVANCED', index=1, number=1,
+            serialized_options=None,
+            type=None),
+        _descriptor.EnumValueDescriptor(
+            name='TF_SKYLINE', index=2, number=2,
+            serialized_options=None,
+            type=None),
+    ],
+    containing_type=None,
+    serialized_options=None,
+    serialized_start=1300,
+    serialized_end=1375,
+)
+_sym_db.RegisterEnumDescriptor(_MELODYALGORITHM)
+
+MelodyAlgorithm = enum_type_wrapper.EnumTypeWrapper(_MELODYALGORITHM)
 WRONG_TIME_SIGNATURE = 0
 WRONG_BPM = 1
 WRONG_KEY = 2
 INVALID_KEY = 3
 LOW_CORRELATION_KEY = 4
 NO_PARTS = 5
+INVALID_FILE = 6
+SKYLINE_SIMPLE = 0
+SKYLINE_ADVANCED = 1
+TF_SKYLINE = 2
 
-_VANILLASTREAMPB_VANILLAPARTPB = _descriptor.Descriptor(
-    name='VanillaPartPB',
-    full_name='music_info.VanillaStreamPB.VanillaPartPB',
+_MELODYLIST = _descriptor.Descriptor(
+    name='MelodyList',
+    full_name='music_info.MelodyList',
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
     fields=[
         _descriptor.FieldDescriptor(
-            name='name', full_name='music_info.VanillaStreamPB.VanillaPartPB.name', index=0,
+            name='filepath', full_name='music_info.MelodyList.filepath', index=0,
             number=1, type=9, cpp_type=9, label=2,
             has_default_value=False, default_value=_b("").decode('utf-8'),
             message_type=None, enum_type=None, containing_type=None,
             is_extension=False, extension_scope=None,
             serialized_options=None, file=DESCRIPTOR),
         _descriptor.FieldDescriptor(
-            name='offsets', full_name='music_info.VanillaStreamPB.VanillaPartPB.offsets', index=1,
+            name='extra_info', full_name='music_info.MelodyList.extra_info', index=1,
+            number=2, type=9, cpp_type=9, label=1,
+            has_default_value=False, default_value=_b("").decode('utf-8'),
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='algorithm', full_name='music_info.MelodyList.algorithm', index=2,
+            number=3, type=14, cpp_type=8, label=1,
+            has_default_value=False, default_value=0,
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='melodies', full_name='music_info.MelodyList.melodies', index=3,
+            number=4, type=11, cpp_type=10, label=3,
+            has_default_value=False, default_value=[],
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+    ],
+    extensions=[
+    ],
+    nested_types=[],
+    enum_types=[
+    ],
+    serialized_options=None,
+    is_extendable=False,
+    syntax='proto2',
+    extension_ranges=[],
+    oneofs=[
+    ],
+    serialized_start=33,
+    serialized_end=175,
+)
+
+_MELODYPARTPB = _descriptor.Descriptor(
+    name='MelodyPartPB',
+    full_name='music_info.MelodyPartPB',
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name='actual_start', full_name='music_info.MelodyPartPB.actual_start', index=0,
+            number=1, type=2, cpp_type=6, label=2,
+            has_default_value=False, default_value=float(0),
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='offsets', full_name='music_info.MelodyPartPB.offsets', index=1,
             number=2, type=2, cpp_type=6, label=3,
             has_default_value=False, default_value=[],
             message_type=None, enum_type=None, containing_type=None,
             is_extension=False, extension_scope=None,
             serialized_options=None, file=DESCRIPTOR),
         _descriptor.FieldDescriptor(
-            name='lengths', full_name='music_info.VanillaStreamPB.VanillaPartPB.lengths', index=2,
+            name='lengths', full_name='music_info.MelodyPartPB.lengths', index=2,
             number=3, type=2, cpp_type=6, label=3,
             has_default_value=False, default_value=[],
             message_type=None, enum_type=None, containing_type=None,
             is_extension=False, extension_scope=None,
             serialized_options=None, file=DESCRIPTOR),
         _descriptor.FieldDescriptor(
-            name='pitches', full_name='music_info.VanillaStreamPB.VanillaPartPB.pitches', index=3,
+            name='pitches', full_name='music_info.MelodyPartPB.pitches', index=3,
+            number=4, type=5, cpp_type=1, label=3,
+            has_default_value=False, default_value=[],
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+    ],
+    extensions=[
+    ],
+    nested_types=[],
+    enum_types=[
+    ],
+    serialized_options=None,
+    is_extendable=False,
+    syntax='proto2',
+    extension_ranges=[],
+    oneofs=[
+    ],
+    serialized_start=177,
+    serialized_end=264,
+)
+
+
+_VANILLASTREAMPB = _descriptor.Descriptor(
+    name='VanillaStreamPB',
+    full_name='music_info.VanillaStreamPB',
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name='filepath', full_name='music_info.VanillaStreamPB.filepath', index=0,
+            number=1, type=9, cpp_type=9, label=2,
+            has_default_value=False, default_value=_b("").decode('utf-8'),
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='parts', full_name='music_info.VanillaStreamPB.parts', index=1,
+            number=2, type=11, cpp_type=10, label=3,
+            has_default_value=False, default_value=[],
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='info', full_name='music_info.VanillaStreamPB.info', index=2,
+            number=3, type=11, cpp_type=10, label=2,
+            has_default_value=False, default_value=None,
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+    ],
+    extensions=[
+    ],
+    nested_types=[],
+    enum_types=[
+    ],
+    serialized_options=None,
+    is_extendable=False,
+    syntax='proto2',
+    extension_ranges=[],
+    oneofs=[
+    ],
+    serialized_start=266,
+    serialized_end=383,
+)
+
+_VANILLAPARTPB = _descriptor.Descriptor(
+    name='VanillaPartPB',
+    full_name='music_info.VanillaPartPB',
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name='name', full_name='music_info.VanillaPartPB.name', index=0,
+            number=1, type=9, cpp_type=9, label=2,
+            has_default_value=False, default_value=_b("").decode('utf-8'),
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='offsets', full_name='music_info.VanillaPartPB.offsets', index=1,
+            number=2, type=2, cpp_type=6, label=3,
+            has_default_value=False, default_value=[],
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='lengths', full_name='music_info.VanillaPartPB.lengths', index=2,
+            number=3, type=2, cpp_type=6, label=3,
+            has_default_value=False, default_value=[],
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='pitches', full_name='music_info.VanillaPartPB.pitches', index=3,
             number=4, type=5, cpp_type=1, label=3,
             has_default_value=False, default_value=[],
             message_type=None, enum_type=None, containing_type=None,
             is_extension=False, extension_scope=None,
             serialized_options=None, file=DESCRIPTOR),
         _descriptor.FieldDescriptor(
-            name='volumes', full_name='music_info.VanillaStreamPB.VanillaPartPB.volumes', index=4,
+            name='volumes', full_name='music_info.VanillaPartPB.volumes', index=4,
             number=5, type=5, cpp_type=1, label=3,
             has_default_value=False, default_value=[],
             message_type=None, enum_type=None, containing_type=None,
@@ -122,45 +304,8 @@ _VANILLASTREAMPB_VANILLAPARTPB = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=128,
-    serialized_end=225,
-)
-
-_VANILLASTREAMPB = _descriptor.Descriptor(
-    name='VanillaStreamPB',
-    full_name='music_info.VanillaStreamPB',
-    filename=None,
-    file=DESCRIPTOR,
-    containing_type=None,
-    fields=[
-        _descriptor.FieldDescriptor(
-            name='filepath', full_name='music_info.VanillaStreamPB.filepath', index=0,
-            number=1, type=9, cpp_type=9, label=1,
-            has_default_value=False, default_value=_b("").decode('utf-8'),
-            message_type=None, enum_type=None, containing_type=None,
-            is_extension=False, extension_scope=None,
-            serialized_options=None, file=DESCRIPTOR),
-        _descriptor.FieldDescriptor(
-            name='parts', full_name='music_info.VanillaStreamPB.parts', index=1,
-            number=2, type=11, cpp_type=10, label=3,
-            has_default_value=False, default_value=[],
-            message_type=None, enum_type=None, containing_type=None,
-            is_extension=False, extension_scope=None,
-            serialized_options=None, file=DESCRIPTOR),
-    ],
-    extensions=[
-    ],
-    nested_types=[_VANILLASTREAMPB_VANILLAPARTPB, ],
-    enum_types=[
-    ],
-    serialized_options=None,
-    is_extendable=False,
-    syntax='proto2',
-    extension_ranges=[],
-    oneofs=[
-    ],
-    serialized_start=33,
-    serialized_end=225,
+    serialized_start=385,
+    serialized_end=482,
 )
 
 
@@ -225,8 +370,8 @@ _PIECEOFMUSIC_PART = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=446,
-    serialized_end=590,
+    serialized_start=703,
+    serialized_end=847,
 )
 
 _PIECEOFMUSIC = _descriptor.Descriptor(
@@ -304,8 +449,8 @@ _PIECEOFMUSIC = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=228,
-    serialized_end=590,
+    serialized_start=485,
+    serialized_end=847,
 )
 
 
@@ -384,8 +529,8 @@ _SETTINGS = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=593,
-    serialized_end=781,
+    serialized_start=850,
+    serialized_end=1038,
 )
 
 
@@ -429,38 +574,57 @@ _MUSICLIST = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=783,
-    serialized_end=897,
+    serialized_start=1040,
+    serialized_end=1154,
 )
 
-_VANILLASTREAMPB_VANILLAPARTPB.containing_type = _VANILLASTREAMPB
-_VANILLASTREAMPB.fields_by_name['parts'].message_type = _VANILLASTREAMPB_VANILLAPARTPB
+_MELODYLIST.fields_by_name['algorithm'].enum_type = _MELODYALGORITHM
+_MELODYLIST.fields_by_name['melodies'].message_type = _MELODYPARTPB
+_VANILLASTREAMPB.fields_by_name['parts'].message_type = _VANILLAPARTPB
+_VANILLASTREAMPB.fields_by_name['info'].message_type = _PIECEOFMUSIC
 _PIECEOFMUSIC_PART.containing_type = _PIECEOFMUSIC
 _PIECEOFMUSIC.fields_by_name['parts'].message_type = _PIECEOFMUSIC_PART
 _PIECEOFMUSIC.fields_by_name['error'].enum_type = _ERRORENUM
 _MUSICLIST.fields_by_name['settings'].message_type = _SETTINGS
 _MUSICLIST.fields_by_name['music_data'].message_type = _PIECEOFMUSIC
+DESCRIPTOR.message_types_by_name['MelodyList'] = _MELODYLIST
+DESCRIPTOR.message_types_by_name['MelodyPartPB'] = _MELODYPARTPB
 DESCRIPTOR.message_types_by_name['VanillaStreamPB'] = _VANILLASTREAMPB
+DESCRIPTOR.message_types_by_name['VanillaPartPB'] = _VANILLAPARTPB
 DESCRIPTOR.message_types_by_name['PieceOfMusic'] = _PIECEOFMUSIC
 DESCRIPTOR.message_types_by_name['Settings'] = _SETTINGS
 DESCRIPTOR.message_types_by_name['MusicList'] = _MUSICLIST
 DESCRIPTOR.enum_types_by_name['ErrorEnum'] = _ERRORENUM
+DESCRIPTOR.enum_types_by_name['MelodyAlgorithm'] = _MELODYALGORITHM
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-VanillaStreamPB = _reflection.GeneratedProtocolMessageType('VanillaStreamPB', (_message.Message,), dict(
+MelodyList = _reflection.GeneratedProtocolMessageType('MelodyList', (_message.Message,), dict(
+    DESCRIPTOR=_MELODYLIST,
+    __module__='music_info_pb2'
+    # @@protoc_insertion_point(class_scope:music_info.MelodyList)
+))
+_sym_db.RegisterMessage(MelodyList)
 
-    VanillaPartPB=_reflection.GeneratedProtocolMessageType('VanillaPartPB', (_message.Message,), dict(
-        DESCRIPTOR=_VANILLASTREAMPB_VANILLAPARTPB,
-        __module__='music_info_pb2'
-        # @@protoc_insertion_point(class_scope:music_info.VanillaStreamPB.VanillaPartPB)
-    ))
-    ,
+MelodyPartPB = _reflection.GeneratedProtocolMessageType('MelodyPartPB', (_message.Message,), dict(
+    DESCRIPTOR=_MELODYPARTPB,
+    __module__='music_info_pb2'
+    # @@protoc_insertion_point(class_scope:music_info.MelodyPartPB)
+))
+_sym_db.RegisterMessage(MelodyPartPB)
+
+VanillaStreamPB = _reflection.GeneratedProtocolMessageType('VanillaStreamPB', (_message.Message,), dict(
     DESCRIPTOR=_VANILLASTREAMPB,
     __module__='music_info_pb2'
     # @@protoc_insertion_point(class_scope:music_info.VanillaStreamPB)
 ))
 _sym_db.RegisterMessage(VanillaStreamPB)
-_sym_db.RegisterMessage(VanillaStreamPB.VanillaPartPB)
+
+VanillaPartPB = _reflection.GeneratedProtocolMessageType('VanillaPartPB', (_message.Message,), dict(
+    DESCRIPTOR=_VANILLAPARTPB,
+    __module__='music_info_pb2'
+    # @@protoc_insertion_point(class_scope:music_info.VanillaPartPB)
+))
+_sym_db.RegisterMessage(VanillaPartPB)
 
 PieceOfMusic = _reflection.GeneratedProtocolMessageType('PieceOfMusic', (_message.Message,), dict(
 

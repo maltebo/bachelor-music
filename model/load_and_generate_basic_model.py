@@ -76,6 +76,9 @@ for melody_nr in range(10):
     for i in range(100):
         x = np.reshape(pattern, (1, len(pattern), 1))
         x = x / float(nr_vocab)
+
+        print(x.shape)
+
         prediction = model.predict(x, verbose=0)
         index = np.argmax(prediction)
         result = int_to_char[index]
@@ -84,7 +87,7 @@ for melody_nr in range(10):
         pattern.append(index)
         pattern = pattern[1:len(pattern)]
 
-    with open(melody_file_name + str(melody_nr), 'x') as fp:
-        fp.write(' '.join(melody_string_list))
+    # with open(melody_file_name + str(melody_nr), 'x') as fp:
+    #     fp.write(' '.join(melody_string_list))
 
 print("\nDone")

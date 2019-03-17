@@ -42,18 +42,20 @@ X = X / float(nr_vocab)
 
 y = tf.one_hot(indices=dataY, depth=nr_vocab)
 
+print("SHAPES:", X.shape, y.shape)
+
 model = tf.keras.models.Sequential()
 model.add(tf.keras.layers.LSTM(256, input_shape=(X.shape[1], X.shape[2])))
 model.add(tf.keras.layers.Dropout(0.2))
 model.add(tf.keras.layers.Dense(y.shape[1], activation='softmax'))
 
-filename = "/home/malte/PycharmProjects/BachelorMusic/weights-improvement-50-0.3534.hdf5"
+filename = "weights-improvement-49-0.2333.hdf5"
 model.load_weights(filename)
 model.compile(loss='categorical_crossentropy', optimizer=tf.train.AdamOptimizer())
 
-filepath = "weights-improvement-{epoch:02d}-{loss:.4f}.hdf5"
-checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
-
-callbacks_list = [checkpoint]
-
-model.fit(X, y, epochs=50, batch_size=256, callbacks=callbacks_list, validation_split=0.2)
+# filepath = "weights-improvement-{epoch:02d}-{loss:.4f}.hdf5"
+# checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
+#
+# callbacks_list = [checkpoint]
+#
+# model.fit(X, y, epochs=50, batch_size=256, callbacks=callbacks_list, validation_split=0.2)

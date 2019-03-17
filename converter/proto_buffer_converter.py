@@ -13,12 +13,10 @@ def stream_from_pb(pb_instance):
     :return:
     """
 
-    if not pb_instance.valid:
+    if not pb_instance.info.valid:
         return None
 
     full_stream = VanillaStream(filename=pb_instance.filepath)
-    full_stream.key = pb_instance.key
-    full_stream.key_correlation = pb_instance.key_correlation
 
     full_stream.insert(m21.meter.TimeSignature('4/4'))
     full_stream.insert(m21.tempo.MetronomeMark(number=120))
@@ -28,25 +26,24 @@ def stream_from_pb(pb_instance):
         temp_part = VanillaPart()
         temp_part.autoSort = False
         temp_part.partName = part.name
-        temp_part.note_percentage = part.note_percentage
-        temp_part.lyrics_percentage = part.lyrics_percentage
 
-        for note in part.notes:
+        for offset, length, pitch, volume in zip(part.offsets, part.lengths,
+                                                 part.pitches, part.volumes):
 
-            if note.pitch < 0:
+            if pitch == 200:
                 temp_rest = m21.note.Rest()
-                temp_rest.quarterLength = note.length
-                temp_part.insert(note.offset, temp_rest)
+                temp_rest.quarterLength = length
+                temp_part.insert(offset, temp_rest)
 
-            elif 0 <= note.pitch <= 128:
+            elif 0 <= pitch <= 128:
                 temp_note = m21.note.Note()
-                temp_note.quarterLength = note.length
-                temp_note.pitch.ps = note.pitch
-                temp_note.volume.velocity = note.volume
-                temp_part.insert(note.offset, temp_note)
+                temp_note.quarterLength = length
+                temp_note.pitch.ps = pitch
+                temp_note.volume.velocity = volume
+                temp_part.insert(offset, temp_note)
 
             else:
-                raise ValueError("Pitch can't be higher than 128!")
+                raise ValueError("Pitch can't be different from 0 - 128 and 200 (Rest)!")
 
         full_stream.insert(temp_part.sorted)
 

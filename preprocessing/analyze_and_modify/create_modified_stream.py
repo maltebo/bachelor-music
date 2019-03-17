@@ -137,8 +137,8 @@ def check_valid_time(m21_stream: VanillaStream):
 
 def check_valid_bpm(m21_stream: VanillaStream):
     try:
-        if not (m21_stream.max_metronome <= c.music_settings.max_bpm and
-                m21_stream.min_metronome >= c.music_settings.min_bpm):
+        if (m21_stream.max_metronome > c.music_settings.max_bpm) or (
+                m21_stream.min_metronome < c.music_settings.min_bpm):
             raise FileNotFittingSettingsError("WRONG_BPM")
     except TypeError:
         # this happens if there are no beats per minute specified. We then expect them to be 120,
@@ -147,7 +147,7 @@ def check_valid_bpm(m21_stream: VanillaStream):
 
 
 def process_data(thread_id, m21_stream):
-    print("%s processing %s" % (thread_id, m21_stream.id))
+    # print("%s processing %s" % (thread_id, m21_stream.id))
     m21_file = m21.converter.parse(m21_stream.id)
 
     make_file_container(m21_file=m21_file, m21_stream=m21_stream)

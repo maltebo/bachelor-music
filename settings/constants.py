@@ -3,9 +3,13 @@
 import os
 import queue
 import threading
+import time
 
 import settings.music_info_pb2 as music_info
 from settings.music_info_pb2 import Settings
+
+print("start variable setup")
+start_time = time.time()
 
 os.chdir("/home/malte/PycharmProjects/BachelorMusic")
 
@@ -28,7 +32,7 @@ MUSIC_INFO_FOLDER_PATH = "/home/malte/PycharmProjects/BachelorMusic/data/music_i
 MELODY_FILE_PATH = "/home/malte/PycharmProjects/BachelorMusic/data/melody_files/melody_info.json"
 
 UPDATE = True
-UPDATE_FREQUENCY = 10
+UPDATE_FREQUENCY = 30
 
 DRAFT = False
 
@@ -91,12 +95,34 @@ def make_music_list():
 
 PROTOCOL_BUFFER_LOCATION = os.path.join(MUSIC_INFO_FOLDER_PATH, settings_filename)
 
-make_data_work_queue_lock = threading.Lock()
-make_data_work_queue = queue.Queue(0)
+mxl_work_queue = queue.Queue(0)
+mxl_files_done = 0
+
+proto_buffer_work_queue = queue.Queue(0)
+proto_buffers_done = 0
+
+melody_work_queue = queue.Queue(0)
+melodies_done = 0
+
 for root, dirs, files in os.walk(MXL_DATA_FOLDER):
     for file in files:
-        if file.endswith(".mxl"):
-            make_data_work_queue.put(os.path.join(root, file))
+        if file.endswith('.mxl'):
+            mxl_work_queue.put(os.path.join(root, file))
+        elif file.endswith('.pb'):
+            proto_buffer_work_queue.put(os.path.join(root, file))
+        elif file.endswith(('.melody_pb')):
+            melody_work_queue.put(os.path.join(root, file))
+            # take for every song only one version into account!
+            break
+
+mxl_files_to_do = mxl_work_queue.qsize()
+mxl_start_time = time.time()
+
+proto_buffers_to_do = proto_buffer_work_queue.qsize()
+proto_buffer_start_time = mxl_start_time
+
+melodies_to_do = melody_work_queue.qsize()
+melodies_start_time = mxl_start_time
 
 if not music_protocol_buffer:
 
@@ -110,6 +136,27 @@ if not music_protocol_buffer:
 else:
     for f in music_protocol_buffer.music_data:
         existing_files[f.filepath] = f.valid
+
+##################################################################
+################ MODEL CONSTANTS #################################
+##################################################################
+
+sequence_length = 30
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # def make_chord_dict() -> dict:
 #     import music21 as m21
@@ -164,4 +211,4 @@ else:
 # except FileNotFoundError:
 #     raise FileNotFoundError("no chord data found, please run the setup method") # Todo
 
-print("finished setup")
+print("finished setup in {sec} seconds".format(sec=str(round(time.time() - start_time, 2))))
