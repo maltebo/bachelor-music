@@ -111,7 +111,7 @@ class Part:
 
 class Note(list):
 
-    def __init__(self, offset, length, pitch: 200, volume: 0, part: 2 ** 32):
+    def __init__(self, offset, length, pitch=200, volume=0, part=2 ** 32):
         super().__init__([offset, length, pitch, volume, part])
         self._m21_note = None
 
@@ -225,7 +225,7 @@ class Song:
             for elem in list_of_parts_or_note_lists:
                 if type(elem) == Part:
                     self.parts.append(deepcopy(elem))
-                    self._notes.extend(elem.notes)
+                    self._notes.extend(elem.notes())
                 elif type(elem) == NoteList:
                     id = 2 ** 32
                     if elem:

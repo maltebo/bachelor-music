@@ -32,6 +32,9 @@ length_output = Dense(16, activation='softmax', name='length_output')(lstm_layer
 model = Model(inputs=[pitch_input, length_input, offset_input],
               outputs=[pitch_output, length_output])
 
+old_weights = "data/tf_weights/weights-improvement-tf-project-20-0.2772.hdf5"
+# model.load_weights(old_weights)
+
 model.compile(loss={'pitch_output': 'categorical_crossentropy',
                     'length_output': 'categorical_crossentropy'},
               optimizer=Adam())
@@ -44,4 +47,4 @@ checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath, monitor='loss', verbos
 callbacks_list = [checkpoint]
 
 model.fit([pitch_in, length_in, offset_in], [pitch_out, length_out],
-          epochs=20, batch_size=4, callbacks=callbacks_list, validation_split=0.2)
+          epochs=50, batch_size=32, callbacks=callbacks_list, validation_split=0.2)

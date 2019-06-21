@@ -13,26 +13,15 @@ start_time = time.time()
 
 os.chdir("/home/malte/PycharmProjects/BachelorMusic")
 
-# if not settings_dict:
-#     settings_dict = {
-#
-# Todo: update in setup file
-#
-#     }
-#
-#     try:
-#         with open(__SETTINGS_LOCATION, 'x') as fp:
-#             fp.write(json.dumps(settings_dict, indent=2))
-#     except:
-#         traceback.print_exc()
 
 MXL_DATA_FOLDER = "/home/malte/PycharmProjects/BachelorMusic/data/MXL/lmd_matched_mxl"
 
 MUSIC_INFO_FOLDER_PATH = "/home/malte/PycharmProjects/BachelorMusic/data/music_info_pb"
 MELODY_FILE_PATH = "/home/malte/PycharmProjects/BachelorMusic/data/melody_files/melody_info.json"
+DELETED_PIECES_PATH = "/home/malte/PycharmProjects/BachelorMusic/data/deleted_pieces"
 
 UPDATE = True
-UPDATE_FREQUENCY = 30
+UPDATE_FREQUENCY = 1
 
 DRAFT = False
 
@@ -97,6 +86,7 @@ PROTOCOL_BUFFER_LOCATION = os.path.join(MUSIC_INFO_FOLDER_PATH, settings_filenam
 
 mxl_work_queue = queue.Queue(0)
 mxl_files_done = 0
+mxl_dict = {}
 
 proto_buffer_work_queue = queue.Queue(0)
 proto_buffers_done = 0
@@ -106,16 +96,19 @@ melodies_done = 0
 
 for root, dirs, files in os.walk(MXL_DATA_FOLDER):
     for file in files:
-        if file.endswith('.mxl'):
-            mxl_work_queue.put(os.path.join(root, file))
-        elif file.endswith('.pb'):
+        if file.split('.')[0].split('_tf_skyline')[0] in mxl_dict:
+            mxl_dict[file.split('.')[0].split('_tf_skyline')[0]].append(os.path.join(root, file))
+        else:
+            mxl_dict[file.split('.')[0].split('_tf_skyline')[0]] = [os.path.join(root, file)]
+        # if file.endswith('.mxl'):
+        #     mxl_work_queue.put(os.path.join(root, file))
+        if file.endswith('.pb'):
             proto_buffer_work_queue.put(os.path.join(root, file))
-        elif file.endswith(('.melody_pb')):
-            melody_work_queue.put(os.path.join(root, file))
+        # elif file.endswith(('.melody_pb')):
+        #     melody_work_queue.put(os.path.join(root, file))
             # take for every song only one version into account!
-            break
+        # break
 
-mxl_files_to_do = mxl_work_queue.qsize()
 mxl_start_time = time.time()
 
 proto_buffers_to_do = proto_buffer_work_queue.qsize()
@@ -137,25 +130,83 @@ else:
     for f in music_protocol_buffer.music_data:
         existing_files[f.filepath] = f.valid
 
+del_list = []
+
+for file in mxl_dict:
+    mxl_files = []
+    protofiles = []
+    melody_files = []
+    done = False
+    valid = False
+
+    for f in mxl_dict[file]:
+        if f.endswith('.mxl'):
+            if os.path.relpath(f, MXL_DATA_FOLDER) in existing_files:
+                done = True
+                valid = existing_files[os.path.relpath(f, MXL_DATA_FOLDER)]
+            mxl_files.append(f.split('.')[0])
+        elif f.endswith('.pb'):
+            protofiles.append(f.split('.')[0])
+        elif f.endswith('.melody_pb'):
+            melody_files.append(f.split('.')[0].split('_tf_skyline')[0])
+
+    if done:
+        if not valid:
+            del_list.extend(mxl_dict[file])
+        else:
+            ref = ""
+            if melody_files:
+                ref = melody_files[0]
+            elif protofiles:
+                ref = protofiles[0]
+            else:
+                print("No protobuffer for valid and done file", file)
+                for f in music_protocol_buffer.music_data:
+                    if f.filepath == mxl_dict[file][0].split('lmd_matched_mxl/')[-1]:
+                        f.filepath = "Deleted"
+                        f.valid = False
+                        f.ClearField('min_metronome')
+                        f.ClearField('max_metronome')
+                        f.ClearField('key_correlation')
+                        f.ClearField('parts')
+                        with open(PROTOCOL_BUFFER_LOCATION, 'wb') as fp:
+                            fp.write(music_protocol_buffer.SerializeToString())
+                        break
+                # raise ValueError("There should be at least one protobuffer in this case")
+
+            for f in mxl_dict[file]:
+                if not f.startswith(ref):
+                    del_list.append(f)
+    else:
+        del_list.extend(mxl_dict[file][1:])
+        try:
+            print(mxl_files[0] + '.mxl')
+            mxl_work_queue.put(mxl_files[0] + '.mxl')
+        except IndexError:
+            print(mxl_dict[file])
+            print("No mxl file for file:", file)
+
+mxl_files_to_do = mxl_work_queue.qsize()
+
+if len(del_list) > 0:
+    print(str(len(del_list)), "files will be moved to the deleted files folder. Alright?")
+    print("First 10 Elements:", del_list[:10])
+    i = input("Y for yes")
+    if i == 'Y':
+        for f in del_list:
+            split_file = f.split('/')
+            folder = '/'.join(split_file[-5:-1])
+            filename = split_file[-1]
+            os.makedirs(os.path.join(DELETED_PIECES_PATH, folder), exist_ok=True)
+            os.rename(f, os.path.join(os.path.join(DELETED_PIECES_PATH, folder), filename))
+    else:
+        print("No files moved")
+
 ##################################################################
 ################ MODEL CONSTANTS #################################
 ##################################################################
 
 sequence_length = 30
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # def make_chord_dict() -> dict:

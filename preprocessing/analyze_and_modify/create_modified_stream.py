@@ -162,7 +162,7 @@ def process_data(thread_id, m21_stream):
 
 
 def make_key_and_correlations(m21_stream: VanillaStream):
-    if not transpose_key(m21_stream):
+    if not transpose_key(m21_stream):  # transposes the song
         raise FileNotFittingSettingsError("INVALID_KEY")
 
     try:
@@ -170,7 +170,7 @@ def make_key_and_correlations(m21_stream: VanillaStream):
     except m21.analysis.discrete.DiscreteAnalysisException:
         raise FileNotFittingSettingsError("INVALID_KEY")
 
-    if stream_key.name != c.music_settings.accepted_key:
+    if stream_key.name != c.music_settings.accepted_key:  # checks for C major
         raise FileNotFittingSettingsError("WRONG_KEY")
 
     for p in list(m21_stream.parts):

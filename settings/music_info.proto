@@ -1,3 +1,6 @@
+// update this by typing
+// protoc -I=/home/malte/PycharmProjects/BachelorMusic/settings --python_out=/home/malte/PycharmProjects/BachelorMusic/settings /home/malte/PycharmProjects/BachelorMusic/settings/music_info.proto
+
 syntax = "proto2";
 
 package music_info;
@@ -41,6 +44,30 @@ message MelodyPartPB {
     repeated float offsets = 2;
     repeated float lengths = 3;
     repeated int32 pitches = 4;
+
+}
+
+message Melody {
+
+    required bool lyrics = 1;
+
+    repeated int32 offsets = 2;
+
+    repeated int32 lengths = 3;
+
+    repeated int32 pitches = 4;
+
+    repeated int32 volumes = 5;
+
+}
+
+message SongData {
+
+    required string filepath = 1;
+
+    repeated Melody melodies = 2;
+
+    repeated int32 chords = 3;
 
 }
 

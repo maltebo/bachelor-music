@@ -18,11 +18,10 @@ def make_tf_data(settings=c.music_settings):
     pitches_output = []
     lengths_output = []
 
-    max_sequence_length = 250  # number of max events (notes!) per melody
     min_sequence_length = c.sequence_length + 1  # number of min beats per melody
 
     # while not c.melody_work_queue.empty():
-    for i in range(100):
+    for i in range(500):
 
         melody = c.melody_work_queue.get()
         if not melody.endswith('_tf_skyline.melody_pb'):

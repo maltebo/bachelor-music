@@ -169,8 +169,6 @@ class VanillaPart(m21.stream.Part):
 
     @staticmethod
     def create_note(start, end, temp_volume: int, temp_lyrics, temp_pitch):
-        if end - start < 0.2:
-            return None
 
         if 0 > temp_pitch > 128:
             return None
