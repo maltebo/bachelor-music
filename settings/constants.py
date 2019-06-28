@@ -6,15 +6,15 @@ import queue
 import threading
 import time
 
+project_folder = __file__.split('/settings/')[0]
+
+os.chdir(project_folder)
+
 import settings.music_info_pb2 as music_info
 from settings.music_info_pb2 import Settings
 
 print("start variable setup")
 start_time = time.time()
-
-project_folder = __file__.split('/settings/')[0]
-
-os.chdir(project_folder)
 
 MXL_DATA_FOLDER = os.path.join(project_folder, "data/MXL/lmd_matched_mxl")
 
