@@ -144,12 +144,18 @@ def make_protobuffer_for_all_data():
             song_data.ParseFromString(fp.read())
 
     try:
-        with open(os.path.join(c.project_folder, "data/preprocessed_data/data_{y}_{m}_{d}.pb"), 'xb') as fp:
+        with open(os.path.join(c.project_folder,
+                               "data/preprocessed_data/data_{y}_{m}_{d}.pb".format(y=proto_buffer.year,
+                                                                                   m=proto_buffer.month,
+                                                                                   d=proto_buffer.day)), 'xb') as fp:
             fp.write(proto_buffer.SerializeToString())
     except FileExistsError:
         ow = input("File already exists! Do you want to overwrite it? Y/n")
         if ow == 'Y':
-            with open(os.path.join(c.project_folder, "data/preprocessed_data/data_{y}_{m}_{d}.pb"),
+            with open(os.path.join(c.project_folder,
+                                   "data/preprocessed_data/data_{y}_{m}_{d}.pb".format(y=proto_buffer.year,
+                                                                                       m=proto_buffer.month,
+                                                                                       d=proto_buffer.day)),
                       'wb') as fp:
                 fp.write(proto_buffer.SerializeToString())
 
@@ -559,7 +565,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, ca
 
 if __name__ == '__main__':
     # make_pb_for_lyrics_files()
-    chord_model(nr_files=None, callbacks=False)
+    # chord_model(nr_files=None, callbacks=False)
     # melody_model(nr_files=5, callbacks=False)
 
-    # make_protobuffer_for_all_data()
+    make_protobuffer_for_all_data()
