@@ -7,8 +7,11 @@ import threading
 import time
 
 project_folder = os.path.abspath(os.path.dirname(__file__)).split('/settings')[0]
-
 os.chdir(project_folder)
+
+import sys
+
+sys.path.append(project_folder)
 
 import settings.music_info_pb2 as music_info
 from settings.music_info_pb2 import Settings
