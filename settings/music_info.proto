@@ -61,6 +61,16 @@ message Melody {
 
 }
 
+message AllData {
+
+    required int32 day = 1;
+    required int32 month = 2;
+    required int32 year = 3;
+
+    repeated SongData songs = 4;
+
+}
+
 message SongData {
 
     required string filepath = 1;

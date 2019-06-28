@@ -1,4 +1,5 @@
 import json
+import os
 import random
 import re
 import time
@@ -7,14 +8,16 @@ import urllib
 
 from bs4 import BeautifulSoup
 
-with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/urls_for_chord_embeddings2.json", 'r') as fp:
+import settings.constants as c
+
+with open(os.path.join(c.project_folder, "web_scraping/urls_for_chord_embeddings2.json"), 'r') as fp:
     urls = json.load(fp)
 
 i = 0
 
 tonality_set = set()
 chords_set = set()
-with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/urls_and_chords.json", 'r') as fp:
+with open(os.path.join(c.project_folder, "web_scraping/urls_and_chords.json"), 'r') as fp:
     urls_and_chords = json.load(fp)
     urls_visited = set(urls_and_chords.keys())
 
@@ -36,21 +39,21 @@ for url in urls:
     except urllib.error.HTTPError:
         print("...failed with HTTPError")
         traceback.print_exc()
-        with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/urls_and_chords.json", 'w') as fb:
+        with open(os.path.join(c.project_folder, "web_scraping/urls_and_chords.json"), 'w') as fb:
             fb.write(json.dumps(urls_and_chords))
         break
 
     except urllib.error.URLError:
         print("... failed with URLError")
         traceback.print_exc()
-        with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/urls_and_chords.json", 'w') as fb:
+        with open(os.path.join(c.project_folder, "web_scraping/urls_and_chords.json"), 'w') as fb:
             fb.write(json.dumps(urls_and_chords))
         continue
 
     except:
         print("...failed")
         traceback.print_exc()
-        with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/urls_and_chords.json", 'w') as fb:
+        with open(os.path.join(c.project_folder, "web_scraping/urls_and_chords.json"), 'w') as fb:
             fb.write(json.dumps(urls_and_chords))
         break
 
@@ -117,7 +120,7 @@ for url in urls:
             time.sleep(1)
         print("Tonality Set", tonality_set)
         print("Chord Set", chords_set)
-        with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/urls_and_chords.json", 'w') as fb:
+        with open(os.path.join(c.project_folder, "web_scraping/urls_and_chords.json"), 'w') as fb:
             fb.write(json.dumps(urls_and_chords))
 
 print("finished everything!")

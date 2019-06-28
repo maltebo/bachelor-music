@@ -1,12 +1,8 @@
-import json
 from math import ceil
 from math import floor
 
 import music_utils.simple_classes as simple
 import settings.constants as c
-
-with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/chord_frequencies_and_transitions.json", 'r') as fp:
-    chord_and_transition_dict = json.load(fp)
 
 chord_to_idx = {
     "C": 0,
@@ -53,7 +49,7 @@ def make_simple_chord_note_array(name: str):
     return chord_note_array
 
 
-potential_chords = dict([(key, make_simple_chord_note_array(key)) for key in chord_and_transition_dict.keys()])
+potential_chords = dict([(key, make_simple_chord_note_array(key)) for key in c.chord_and_transition_dict.keys()])
 
 
 #
@@ -236,8 +232,8 @@ def get_corresponding_chords(pitches_list):
             # if bass_note:
             #     bass_list[i] = bass_note
 
-    for i, (prob, chord) in enumerate(zip(note_prob, chord_list)):
-        print(chord, prob)
+    # for i, (prob, chord) in enumerate(zip(note_prob, chord_list)):
+    #     print(chord, prob)
 
     return chord_list
 
@@ -275,7 +271,7 @@ def get_chord(note_list, previous_chord, metric_position):
             transition_prob = 0.5
 
         if chord != previous_chord:
-            transition_prob = (1 - transition_prob) * chord_and_transition_dict[previous_chord][chord]
+            transition_prob = (1 - transition_prob) * c.chord_and_transition_dict[previous_chord][chord]
 
         chord_probability = sum([a * b for a, b in zip(potential_chords[chord], note_values)]) * transition_prob
 
@@ -333,9 +329,9 @@ def make_simple_part_from_chords(chord_list, bass_list=None):
         if fifth < third:
             fifth += 12
 
-        chord_part.append(simple.Note(i * 2, 2.0, root, 80))
-        chord_part.append(simple.Note(i * 2, 2.0, third, 70))
-        chord_part.append(simple.Note(i * 2, 2.0, fifth, 70))
+        chord_part.append(simple.Note(i * 2, 2.0, root, 60))
+        chord_part.append(simple.Note(i * 2, 2.0, third, 50))
+        chord_part.append(simple.Note(i * 2, 2.0, fifth, 50))
 
     if bass_list:
         for i, bass_note in enumerate(bass_list):
@@ -359,7 +355,9 @@ if __name__ == "__main__":
             if filename.endswith('.pb'):
                 file_list.append(os.path.join(dirname, filename))
 
-    for filename in file_list[10:11]:
+    used_chords = []
+
+    for filename in file_list:
         assert filename.endswith(".pb")
 
         proto_buffer_path = filename
@@ -377,6 +375,9 @@ if __name__ == "__main__":
 
         chords = get_corresponding_chords(split_song)
 
-        print(chords)
+        used_chords.extend(chords)
+        import collections
 
-        make_simple_part_from_chords(chords)
+        print(collections.Counter(used_chords))
+
+        simple_part = make_simple_part_from_chords(chords)[0]

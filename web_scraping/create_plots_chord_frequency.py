@@ -1,8 +1,11 @@
 import collections
 import json
+import os
 import re
 
-with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/urls_and_chords.json", 'r') as fp:
+import settings.constants as c
+
+with open(os.path.join(c.project_folder, "web_scraping/urls_and_chords.json"), 'r') as fp:
     chord_dict = json.load(fp)
 
 chord_to_idx = {
@@ -150,18 +153,20 @@ for elem in chord_dict:
 complex_counts = collections.Counter(complex_chord_list)
 simple_counts = collections.Counter(simple_chord_list)
 
-print("Complex Counts:", complex_counts)
-print("Simple Counts:", simple_counts)
+# print("Complex Counts:", complex_counts)
+# print("Simple Counts:", simple_counts)
 
-relevant_chords = [chord for chord, count in simple_counts.most_common(10)]
-
-for elem in dict(simple_transitions):
-    if elem not in relevant_chords:
-        del simple_transitions[elem]
-    else:
-        for inner_elem in dict(simple_transitions[elem]):
-            if inner_elem not in relevant_chords:
-                del simple_transitions[elem][inner_elem]
+##############################################################################
+# needed if we want to reduce the chord set
+##############################################################################
+# relevant_chords = [chord for chord, count in simple_counts.most_common(10)]
+# for elem in dict(simple_transitions):
+#     if elem not in relevant_chords:
+#         del simple_transitions[elem]
+#     else:
+#         for inner_elem in dict(simple_transitions[elem]):
+#             if inner_elem not in relevant_chords:
+#                 del simple_transitions[elem][inner_elem]
 
 chord_number = 0
 
@@ -176,12 +181,31 @@ for elem in simple_transitions:
 for elem in simple_transitions:
     simple_transitions[elem]["frequency"] /= chord_number
 
-print("Progression Counter:")
-print(len(collections.Counter(progression_list)))
-print(collections.Counter([x for x in progression_list if len(x.split(",")) > 4]).most_common(100))
+# print("Progression Counter:")
+# print(len(collections.Counter(progression_list)))
+# print(collections.Counter([x for x in progression_list if len(x.split(",")) > 4]).most_common(100))
 
-# with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/chord_frequencies_and_transitions.json", 'w') as fp:
-#     fp.write(json.dumps(simple_transitions, indent=2))
+# normalize so that ech value is at least 0.01:
+for elem in simple_transitions:
+    simple_transitions[elem]["frequency"] = (simple_transitions[elem]["frequency"] + 0.013) / (
+                1 + 0.013 * len(simple_transitions))
+    for chord in idx_to_chord:
+        if chord not in simple_transitions[elem]:
+            simple_transitions[elem][chord] = 0.0
+        if chord + 'm' not in simple_transitions[elem]:
+            simple_transitions[elem][chord + 'm'] = 0.0
+    for chord in simple_transitions[elem]:
+        if chord == elem:
+            del simple_transitions[elem][chord]
+            break
+    for temp_elem in simple_transitions[elem]:
+        simple_transitions[elem][temp_elem] = (simple_transitions[elem][temp_elem] + 0.013) / (
+                    1 + 0.013 * (len(simple_transitions[elem]) - 1))
+
+# print(json.dumps(simple_transitions,indent=2))
+
+with open(os.path.join(c.project_folder, "web_scraping/chord_frequencies_and_transitions_full.json"), 'x') as fp:
+    fp.write(json.dumps(simple_transitions, indent=2))
 
 """
 

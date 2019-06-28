@@ -1,7 +1,10 @@
 import json
+import os
 import urllib
 
 from bs4 import BeautifulSoup
+
+import settings.constants as c
 
 subgenres = [
     24, 751, 665, 343, 734, 218, 192, 104, 46, 1095, 910, 36, 414, 1093, 197, 487, 150, 565, 140, 47, 103, 938, 177, 11,
@@ -14,20 +17,20 @@ subgenres = [
 decade = [1980, 1990, 2000, 2010]
 
 try:
-    with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/urls_for_chord_embeddings2.json", "r") as fp:
+    with open(os.path.join(c.project_folder, "web_scraping/urls_for_chord_embeddings2.json"), "r") as fp:
         urls = set(json.load(fp))
 except:
-    with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/urls_for_chord_embeddings.json", "r") as fp:
+    with open(os.path.join(c.project_folder, "web_scraping/urls_for_chord_embeddings.json"), "r") as fp:
         urls = set(json.load(fp))
-    with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/urls_for_chord_embeddings2.json", "x") as fp:
+    with open(os.path.join(c.project_folder, "web_scraping/urls_for_chord_embeddings2.json"), "x") as fp:
         fp.write(json.dumps(list(urls), indent=2))
 
 try:
-    with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/pages_visited.json", "r") as fp:
+    with open(os.path.join(c.project_folder, "web_scraping/pages_visited.json"), "r") as fp:
         pages_visited = set(json.load(fp))
 except:
     pages_visited = set()
-    with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/pages_visited.json", "x") as fp:
+    with open(os.path.join(c.project_folder, "web_scraping/pages_visited.json"), "x") as fp:
         fp.write(json.dumps(list(pages_visited), indent=2))
 
 print(urls)
@@ -88,10 +91,10 @@ for sub in subgenres:
                 urls.add(song["tab_url"])
 
                 if len(urls) % 10 == 0:
-                    with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/pages_visited.json", "w") as fp:
+                    with open(os.path.join(c.project_folder, "web_scraping/pages_visited.json"), "w") as fp:
                         fp.write(json.dumps(list(pages_visited), indent=2))
 
-                    with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/urls_for_chord_embeddings2.json",
+                    with open(os.path.join(c.project_folder, "web_scraping/urls_for_chord_embeddings2.json"),
                               "w") as fp:
                         fp.write(json.dumps(list(urls), indent=2))
 
@@ -102,8 +105,8 @@ for sub in subgenres:
     if weird:
         break
 
-with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/pages_visited.json", "w") as fp:
+with open(os.path.join(c.project_folder, "web_scraping/pages_visited.json"), "w") as fp:
     fp.write(json.dumps(list(pages_visited), indent=2))
 
-with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/urls_for_chord_embeddings2.json", "w") as fp:
+with open(os.path.join(c.project_folder, "web_scraping/urls_for_chord_embeddings2.json"), "w") as fp:
     fp.write(json.dumps(list(urls), indent=2))

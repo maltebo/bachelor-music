@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 import os
 import queue
 import threading
@@ -11,14 +12,15 @@ from settings.music_info_pb2 import Settings
 print("start variable setup")
 start_time = time.time()
 
-os.chdir("/home/malte/PycharmProjects/BachelorMusic")
+project_folder = __file__.split('/settings/')[0]
 
+os.chdir(project_folder)
 
-MXL_DATA_FOLDER = "/home/malte/PycharmProjects/BachelorMusic/data/MXL/lmd_matched_mxl"
+MXL_DATA_FOLDER = os.path.join(project_folder, "data/MXL/lmd_matched_mxl")
 
-MUSIC_INFO_FOLDER_PATH = "/home/malte/PycharmProjects/BachelorMusic/data/music_info_pb"
-MELODY_FILE_PATH = "/home/malte/PycharmProjects/BachelorMusic/data/melody_files/melody_info.json"
-DELETED_PIECES_PATH = "/home/malte/PycharmProjects/BachelorMusic/data/deleted_pieces"
+MUSIC_INFO_FOLDER_PATH = os.path.join(project_folder, "data/music_info_pb")
+MELODY_FILE_PATH = os.path.join(project_folder, "data/melody_files/melody_info.json")
+DELETED_PIECES_PATH = os.path.join(project_folder, "data/deleted_pieces")
 
 UPDATE = True
 UPDATE_FREQUENCY = 1
@@ -202,11 +204,19 @@ if len(del_list) > 0:
     else:
         print("No files moved")
 
+with open(os.path.join(project_folder, "web_scraping/chord_frequencies_and_transitions_full.json"), 'r') as fp:
+    chord_and_transition_dict = json.load(fp)
+
+chord_to_id = {name: i for (i, name) in enumerate(chord_and_transition_dict.keys())}
+chord_to_id['None'] = len(chord_to_id)
+
 ##################################################################
 ################ MODEL CONSTANTS #################################
 ##################################################################
 
-sequence_length = 30
+sequence_length = 50
+
+chord_sequence_length = 20
 
 
 # def make_chord_dict() -> dict:

@@ -1,4 +1,5 @@
 import json
+import os
 
 import numpy as np
 import tensorflow as tf
@@ -53,7 +54,7 @@ model.add(tf.keras.layers.LSTM(256, input_shape=(X.shape[1], X.shape[2])))
 model.add(tf.keras.layers.Dropout(0.2))
 model.add(tf.keras.layers.Dense(y.shape[1], activation='softmax'))
 
-filename = "/home/malte/PycharmProjects/BachelorMusic/weights-improvement-49-0.2333.hdf5"
+filename = os.path.join(c.project_folder, "weights-improvement-49-0.2333.hdf5")
 model.load_weights(filename)
 model.compile(loss='categorical_crossentropy', optimizer=tf.train.AdamOptimizer())
 
@@ -71,7 +72,7 @@ for melody_nr in range(10):
 
     melody_string_list = []
 
-    melody_file_name = "/home/malte/PycharmProjects/BachelorMusic/data/generated_melodies/melody_"
+    melody_file_name = os.path.join(c.project_folder, "data/generated_melodies/melody_")
 
     for i in range(100):
         x = np.reshape(pattern, (1, len(pattern), 1))

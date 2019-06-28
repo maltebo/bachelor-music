@@ -241,9 +241,15 @@ def skyline_advanced(song: simple.Song, split: bool,
                 if not split:
                     results.append((0.0, lyrics_part))
                 else:
-                    results.extend(make_full_sub_melodies(lyrics_part, max_rest=max_rest,
+                    try:
+                        results.extend(make_full_sub_melodies(lyrics_part, max_rest=max_rest,
                                                           min_melody_length=min_melody_length))
-            return True, results
+                    except TypeError:
+                        print("Problem with file", song.name)
+            if results:
+                return True, results
+            else:
+                return False, None
 
     # if there are no lyrics parts, we'll find our result manually
 
@@ -451,8 +457,8 @@ if __name__ == '__main__':
                 file_list.append(os.path.join(dirname, filename))
                 pass
 
-    # file_list.append(("/home/malte/PycharmProjects/BachelorMusic/data/MXL/lmd_matched_mxl/D/B/E/TRDBEBI128F1495CAB/03eb725d73e98dd52dd026fe8c31e531.pb"))
-    # file_list.append("/home/malte/PycharmProjects/BachelorMusic/data/MXL/lmd_matched_mxl/C/Q/D/TRCQDMP128F42483E0/143ee97082008e4f8781979fe2e42d76.pb")
+    # file_list.append((os.path.join(c.project_folder, "data/MXL/lmd_matched_mxl/D/B/E/TRDBEBI128F1495CAB/03eb725d73e98dd52dd026fe8c31e531.pb")))
+    # file_list.append(os.path.join(c.project_folder, "data/MXL/lmd_matched_mxl/C/Q/D/TRCQDMP128F42483E0/143ee97082008e4f8781979fe2e42d76.pb"))
 
     shuffle(file_list)
 
@@ -477,7 +483,7 @@ if __name__ == '__main__':
 
         if not lyrics:
             print("\nNo lyrics found!\n")
-            continue
+            # continue
         else:
             print("\nLyrics found!\n")
         # print([note.part for note in melody])
@@ -503,42 +509,33 @@ if __name__ == '__main__':
             # full_melodies = make_full_sub_melodies(tf_melody, 4.0, 16.0)
 
         else:
-            pass
+            # pass
             # break
-            # # full_stream = stream_from_pb(proto_buffer)
+            # full_stream = stream_from_pb(proto_buffer)
             # simple_melody = simple_skyline_algorithm_from_simple(simple_song, split=False)[0][1]
             # # print(json_format.MessageToJson(proto_buffer.info))
             #
             # tf_melody = tf_skyline(simple_song, split=False)[0][1]
-            #
-            # try:
-            #
-            #     all_melodies_song = simple.Song(list_of_parts_or_note_lists=[simple_melody,
-            #                                                                  tf_melody,
-            #                                                                  full_melody])
-            # except ValueError:
-            #     print("\n\nValueError!\n\n")
-            #     print(simple_melody)
-            #     print(tf_melody)
-            #     print(full_melody)
-            #
-            # # all_melodies_song.m21_stream().show('midi')
-            #
+
+            # all_melodies_song.m21_stream().show('midi')
+
             # full_melodies = make_full_sub_melodies(tf_melody, max_rest=4.0, min_melody_length=16.0)
-            #
+
             # print("Full melodies:")
             #
             # [print(m) for m in full_melodies]
 
-            # from preprocessing.melody_and_chords import find_chords
-            #
-            # areas = find_chords.split_in_areas(simple_song)
-            #
-            # prob_chords, bass_list = find_chords.get_corresponding_chords(areas)
-            #
-            # simple_chord_part, bass_chord_part = find_chords.make_simple_part_from_chords(prob_chords, bass_list)
-            #
-            # full_song = simple.Song(list_of_parts_or_note_lists=[full_melody, simple_chord_part, bass_chord_part])
-            #
+            from preprocessing.melody_and_chords import find_chords
+
+            areas = find_chords.split_in_areas(simple_song)
+
+            prob_chords = find_chords.get_corresponding_chords(areas)
+
+            simple_chord_part, bass_chord_part = find_chords.make_simple_part_from_chords(prob_chords)
+
+            full_song = simple.Song(list_of_parts_or_note_lists=[full_melody[0][1], simple_chord_part])
+
             # full_song.m21_stream().show('text')
-            # full_song.m21_stream().show('midi')
+            full_song.m21_stream().show('midi')
+
+            break

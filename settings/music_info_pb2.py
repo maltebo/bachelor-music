@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     syntax='proto2',
     serialized_options=None,
     serialized_pb=_b(
-        '\n\x10music_info.proto\x12\nmusic_info\"\x8e\x01\n\nMelodyList\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12\x12\n\nextra_info\x18\x02 \x01(\t\x12.\n\talgorithm\x18\x03 \x01(\x0e\x32\x1b.music_info.MelodyAlgorithm\x12*\n\x08melodies\x18\x04 \x03(\x0b\x32\x18.music_info.MelodyPartPB\"W\n\x0cMelodyPartPB\x12\x14\n\x0c\x61\x63tual_start\x18\x01 \x02(\x02\x12\x0f\n\x07offsets\x18\x02 \x03(\x02\x12\x0f\n\x07lengths\x18\x03 \x03(\x02\x12\x0f\n\x07pitches\x18\x04 \x03(\x05\"\\\n\x06Melody\x12\x0e\n\x06lyrics\x18\x01 \x02(\x08\x12\x0f\n\x07offsets\x18\x02 \x03(\x05\x12\x0f\n\x07lengths\x18\x03 \x03(\x05\x12\x0f\n\x07pitches\x18\x04 \x03(\x05\x12\x0f\n\x07volumes\x18\x05 \x03(\x05\"R\n\x08SongData\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12$\n\x08melodies\x18\x02 \x03(\x0b\x32\x12.music_info.Melody\x12\x0e\n\x06\x63hords\x18\x03 \x03(\x05\"u\n\x0fVanillaStreamPB\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12(\n\x05parts\x18\x02 \x03(\x0b\x32\x19.music_info.VanillaPartPB\x12&\n\x04info\x18\x03 \x02(\x0b\x32\x18.music_info.PieceOfMusic\"a\n\rVanillaPartPB\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0f\n\x07offsets\x18\x02 \x03(\x02\x12\x0f\n\x07lengths\x18\x03 \x03(\x02\x12\x0f\n\x07pitches\x18\x04 \x03(\x05\x12\x0f\n\x07volumes\x18\x05 \x03(\x05\"\xea\x02\n\x0cPieceOfMusic\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12\r\n\x05valid\x18\x02 \x02(\x08\x12\x15\n\rmin_metronome\x18\x04 \x01(\x05\x12\x15\n\rmax_metronome\x18\x05 \x01(\x05\x12\x0b\n\x03key\x18\x06 \x01(\t\x12\x17\n\x0fkey_correlation\x18\x07 \x01(\x02\x12,\n\x05parts\x18\x08 \x03(\x0b\x32\x1d.music_info.PieceOfMusic.Part\x12$\n\x05\x65rror\x18\x0c \x01(\x0e\x32\x15.music_info.ErrorEnum\x1a\x90\x01\n\x04Part\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x15\n\raverage_pitch\x18\x02 \x01(\x02\x12\x16\n\x0e\x61verage_volume\x18\x03 \x01(\x02\x12\x17\n\x0fkey_correlation\x18\x05 \x01(\x02\x12\x17\n\x0fnote_percentage\x18\x06 \x01(\x02\x12\x19\n\x11lyrics_percentage\x18\x07 \x01(\x02\"\xbc\x01\n\x08Settings\x12\x11\n\tmin_pitch\x18\x01 \x02(\x02\x12\x11\n\tmax_pitch\x18\x02 \x02(\x02\x12\x1d\n\x15\x64\x65lete_part_threshold\x18\x03 \x02(\x02\x12\x1f\n\x17\x64\x65lete_stream_threshold\x18\x04 \x02(\x02\x12\x14\n\x0c\x61\x63\x63\x65pted_key\x18\x05 \x02(\t\x12\x0f\n\x07max_bpm\x18\x06 \x02(\x05\x12\x0f\n\x07min_bpm\x18\x07 \x02(\x05\x12\x12\n\nvalid_time\x18\x08 \x02(\t\"r\n\tMusicList\x12&\n\x08settings\x18\x01 \x02(\x0b\x32\x14.music_info.Settings\x12,\n\nmusic_data\x18\x02 \x03(\x0b\x32\x18.music_info.PieceOfMusic\x12\x0f\n\x07\x63ounter\x18\x03 \x02(\x05*\x8d\x01\n\tErrorEnum\x12\x18\n\x14WRONG_TIME_SIGNATURE\x10\x00\x12\r\n\tWRONG_BPM\x10\x01\x12\r\n\tWRONG_KEY\x10\x02\x12\x0f\n\x0bINVALID_KEY\x10\x03\x12\x17\n\x13LOW_CORRELATION_KEY\x10\x04\x12\x0c\n\x08NO_PARTS\x10\x05\x12\x10\n\x0cINVALID_FILE\x10\x06*K\n\x0fMelodyAlgorithm\x12\x12\n\x0eSKYLINE_SIMPLE\x10\x00\x12\x14\n\x10SKYLINE_ADVANCED\x10\x01\x12\x0e\n\nTF_SKYLINE\x10\x02')
+        '\n\x10music_info.proto\x12\nmusic_info\"\x8e\x01\n\nMelodyList\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12\x12\n\nextra_info\x18\x02 \x01(\t\x12.\n\talgorithm\x18\x03 \x01(\x0e\x32\x1b.music_info.MelodyAlgorithm\x12*\n\x08melodies\x18\x04 \x03(\x0b\x32\x18.music_info.MelodyPartPB\"W\n\x0cMelodyPartPB\x12\x14\n\x0c\x61\x63tual_start\x18\x01 \x02(\x02\x12\x0f\n\x07offsets\x18\x02 \x03(\x02\x12\x0f\n\x07lengths\x18\x03 \x03(\x02\x12\x0f\n\x07pitches\x18\x04 \x03(\x05\"\\\n\x06Melody\x12\x0e\n\x06lyrics\x18\x01 \x02(\x08\x12\x0f\n\x07offsets\x18\x02 \x03(\x05\x12\x0f\n\x07lengths\x18\x03 \x03(\x05\x12\x0f\n\x07pitches\x18\x04 \x03(\x05\x12\x0f\n\x07volumes\x18\x05 \x03(\x05\"X\n\x07\x41llData\x12\x0b\n\x03\x64\x61y\x18\x01 \x02(\x05\x12\r\n\x05month\x18\x02 \x02(\x05\x12\x0c\n\x04year\x18\x03 \x02(\x05\x12#\n\x05songs\x18\x04 \x03(\x0b\x32\x14.music_info.SongData\"R\n\x08SongData\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12$\n\x08melodies\x18\x02 \x03(\x0b\x32\x12.music_info.Melody\x12\x0e\n\x06\x63hords\x18\x03 \x03(\x05\"u\n\x0fVanillaStreamPB\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12(\n\x05parts\x18\x02 \x03(\x0b\x32\x19.music_info.VanillaPartPB\x12&\n\x04info\x18\x03 \x02(\x0b\x32\x18.music_info.PieceOfMusic\"a\n\rVanillaPartPB\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0f\n\x07offsets\x18\x02 \x03(\x02\x12\x0f\n\x07lengths\x18\x03 \x03(\x02\x12\x0f\n\x07pitches\x18\x04 \x03(\x05\x12\x0f\n\x07volumes\x18\x05 \x03(\x05\"\xea\x02\n\x0cPieceOfMusic\x12\x10\n\x08\x66ilepath\x18\x01 \x02(\t\x12\r\n\x05valid\x18\x02 \x02(\x08\x12\x15\n\rmin_metronome\x18\x04 \x01(\x05\x12\x15\n\rmax_metronome\x18\x05 \x01(\x05\x12\x0b\n\x03key\x18\x06 \x01(\t\x12\x17\n\x0fkey_correlation\x18\x07 \x01(\x02\x12,\n\x05parts\x18\x08 \x03(\x0b\x32\x1d.music_info.PieceOfMusic.Part\x12$\n\x05\x65rror\x18\x0c \x01(\x0e\x32\x15.music_info.ErrorEnum\x1a\x90\x01\n\x04Part\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x15\n\raverage_pitch\x18\x02 \x01(\x02\x12\x16\n\x0e\x61verage_volume\x18\x03 \x01(\x02\x12\x17\n\x0fkey_correlation\x18\x05 \x01(\x02\x12\x17\n\x0fnote_percentage\x18\x06 \x01(\x02\x12\x19\n\x11lyrics_percentage\x18\x07 \x01(\x02\"\xbc\x01\n\x08Settings\x12\x11\n\tmin_pitch\x18\x01 \x02(\x02\x12\x11\n\tmax_pitch\x18\x02 \x02(\x02\x12\x1d\n\x15\x64\x65lete_part_threshold\x18\x03 \x02(\x02\x12\x1f\n\x17\x64\x65lete_stream_threshold\x18\x04 \x02(\x02\x12\x14\n\x0c\x61\x63\x63\x65pted_key\x18\x05 \x02(\t\x12\x0f\n\x07max_bpm\x18\x06 \x02(\x05\x12\x0f\n\x07min_bpm\x18\x07 \x02(\x05\x12\x12\n\nvalid_time\x18\x08 \x02(\t\"r\n\tMusicList\x12&\n\x08settings\x18\x01 \x02(\x0b\x32\x14.music_info.Settings\x12,\n\nmusic_data\x18\x02 \x03(\x0b\x32\x18.music_info.PieceOfMusic\x12\x0f\n\x07\x63ounter\x18\x03 \x02(\x05*\x8d\x01\n\tErrorEnum\x12\x18\n\x14WRONG_TIME_SIGNATURE\x10\x00\x12\r\n\tWRONG_BPM\x10\x01\x12\r\n\tWRONG_KEY\x10\x02\x12\x0f\n\x0bINVALID_KEY\x10\x03\x12\x17\n\x13LOW_CORRELATION_KEY\x10\x04\x12\x0c\n\x08NO_PARTS\x10\x05\x12\x10\n\x0cINVALID_FILE\x10\x06*K\n\x0fMelodyAlgorithm\x12\x12\n\x0eSKYLINE_SIMPLE\x10\x00\x12\x14\n\x10SKYLINE_ADVANCED\x10\x01\x12\x0e\n\nTF_SKYLINE\x10\x02')
 )
 
 _ERRORENUM = _descriptor.EnumDescriptor(
@@ -59,8 +59,8 @@ _ERRORENUM = _descriptor.EnumDescriptor(
     ],
     containing_type=None,
     serialized_options=None,
-    serialized_start=1335,
-    serialized_end=1476,
+    serialized_start=1425,
+    serialized_end=1566,
 )
 _sym_db.RegisterEnumDescriptor(_ERRORENUM)
 
@@ -86,8 +86,8 @@ _MELODYALGORITHM = _descriptor.EnumDescriptor(
     ],
     containing_type=None,
     serialized_options=None,
-    serialized_start=1478,
-    serialized_end=1553,
+    serialized_start=1568,
+    serialized_end=1643,
 )
 _sym_db.RegisterEnumDescriptor(_MELODYALGORITHM)
 
@@ -206,6 +206,7 @@ _MELODYPARTPB = _descriptor.Descriptor(
     serialized_end=264,
 )
 
+
 _MELODY = _descriptor.Descriptor(
     name='Melody',
     full_name='music_info.Melody',
@@ -264,6 +265,58 @@ _MELODY = _descriptor.Descriptor(
     serialized_end=358,
 )
 
+_ALLDATA = _descriptor.Descriptor(
+    name='AllData',
+    full_name='music_info.AllData',
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name='day', full_name='music_info.AllData.day', index=0,
+            number=1, type=5, cpp_type=1, label=2,
+            has_default_value=False, default_value=0,
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='month', full_name='music_info.AllData.month', index=1,
+            number=2, type=5, cpp_type=1, label=2,
+            has_default_value=False, default_value=0,
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='year', full_name='music_info.AllData.year', index=2,
+            number=3, type=5, cpp_type=1, label=2,
+            has_default_value=False, default_value=0,
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+        _descriptor.FieldDescriptor(
+            name='songs', full_name='music_info.AllData.songs', index=3,
+            number=4, type=11, cpp_type=10, label=3,
+            has_default_value=False, default_value=[],
+            message_type=None, enum_type=None, containing_type=None,
+            is_extension=False, extension_scope=None,
+            serialized_options=None, file=DESCRIPTOR),
+    ],
+    extensions=[
+    ],
+    nested_types=[],
+    enum_types=[
+    ],
+    serialized_options=None,
+    is_extendable=False,
+    syntax='proto2',
+    extension_ranges=[],
+    oneofs=[
+    ],
+    serialized_start=360,
+    serialized_end=448,
+)
+
+
 _SONGDATA = _descriptor.Descriptor(
     name='SongData',
     full_name='music_info.SongData',
@@ -304,8 +357,8 @@ _SONGDATA = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=360,
-    serialized_end=442,
+    serialized_start=450,
+    serialized_end=532,
 )
 
 
@@ -349,8 +402,8 @@ _VANILLASTREAMPB = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=444,
-    serialized_end=561,
+    serialized_start=534,
+    serialized_end=651,
 )
 
 
@@ -408,8 +461,8 @@ _VANILLAPARTPB = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=563,
-    serialized_end=660,
+    serialized_start=653,
+    serialized_end=750,
 )
 
 
@@ -474,8 +527,8 @@ _PIECEOFMUSIC_PART = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=881,
-    serialized_end=1025,
+    serialized_start=971,
+    serialized_end=1115,
 )
 
 _PIECEOFMUSIC = _descriptor.Descriptor(
@@ -553,8 +606,8 @@ _PIECEOFMUSIC = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=663,
-    serialized_end=1025,
+    serialized_start=753,
+    serialized_end=1115,
 )
 
 
@@ -633,8 +686,8 @@ _SETTINGS = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=1028,
-    serialized_end=1216,
+    serialized_start=1118,
+    serialized_end=1306,
 )
 
 
@@ -678,12 +731,13 @@ _MUSICLIST = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=1218,
-    serialized_end=1332,
+    serialized_start=1308,
+    serialized_end=1422,
 )
 
 _MELODYLIST.fields_by_name['algorithm'].enum_type = _MELODYALGORITHM
 _MELODYLIST.fields_by_name['melodies'].message_type = _MELODYPARTPB
+_ALLDATA.fields_by_name['songs'].message_type = _SONGDATA
 _SONGDATA.fields_by_name['melodies'].message_type = _MELODY
 _VANILLASTREAMPB.fields_by_name['parts'].message_type = _VANILLAPARTPB
 _VANILLASTREAMPB.fields_by_name['info'].message_type = _PIECEOFMUSIC
@@ -695,6 +749,7 @@ _MUSICLIST.fields_by_name['music_data'].message_type = _PIECEOFMUSIC
 DESCRIPTOR.message_types_by_name['MelodyList'] = _MELODYLIST
 DESCRIPTOR.message_types_by_name['MelodyPartPB'] = _MELODYPARTPB
 DESCRIPTOR.message_types_by_name['Melody'] = _MELODY
+DESCRIPTOR.message_types_by_name['AllData'] = _ALLDATA
 DESCRIPTOR.message_types_by_name['SongData'] = _SONGDATA
 DESCRIPTOR.message_types_by_name['VanillaStreamPB'] = _VANILLASTREAMPB
 DESCRIPTOR.message_types_by_name['VanillaPartPB'] = _VANILLAPARTPB
@@ -725,6 +780,13 @@ Melody = _reflection.GeneratedProtocolMessageType('Melody', (_message.Message,),
     # @@protoc_insertion_point(class_scope:music_info.Melody)
 ))
 _sym_db.RegisterMessage(Melody)
+
+AllData = _reflection.GeneratedProtocolMessageType('AllData', (_message.Message,), dict(
+    DESCRIPTOR=_ALLDATA,
+    __module__='music_info_pb2'
+    # @@protoc_insertion_point(class_scope:music_info.AllData)
+))
+_sym_db.RegisterMessage(AllData)
 
 SongData = _reflection.GeneratedProtocolMessageType('SongData', (_message.Message,), dict(
     DESCRIPTOR=_SONGDATA,

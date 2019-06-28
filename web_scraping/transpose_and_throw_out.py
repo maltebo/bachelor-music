@@ -1,8 +1,11 @@
 import json
+import os
 import re
 import traceback
 
-with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/urls_and_chords.json", 'r') as fp:
+import settings.constants as c
+
+with open(os.path.join(c.project_folder, "web_scraping/urls_and_chords.json"), 'r') as fp:
     chord_dict = json.load(fp)
 
 chord_to_idx = {
@@ -125,13 +128,13 @@ for elem in chord_dict:
         simple_chord_dict[elem] = song_chord_list
 
 try:
-    with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/simple_chords_C.json", 'w') as fp:
+    with open(os.path.join(c.project_folder, "web_scraping/simple_chords_C.json"), 'w') as fp:
         fp.write(json.dumps(simple_chord_dict))
 except:
     traceback.print_exc()
 
 try:
-    with open("/home/malte/PycharmProjects/BachelorMusic/web_scraping/complex_chords_C.json", 'w') as fp:
+    with open(os.path.join(c.project_folder, "web_scraping/complex_chords_C.json"), 'w') as fp:
         fp.write(json.dumps(complex_chord_dict))
 except:
     traceback.print_exc()

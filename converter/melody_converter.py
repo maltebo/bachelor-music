@@ -78,8 +78,8 @@ def file_to_m21_stream(filename) -> VanillaStream:
 
 if __name__ == "__main__":
 
-    for dirpath, dirnames, filenames in os.walk("/home/malte/PycharmProjects/BachelorMusic/"
-                                                "data/generated_melodies/simple_int_melodies"):
+    for dirpath, dirnames, filenames in os.walk(os.path.join(c.project_folder,
+                                                             "data/generated_melodies/simple_int_melodies")):
 
         for filename in filenames:
             melody_stream = file_to_m21_stream(os.path.join(dirpath, filename))

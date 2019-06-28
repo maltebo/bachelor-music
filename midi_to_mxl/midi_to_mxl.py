@@ -1,5 +1,9 @@
-import sys, os, time
+import os
+import sys
+import time
 from subprocess import Popen, list2cmdline
+
+import settings.constants as c
 
 
 def cpu_count():
@@ -64,6 +68,6 @@ def exec_commands(cmds):
 
 ascii_uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-commands = [["/home/malte/PycharmProjects/BachelorMusic/midi_to_mxl/midi_to_mxl.sh", letter] for letter in ascii_uppercase]
+commands = [[os.path.join(c.project_folder, "midi_to_mxl/midi_to_mxl.sh"), letter] for letter in ascii_uppercase]
 
 exec_commands(commands)
