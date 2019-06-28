@@ -565,7 +565,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, ca
 
 if __name__ == '__main__':
     # make_pb_for_lyrics_files()
-    # chord_model(nr_files=None, callbacks=False)
+    chord_model(nr_files=None, callbacks=False)
     # melody_model(nr_files=5, callbacks=False)
 
-    make_protobuffer_for_all_data()
+    # make_protobuffer_for_all_data()

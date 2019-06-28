@@ -6,7 +6,7 @@ import queue
 import threading
 import time
 
-project_folder = __file__.split('/settings/')[0]
+project_folder = os.path.abspath(os.path.dirname(__file__)).split('/settings')[0]
 
 os.chdir(project_folder)
 
