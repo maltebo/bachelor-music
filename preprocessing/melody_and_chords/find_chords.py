@@ -2,7 +2,7 @@ from math import ceil
 from math import floor
 
 import music_utils.simple_classes as simple
-import settings.constants as c
+import settings.constants_chords as c
 
 chord_to_idx = {
     "C": 0,

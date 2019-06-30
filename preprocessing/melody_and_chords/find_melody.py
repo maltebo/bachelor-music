@@ -457,8 +457,8 @@ if __name__ == '__main__':
                 file_list.append(os.path.join(dirname, filename))
                 pass
 
-    # file_list.append((os.path.join(c.project_folder, "data/MXL/lmd_matched_mxl/D/B/E/TRDBEBI128F1495CAB/03eb725d73e98dd52dd026fe8c31e531.pb")))
-    # file_list.append(os.path.join(c.project_folder, "data/MXL/lmd_matched_mxl/C/Q/D/TRCQDMP128F42483E0/143ee97082008e4f8781979fe2e42d76.pb"))
+    # file_list.append((os.path.join(c_m.project_folder, "data/MXL/lmd_matched_mxl/D/B/E/TRDBEBI128F1495CAB/03eb725d73e98dd52dd026fe8c31e531.pb")))
+    # file_list.append(os.path.join(c_m.project_folder, "data/MXL/lmd_matched_mxl/C/Q/D/TRCQDMP128F42483E0/143ee97082008e4f8781979fe2e42d76.pb"))
 
     shuffle(file_list)
 

@@ -3,7 +3,8 @@ from tensorflow._api.v1.keras.preprocessing.sequence import pad_sequences
 from tensorflow._api.v1.keras.utils import to_categorical
 
 import converter.melody_converter as mc
-import settings.constants as c
+import settings.constants_model as c_m
+import settings.constants_preprocessing as c_p
 import settings.music_info_pb2 as music_info
 from music_utils.vanilla_stream import VanillaStream
 
@@ -11,19 +12,19 @@ from music_utils.vanilla_stream import VanillaStream
 # tf.enable_eager_execution()
 
 
-def make_tf_data(settings=c.music_settings):
+def make_tf_data(settings=c_p.music_settings):
     pitches_input = []
     lengths_input = []
     offsets_input = []
     pitches_output = []
     lengths_output = []
 
-    min_sequence_length = c.sequence_length + 1  # number of min beats per melody
+    min_sequence_length = c_m.sequence_length + 1  # number of min beats per melody
 
-    # while not c.melody_work_queue.empty():
+    # while not c_m.melody_work_queue.empty():
     for i in range(500):
 
-        melody = c.melody_work_queue.get()
+        melody = c_p.melody_work_queue.get()
         if not melody.endswith('_tf_skyline.melody_pb'):
             continue
 
@@ -40,20 +41,20 @@ def make_tf_data(settings=c.music_settings):
             offsets = [offset_to_binary_array(o) for o in m.offsets]
 
             for time_step in range(len(m.lengths) - 2):
-                pitches_input.append(pitches[max(0, time_step - c.sequence_length + 1): time_step + 1])
-                lengths_input.append(lengths[max(0, time_step - c.sequence_length + 1): time_step + 1])
-                offsets_input.append(offsets[max(0, time_step - c.sequence_length + 1): time_step + 1])
+                pitches_input.append(pitches[max(0, time_step - c_m.sequence_length + 1): time_step + 1])
+                lengths_input.append(lengths[max(0, time_step - c_m.sequence_length + 1): time_step + 1])
+                offsets_input.append(offsets[max(0, time_step - c_m.sequence_length + 1): time_step + 1])
 
                 pitches_output.append(pitches[time_step + 1])
                 lengths_output.append(lengths[time_step + 1])
 
-    pitches_input = pad_sequences(pitches_input, maxlen=c.sequence_length, dtype='float32')
-    lengths_input = pad_sequences(lengths_input, maxlen=c.sequence_length, dtype='float32')
-    offsets_input = pad_sequences(offsets_input, maxlen=c.sequence_length, dtype='float32')
+    pitches_input = pad_sequences(pitches_input, maxlen=c_m.sequence_length, dtype='float32')
+    lengths_input = pad_sequences(lengths_input, maxlen=c_m.sequence_length, dtype='float32')
+    offsets_input = pad_sequences(offsets_input, maxlen=c_m.sequence_length, dtype='float32')
 
-    pitches_input = np.reshape(pitches_input, (-1, c.sequence_length, 37))
-    lengths_input = np.reshape(lengths_input, (-1, c.sequence_length, 16))
-    offsets_input = np.reshape(offsets_input, (-1, c.sequence_length, 4))
+    pitches_input = np.reshape(pitches_input, (-1, c_m.sequence_length, 37))
+    lengths_input = np.reshape(lengths_input, (-1, c_m.sequence_length, 16))
+    offsets_input = np.reshape(offsets_input, (-1, c_m.sequence_length, 4))
 
     pitches_output = np.reshape(pitches_output, (-1, 37))
     lengths_output = np.reshape(lengths_output, (-1, 16))
@@ -61,12 +62,12 @@ def make_tf_data(settings=c.music_settings):
     return pitches_input, lengths_input, offsets_input, pitches_output, lengths_output
 
 
-def pitch_to_int(pitch, settings=c.music_settings):
+def pitch_to_int(pitch, settings=c_p.music_settings):
     assert (settings.min_pitch <= pitch <= settings.max_pitch) or pitch == 200
     return int((pitch - settings.min_pitch + 1) % (200 - settings.min_pitch + 1))
 
 
-def int_to_pitch(int_pitch, settings=c.music_settings):
+def int_to_pitch(int_pitch, settings=c_p.music_settings):
     assert int_pitch <= settings.max_pitch - settings.min_pitch + 1
     if int_pitch == 0:
         return 200
@@ -114,7 +115,7 @@ def offset_to_binary_array(offset):
 
 class TfDataPoint:
 
-    def __init__(self, real_pitch: int, real_length: float, real_offset: float, settings=c.music_settings):
+    def __init__(self, real_pitch: int, real_length: float, real_offset: float, settings=c_p.music_settings):
 
         assert 0.0 < real_length <= 4.0
 
@@ -167,7 +168,7 @@ class MelodyStructure:
 
 
 if __name__ == '__main__':
-    print(c.melody_work_queue.qsize())
+    print(c_p.melody_work_queue.qsize())
 
     pitches_input, lengths_input, offsets_input, pitches_output, lengths_output = make_tf_data()
 

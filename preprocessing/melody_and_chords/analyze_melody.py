@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 import music_utils.simple_classes as simple
 import preprocessing.melody_and_chords.find_melody as find_melody
-import settings.constants as c
+import settings.constants_preprocessing as c
 from settings.music_info_pb2 import VanillaStreamPB
 
 

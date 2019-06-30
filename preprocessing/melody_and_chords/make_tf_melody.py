@@ -7,7 +7,7 @@ import threading
 import time
 import traceback
 
-import settings.constants as c
+import settings.constants_preprocessing as c
 
 
 class MakeDataThread(threading.Thread):
@@ -71,7 +71,7 @@ class MakeDataThread(threading.Thread):
                 #
                 # melody_list = music_info.MelodyList()
                 # melody_list.extra_info = "Doesn't save note volumes"
-                # melody_list.filepath = os.path.relpath(filename, c.MXL_DATA_FOLDER).replace('.pb', '.mxl')
+                # melody_list.filepath = os.path.relpath(filename, c_m.MXL_DATA_FOLDER).replace('.pb', '.mxl')
                 # melody_list.algorithm = music_info.TF_SKYLINE
                 #
                 # for i, m in enumerate(melodies):

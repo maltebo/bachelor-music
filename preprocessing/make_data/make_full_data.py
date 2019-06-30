@@ -14,7 +14,8 @@ from tensorflow._api.v1.keras.utils import to_categorical
 import music_utils.simple_classes as simple
 import preprocessing.melody_and_chords.find_chords as chords
 import preprocessing.melody_and_chords.find_melody as melody
-import settings.constants as c
+import settings.constants_chords as c_c
+import settings.constants_model as c_m
 import settings.music_info_pb2 as music_info
 
 config = tf.ConfigProto()
@@ -30,7 +31,9 @@ def make_pb_for_lyrics_files():
     if start != 'Y':
         return
 
-    my_work_queue = c.proto_buffer_work_queue
+    import settings.constants_preprocessing as c_p
+
+    my_work_queue = c_p.proto_buffer_work_queue
 
     work = False
 
@@ -105,7 +108,7 @@ def make_pb_for_lyrics_files():
 
             song_chords = chords.get_corresponding_chords(split_song)
 
-            song_chords = [c.chord_to_id[ch] for ch in song_chords]
+            song_chords = [c_c.chord_to_id[ch] for ch in song_chords]
 
             song_pb.chords.extend(song_chords)
 
@@ -123,7 +126,7 @@ def make_pb_for_lyrics_files():
 
 def make_protobuffer_for_all_data():
     all_files = []
-    for folder, _, files in os.walk(c.MXL_DATA_FOLDER):
+    for folder, _, files in os.walk(c_m.MXL_DATA_FOLDER):
         for file in files:
             if file.endswith('.pb_full'):
                 all_files.append(os.path.join(folder, file))
@@ -144,7 +147,7 @@ def make_protobuffer_for_all_data():
             song_data.ParseFromString(fp.read())
 
     try:
-        with open(os.path.join(c.project_folder,
+        with open(os.path.join(c_m.project_folder,
                                "data/preprocessed_data/data_{y}_{m}_{d}.pb".format(y=proto_buffer.year,
                                                                                    m=proto_buffer.month,
                                                                                    d=proto_buffer.day)), 'xb') as fp:
@@ -152,7 +155,7 @@ def make_protobuffer_for_all_data():
     except FileExistsError:
         ow = input("File already exists! Do you want to overwrite it? Y/n")
         if ow == 'Y':
-            with open(os.path.join(c.project_folder,
+            with open(os.path.join(c_m.project_folder,
                                    "data/preprocessed_data/data_{y}_{m}_{d}.pb".format(y=proto_buffer.year,
                                                                                        m=proto_buffer.month,
                                                                                        d=proto_buffer.day)),
@@ -166,7 +169,7 @@ def offset_to_binary_array(offset):
 
 def make_melody_data_from_file(nr_files=None):
     all_files = []
-    for folder, _, files in os.walk(os.path.join(c.project_folder, "data/preprocessed_data")):
+    for folder, _, files in os.walk(os.path.join(c_m.project_folder, "data/preprocessed_data")):
         for file in files:
             if file.endswith('.pb'):
                 all_files.append(os.path.join(folder, file))
@@ -204,15 +207,15 @@ def make_melody_data_from_file(nr_files=None):
             pitches = [(n - 48) % (200 - 48) for n in melody.pitches]
 
             for i in range(len(melody.pitches)):
-                current_offsets = offsets_input[max(0, i - (c.sequence_length)): i]
-                current_lengths = lengths[max(0, i - (c.sequence_length)): i]
-                current_pitches = pitches[max(0, i - (c.sequence_length)): i]
+                current_offsets = offsets_input[max(0, i - (c_m.sequence_length)): i]
+                current_lengths = lengths[max(0, i - (c_m.sequence_length)): i]
+                current_pitches = pitches[max(0, i - (c_m.sequence_length)): i]
 
                 # chord_list = []
                 #
                 # if current_lengths:
                 #
-                #     chord_list = chords[(offsets[max(0, (i - c.sequence_length))]//8)*8: int((((offsets[i] - 0.5)//8)*8)+8)]
+                #     chord_list = chords[(offsets[max(0, (i - c_m.sequence_length))]//8)*8: int((((offsets[i] - 0.5)//8)*8)+8)]
                 #     assert len(chord_list) >= sum(current_lengths) + len(current_lengths)
                 #     assert len(chord_list) <= sum(current_lengths) + len(current_lengths) + 14
                 #     assert len(chord_list) % 8 == 0
@@ -271,9 +274,9 @@ def melody_data_generator(data, batch_size):
         assert len(pitch_sequences) == len(offset_sequences)
         assert len(pitch_sequences) == batch_size
 
-        length_sequences = pad_sequences(length_sequences, maxlen=c.sequence_length, dtype='float32')
-        pitch_sequences = pad_sequences(pitch_sequences, maxlen=c.sequence_length, dtype='float32')
-        offset_sequences = pad_sequences(offset_sequences, maxlen=c.sequence_length, dtype='float32')
+        length_sequences = pad_sequences(length_sequences, maxlen=c_m.sequence_length, dtype='float32')
+        pitch_sequences = pad_sequences(pitch_sequences, maxlen=c_m.sequence_length, dtype='float32')
+        offset_sequences = pad_sequences(offset_sequences, maxlen=c_m.sequence_length, dtype='float32')
 
         # [print(e) for e in note_sequences[:5]]
 
@@ -303,9 +306,9 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
     ################# MODEL
     ##########################################################################################
 
-    pitch_input = Input(shape=(c.sequence_length, 37), dtype='float32', name='pitch_input')
-    length_input = Input(shape=(c.sequence_length, 16), dtype='float32', name='length_input')
-    offset_input = Input(shape=(c.sequence_length, 4), dtype='float32', name='offset_input')
+    pitch_input = Input(shape=(c_m.sequence_length, 37), dtype='float32', name='pitch_input')
+    length_input = Input(shape=(c_m.sequence_length, 16), dtype='float32', name='length_input')
+    offset_input = Input(shape=(c_m.sequence_length, 4), dtype='float32', name='offset_input')
 
     concatenated_input = concatenate([pitch_input, length_input, offset_input], axis=-1)
 
@@ -340,7 +343,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         early_stopping = cb.EarlyStopping(monitor='val_loss', min_delta=0, patience=5,
                                           verbose=0, mode='auto', baseline=None)
 
-        tensorboard = cb.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
+        tensorboard = cb.TensorBoard(log_dir=os.path.join(c_m.project_folder, "data/tensorboard_logs"),
                                      histogram_freq=1, batch_size=32, write_graph=True, write_grads=True,
                                      write_images=True, embeddings_freq=0, embeddings_layer_names=None,
                                      embeddings_metadata=None, embeddings_data=None)
@@ -373,7 +376,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
 def make_chord_data_from_file(nr_files=None):
     all_files = []
-    for folder, _, files in os.walk(os.path.join(c.project_folder, "data/preprocessed_data")):
+    for folder, _, files in os.walk(os.path.join(c_m.project_folder, "data/preprocessed_data")):
         for file in files:
             if file.endswith('.pb'):
                 all_files.append(os.path.join(folder, file))
@@ -408,7 +411,7 @@ def make_chord_data_from_file(nr_files=None):
                 start_list[offset] = 1
 
         for i in range(len(chords)):
-            current_chords = chords[max(0, i - (c.chord_sequence_length)): i]
+            current_chords = chords[max(0, i - (c_m.chord_sequence_length)): i]
             current_pitches = melody_list[i * 8: (i + 1) * 8]
             current_starts = start_list[i * 8: (i + 1) * 8]
 
@@ -458,7 +461,7 @@ def chord_data_generator(data, batch_size):
         chords = [to_categorical(chord, num_classes=25) for chord in chords]
 
         melody = [to_categorical(pitch, num_classes=37) for pitch in melody]
-        chords = pad_sequences(chords, maxlen=c.chord_sequence_length, dtype='float32')
+        chords = pad_sequences(chords, maxlen=c_m.chord_sequence_length, dtype='float32')
 
         melody = np.reshape(melody, (-1, 8 * 37))
 
@@ -487,7 +490,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, ca
     ################# MODEL
     ##########################################################################################
 
-    chord_input = Input(shape=(c.chord_sequence_length, 25), dtype='float32', name='chord_input')
+    chord_input = Input(shape=(c_m.chord_sequence_length, 25), dtype='float32', name='chord_input')
     melody_input = Input(shape=(8 * 37,), dtype='float32', name='melody_input')
     start_input = Input(shape=(8,), dtype='float32', name='start_input')
     on_full_beat_input = Input(shape=(2,), dtype='float32', name='on_full_beat_input')
@@ -527,7 +530,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, ca
         early_stopping = cb.EarlyStopping(monitor='val_loss', min_delta=0, patience=5,
                                           verbose=0, mode='auto', baseline=None)
 
-        tensorboard = cb.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
+        tensorboard = cb.TensorBoard(log_dir=os.path.join(c_m.project_folder, "data/tensorboard_logs"),
                                      histogram_freq=1, batch_size=32, write_graph=True, write_grads=True,
                                      write_images=True, embeddings_freq=0, embeddings_layer_names=None,
                                      embeddings_metadata=None, embeddings_data=None)
@@ -566,6 +569,6 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, ca
 if __name__ == '__main__':
     # make_pb_for_lyrics_files()
     chord_model(nr_files=None, callbacks=False)
-    # melody_model(nr_files=5, callbacks=False)
+    melody_model(nr_files=5, callbacks=False)
 
     # make_protobuffer_for_all_data()

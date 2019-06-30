@@ -1,4 +1,4 @@
-import pandas as pd
+import json
 import os
 
 import matplotlib.pyplot as plt
@@ -287,5 +287,5 @@ print('Confusion Matrix:\n', cm)
 #
 #     del stat_data[d]
 #
-# with open(os.path.join(c.project_folder, "preprocessing/melody_and_chords/melody_stat_data.json"), 'w') as fp:
+# with open(os.path.join(c_m.project_folder, "preprocessing/melody_and_chords/melody_stat_data.json"), 'w') as fp:
 #     fp.write(json.dumps(stat_data, indent=2))

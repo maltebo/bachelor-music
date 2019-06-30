@@ -8,7 +8,7 @@ import traceback
 
 import music21 as m21
 
-import settings.constants as c
+import settings.constants_preprocessing as c
 from music_utils.vanilla_stream import VanillaStream
 from preprocessing.analyze_and_modify.create_modified_stream import make_key_and_correlations
 from preprocessing.analyze_and_modify.create_modified_stream import process_data

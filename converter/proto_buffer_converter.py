@@ -1,6 +1,6 @@
 import music21 as m21
 
-import settings.constants as c
+import settings.constants_preprocessing as c
 from music_utils.vanilla_part import VanillaPart
 from music_utils.vanilla_stream import VanillaStream
 

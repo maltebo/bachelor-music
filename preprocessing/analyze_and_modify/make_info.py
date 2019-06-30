@@ -2,7 +2,7 @@ import os
 import sys
 import traceback
 
-import settings.constants as c
+import settings.constants_preprocessing as c
 import settings.music_info_pb2 as music_info
 from music_utils.vanilla_part import VanillaPart
 from music_utils.vanilla_stream import VanillaStream

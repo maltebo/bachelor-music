@@ -16,7 +16,7 @@ import model.make_tf_structure as make_tf
 
 from tensorflow._api.v1.keras.utils import to_categorical
 
-import settings.constants as c
+import settings.constants_model as c
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU
