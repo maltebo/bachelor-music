@@ -14,6 +14,7 @@ from tensorflow._api.v1.keras.utils import to_categorical
 import music_utils.simple_classes as simple
 import preprocessing.melody_and_chords.find_chords as chords
 import preprocessing.melody_and_chords.find_melody as melody
+import settings.constants as c
 import settings.constants_chords as c_c
 import settings.constants_model as c_m
 import settings.music_info_pb2 as music_info
@@ -147,7 +148,7 @@ def make_protobuffer_for_all_data():
             song_data.ParseFromString(fp.read())
 
     try:
-        with open(os.path.join(c_m.project_folder,
+        with open(os.path.join(c.project_folder,
                                "data/preprocessed_data/data_{y}_{m}_{d}.pb".format(y=proto_buffer.year,
                                                                                    m=proto_buffer.month,
                                                                                    d=proto_buffer.day)), 'xb') as fp:
@@ -155,7 +156,7 @@ def make_protobuffer_for_all_data():
     except FileExistsError:
         ow = input("File already exists! Do you want to overwrite it? Y/n")
         if ow == 'Y':
-            with open(os.path.join(c_m.project_folder,
+            with open(os.path.join(c.project_folder,
                                    "data/preprocessed_data/data_{y}_{m}_{d}.pb".format(y=proto_buffer.year,
                                                                                        m=proto_buffer.month,
                                                                                        d=proto_buffer.day)),
@@ -169,7 +170,7 @@ def offset_to_binary_array(offset):
 
 def make_melody_data_from_file(nr_files=None):
     all_files = []
-    for folder, _, files in os.walk(os.path.join(c_m.project_folder, "data/preprocessed_data")):
+    for folder, _, files in os.walk(os.path.join(c.project_folder, "data/preprocessed_data")):
         for file in files:
             if file.endswith('.pb'):
                 all_files.append(os.path.join(folder, file))
@@ -343,7 +344,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         early_stopping = cb.EarlyStopping(monitor='val_loss', min_delta=0, patience=5,
                                           verbose=0, mode='auto', baseline=None)
 
-        tensorboard = cb.TensorBoard(log_dir=os.path.join(c_m.project_folder, "data/tensorboard_logs"),
+        tensorboard = cb.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
                                      histogram_freq=1, batch_size=32, write_graph=True, write_grads=True,
                                      write_images=True, embeddings_freq=0, embeddings_layer_names=None,
                                      embeddings_metadata=None, embeddings_data=None)
@@ -376,7 +377,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
 def make_chord_data_from_file(nr_files=None):
     all_files = []
-    for folder, _, files in os.walk(os.path.join(c_m.project_folder, "data/preprocessed_data")):
+    for folder, _, files in os.walk(os.path.join(c.project_folder, "data/preprocessed_data")):
         for file in files:
             if file.endswith('.pb'):
                 all_files.append(os.path.join(folder, file))
@@ -530,7 +531,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, ca
         early_stopping = cb.EarlyStopping(monitor='val_loss', min_delta=0, patience=5,
                                           verbose=0, mode='auto', baseline=None)
 
-        tensorboard = cb.TensorBoard(log_dir=os.path.join(c_m.project_folder, "data/tensorboard_logs"),
+        tensorboard = cb.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
                                      histogram_freq=1, batch_size=32, write_graph=True, write_grads=True,
                                      write_images=True, embeddings_freq=0, embeddings_layer_names=None,
                                      embeddings_metadata=None, embeddings_data=None)
