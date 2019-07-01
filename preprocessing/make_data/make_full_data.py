@@ -3,13 +3,13 @@ import random
 
 import numpy as np
 import tensorflow as tf
-import tensorflow._api.v1.keras.callbacks as cb
-from tensorflow._api.v1.keras.backend import set_session
-from tensorflow._api.v1.keras.layers import Input, LSTM, Dense, concatenate, Masking
-from tensorflow._api.v1.keras.models import Model
-from tensorflow._api.v1.keras.optimizers import Adam
-from tensorflow._api.v1.keras.preprocessing.sequence import pad_sequences
-from tensorflow._api.v1.keras.utils import to_categorical
+import tensorflow.python.keras.callbacks as cb
+from tensorflow.python.keras.backend import set_session
+from tensorflow.python.keras.layers import Input, LSTM, Dense, concatenate, Masking
+from tensorflow.python.keras.models import Model
+from tensorflow.python.keras.optimizers import Adam
+from tensorflow.python.keras.preprocessing.sequence import pad_sequences
+from tensorflow.python.keras.utils import to_categorical
 
 import music_utils.simple_classes as simple
 import preprocessing.melody_and_chords.find_chords as chords
@@ -127,7 +127,7 @@ def make_pb_for_lyrics_files():
 
 def make_protobuffer_for_all_data():
     all_files = []
-    for folder, _, files in os.walk(c_m.MXL_DATA_FOLDER):
+    for folder, _, files in os.walk(c_c.MXL_DATA_FOLDER):
         for file in files:
             if file.endswith('.pb_full'):
                 all_files.append(os.path.join(folder, file))

@@ -1,5 +1,5 @@
 import numpy as np
-import tensorflow._api.v1.keras as keras
+import tensorflow.python.keras as keras
 
 
 class DataGenerator:

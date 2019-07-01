@@ -1,8 +1,8 @@
 import tensorflow as tf
-from tensorflow._api.v1.keras.backend import set_session
-from tensorflow._api.v1.keras.layers import Input, LSTM, Dense, concatenate, Masking
-from tensorflow._api.v1.keras.models import Model
-from tensorflow._api.v1.keras.optimizers import Adam
+from tensorflow.python.keras.backend import set_session
+from tensorflow.python.keras.layers import Input, LSTM, Dense, concatenate, Masking
+from tensorflow.python.keras.models import Model
+from tensorflow.python.keras.optimizers import Adam
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU

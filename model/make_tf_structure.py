@@ -1,6 +1,6 @@
 import numpy as np
-from tensorflow._api.v1.keras.preprocessing.sequence import pad_sequences
-from tensorflow._api.v1.keras.utils import to_categorical
+from tensorflow.python.keras.preprocessing.sequence import pad_sequences
+from tensorflow.python.keras.utils import to_categorical
 
 import converter.melody_converter as mc
 import settings.constants_model as c_m

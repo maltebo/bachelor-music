@@ -7,14 +7,14 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import tensorflow as tf
 from tensorflow.python.keras.backend import set_session
 
-from tensorflow._api.v1.keras.layers import Input, LSTM, Dense, concatenate, Masking
-from tensorflow._api.v1.keras.models import Model
-from tensorflow._api.v1.keras.optimizers import Adam
-from tensorflow._api.v1.keras.preprocessing.sequence import pad_sequences
+from tensorflow.python.keras.layers import Input, LSTM, Dense, concatenate, Masking
+from tensorflow.python.keras.models import Model
+from tensorflow.python.keras.optimizers import Adam
+from tensorflow.python.keras.preprocessing.sequence import pad_sequences
 
 import model.make_tf_structure as make_tf
 
-from tensorflow._api.v1.keras.utils import to_categorical
+from tensorflow.python.keras.utils import to_categorical
 
 import settings.constants_model as c
 
