@@ -223,14 +223,14 @@ def make_protobuffer_for_all_data():
 
     proto_buffer = music_info.AllData()
 
-    # import datetime
-    # proto_buffer.day = datetime.datetime.now().day
-    # proto_buffer.month = datetime.datetime.now().month
-    # proto_buffer.year = datetime.datetime.now().year
+    import datetime
+    proto_buffer.day = datetime.datetime.now().day
+    proto_buffer.month = datetime.datetime.now().month
+    proto_buffer.year = datetime.datetime.now().year
 
     for i, file in enumerate(all_files):
-        # print("Processing", file)
-        # print("{p} percent done".format(p=(i / len(all_files)) * 100))
+        print("Processing", file)
+        print("{p} percent done".format(p=(i / len(all_files)) * 100))
 
         song_data = proto_buffer.songs.add()
         with open(file, 'rb') as fp:
