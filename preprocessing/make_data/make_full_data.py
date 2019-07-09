@@ -40,6 +40,12 @@ def make_pb_for_all_files():
 
         assert filename.endswith('.pb')
 
+        new_filename = filename.replace('.pb', '.pb_full_final')
+        new_filename = new_filename.replace('protobuffer', 'protobuffer_data')
+
+        if os.path.exists(new_filename):
+            continue
+
         print(filename)
 
         with open(filename, 'rb') as fp:
@@ -107,9 +113,6 @@ def make_pb_for_all_files():
             song_chords = [c_c.chord_to_id[ch] for ch in song_chords]
 
             song_pb.chords.extend(song_chords)
-
-        new_filename = filename.replace('.pb', '.pb_full_final')
-        new_filename = new_filename.replace('protobuffer', 'protobuffer_data')
 
         with open(new_filename, 'xb') as fp:
             fp.write(song_pb.SerializeToString())
