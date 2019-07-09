@@ -20,11 +20,11 @@ import preprocessing.melody_and_chords.find_chords as chords
 import preprocessing.melody_and_chords.find_melody as melody
 import settings.music_info_pb2 as music_info
 
-config = tf.ConfigProto()
+config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU
 config.log_device_placement = False  # to log device placement (on which device the operation ran)
 # (nothing gets printed in Jupyter, only if you run it standalone)
-sess = tf.Session(config=config)
+sess = tf.compat.v1.Session(config=config)
 set_session(sess)
 
 
@@ -113,7 +113,6 @@ def make_pb_for_all_files():
 
         with open(new_filename, 'xb') as fp:
             fp.write(song_pb.SerializeToString())
-
 
 def make_pb_for_lyrics_files():
     start = input("Really? This will delete some files. Go on? Y/n")
