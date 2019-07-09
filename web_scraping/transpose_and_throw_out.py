@@ -37,6 +37,14 @@ idx_to_chord = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
 complex_nr = 0
 simple_nr = 0
 
+absolute_songs = 0
+total_songs = 0
+tonality_specified = 0
+no_tonality_specified = 0
+no_tonality_songs = 0
+minor_songs = 0
+major_songs = 0
+
 simple_chord_list = []
 simple_chord_dict = {}
 complex_chord_list = []
@@ -44,13 +52,14 @@ complex_chord_dict = {}
 
 for elem in chord_dict:
 
+    absolute_songs += 1
+
     curr_chords = chord_dict[elem]["chords"]
 
     if not curr_chords:
         continue
 
-    if len(curr_chords) < 9:
-        continue
+    total_songs += 1
 
     tonality = chord_dict[elem]["tonality"]
 
@@ -59,6 +68,7 @@ for elem in chord_dict:
 
     if not tonality:
 
+        no_tonality_specified += 1
         if curr_chords[0] == curr_chords[-1]:
 
             res = re.fullmatch(r"([A-G][b#]{0,1}m{0,1})", curr_chords[0])
@@ -67,7 +77,11 @@ for elem in chord_dict:
 
             tonality = res
 
+    else:
+        tonality_specified += 1
+
     if not tonality:
+        no_tonality_songs += 1
         continue
 
     start_chord = re.match(r"([A-G][b#]{0,1})", tonality).group(1)
@@ -75,10 +89,12 @@ for elem in chord_dict:
     minor = tonality.endswith("m")
 
     if minor:
+        minor_songs += 1
         continue
 
     # we only have major pieces at this point
 
+    major_songs += 1
     change_val = 0
 
     if start_chord != "C":
@@ -127,14 +143,31 @@ for elem in chord_dict:
         simple_nr += 1
         simple_chord_dict[elem] = song_chord_list
 
-try:
-    with open(os.path.join(c.project_folder, "web_scraping/simple_chords_C.json"), 'w') as fp:
-        fp.write(json.dumps(simple_chord_dict))
-except:
-    traceback.print_exc()
+show = input("Do you want to see statistics? Y/n")
 
-try:
-    with open(os.path.join(c.project_folder, "web_scraping/complex_chords_C.json"), 'w') as fp:
-        fp.write(json.dumps(complex_chord_dict))
-except:
-    traceback.print_exc()
+if show == 'Y':
+    print("complex_nr", complex_nr)
+    print("simple_nr", simple_nr)
+
+    print("absolute songs", absolute_songs)
+    print("total songs", total_songs)
+    print("tonality specified", tonality_specified)
+    print("no tonality specified", no_tonality_specified)
+    print("no tonality songs", no_tonality_songs)
+    print("minor songs", minor_songs)
+    print("major songs", major_songs)
+
+save = input("do you want to save the data? Y/n")
+
+if save == 'Y':
+    try:
+        with open(os.path.join(c.project_folder, "web_scraping/simple_chords_C.json"), 'w') as fp:
+            fp.write(json.dumps(simple_chord_dict))
+    except:
+        traceback.print_exc()
+
+    try:
+        with open(os.path.join(c.project_folder, "web_scraping/complex_chords_C.json"), 'w') as fp:
+            fp.write(json.dumps(complex_chord_dict))
+    except:
+        traceback.print_exc()

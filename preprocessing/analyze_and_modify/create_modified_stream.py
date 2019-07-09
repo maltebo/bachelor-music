@@ -204,7 +204,7 @@ def make_key_and_correlations(m21_stream: VanillaStream):
         raise FileNotFittingSettingsError("INVALID_KEY")
 
     if new_stream_key.name != stream_key.name or (new_stream_key.correlationCoefficient <
-                                                  c.music_settings.delete_part_threshold):
+                                                  c.music_settings.delete_stream_threshold):
         m21_stream.key = "invalid"
         m21_stream.key_correlation = -1.0
         raise FileNotFittingSettingsError("LOW_CORRELATION_KEY")

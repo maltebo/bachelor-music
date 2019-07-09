@@ -90,6 +90,7 @@ def split_in_areas(song: simple.Song):
 
     last_note = max(all_notes, key=lambda x: x.offset + x.length)
 
+    # number of needed buckets
     bucket_number = int(ceil((last_note.offset + last_note.length) / 2.0))
 
     if not bucket_number:
@@ -218,7 +219,7 @@ def get_corresponding_chords(pitches_list):
     # bass_list = ['None'] * len(pitches_list)
 
     note_prob = [None] * len(pitches_list)
-    added_seventh = [0] * len(pitches_list)
+    # added_seventh = [0] * len(pitches_list)
 
     for i, note_list in enumerate(pitches_list):
 
@@ -250,6 +251,11 @@ def get_chord(note_list, previous_chord, metric_position):
     note_values = [0] * 12
 
     for note in note_list:
+
+        assert note[2] < 2.0
+        assert note[2] > -4
+        assert note[1] + note[2] > 0
+
         pitch = note[0] % 12
         length_in_bucket = min(2.0, note[1] + note[2]) - max(0.0, note[2])
         factor = 1

@@ -24,7 +24,7 @@ config.gpu_options.allow_growth = True  # dynamically grow the memory used on th
 sess = tf.Session(config=config)
 set_session(sess)  # set this TensorFlow session as the default session for Keras
 
-pitch_input = Input(shape=(c.sequence_length, 37), dtype='float32', name='pitch_input')
+pitch_input = Input(shape=(c.sequence_length, 38), dtype='float32', name='pitch_input')
 length_input = Input(shape=(c.sequence_length, 16), dtype='float32', name='length_input')
 offset_input = Input(shape=(c.sequence_length, 4), dtype='float32', name='offset_input')
 
@@ -34,7 +34,7 @@ masked_input = Masking(0.0)(concatenated_input)
 
 lstm_layer = LSTM(512)(masked_input)
 
-pitch_output = Dense(37, activation='softmax', name='pitch_output')(lstm_layer)
+pitch_output = Dense(38, activation='softmax', name='pitch_output')(lstm_layer)
 length_output = Dense(16, activation='softmax', name='length_output')(lstm_layer)
 
 model = Model(inputs=[pitch_input, length_input, offset_input],
@@ -64,7 +64,7 @@ for melody_nr in range(1):
 
     # for i in range(100):
 
-    pitch_input_one_hot = to_categorical([start_pitch], num_classes=37)
+    pitch_input_one_hot = to_categorical([start_pitch], num_classes=38)
     pitch_input_pad = pad_sequences([pitch_input_one_hot], maxlen=c.sequence_length,
                                     dtype='float32', padding='pre',
                                     truncating='post', value=0.0)
@@ -92,15 +92,15 @@ for melody_nr in range(1):
                                    make_tf.int_to_length(length_idx),
                                    offset))
 
-        pitch_one_hot = to_categorical([pitch_idx], num_classes=37)
+        pitch_one_hot = to_categorical([pitch_idx], num_classes=38)
         length_one_hot = to_categorical([length_idx], num_classes=16)
         offset_bool = make_tf.offset_to_binary_array(offset)
         offset_bool = np.reshape(offset_bool, (1, 4))
 
-        pitch_input_res = np.reshape(pitch_input_pad, (30, 37))
+        pitch_input_res = np.reshape(pitch_input_pad, (30, 38))
         pitch_input_res = np.concatenate([pitch_input_res, pitch_one_hot], axis=0)
         pitch_input_res = pitch_input_res[1:]
-        pitch_input_pad = np.reshape(pitch_input_res, (1, 30, 37))
+        pitch_input_pad = np.reshape(pitch_input_res, (1, 30, 38))
 
         length_input_res = np.reshape(length_input_pad, (30, 16))
         length_input_res = np.concatenate([length_input_res, length_one_hot], axis=0)

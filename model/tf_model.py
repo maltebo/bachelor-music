@@ -16,7 +16,7 @@ import model.make_tf_structure as tf_struct
 
 pitch_in, length_in, offset_in, pitch_out, length_out = tf_struct.make_tf_data()
 
-pitch_input = Input(shape=(c.sequence_length, 37), dtype='float32', name='pitch_input')
+pitch_input = Input(shape=(c.sequence_length, 38), dtype='float32', name='pitch_input')
 length_input = Input(shape=(c.sequence_length, 16), dtype='float32', name='length_input')
 offset_input = Input(shape=(c.sequence_length, 4), dtype='float32', name='offset_input')
 
@@ -26,7 +26,7 @@ masked_input = Masking(0.0)(concatenated_input)
 
 lstm_layer = LSTM(512)(masked_input)
 
-pitch_output = Dense(37, activation='softmax', name='pitch_output')(lstm_layer)
+pitch_output = Dense(38, activation='softmax', name='pitch_output')(lstm_layer)
 length_output = Dense(16, activation='softmax', name='length_output')(lstm_layer)
 
 model = Model(inputs=[pitch_input, length_input, offset_input],

@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 
 import settings.constants as c
 
+# manually found all subgenres for pop, because otherwise (due to the 20 pages limit) not all
+# songs could be found
 subgenres = [
     24, 751, 665, 343, 734, 218, 192, 104, 46, 1095, 910, 36, 414, 1093, 197, 487, 150, 565, 140, 47, 103, 938, 177, 11,
     317, 296, 326, 9, 37, 707, 77, 179, 383, 259, 86, 94, 842, 318, 3, 75, 792, 202, 66, 82, 813, 323, 87, 704, 347, 12,
@@ -33,7 +35,7 @@ except:
     with open(os.path.join(c.project_folder, "web_scraping/pages_visited.json"), "x") as fp:
         fp.write(json.dumps(list(pages_visited), indent=2))
 
-print(urls)
+# print(urls)
 
 weird = False
 
@@ -53,6 +55,7 @@ for sub in subgenres:
                                                 page_nr=page_nr,
                                                 sub=sub))
 
+
             try:
                 if page_name in pages_visited:
                     break
@@ -60,6 +63,7 @@ for sub in subgenres:
                 response = urllib.request.urlopen(page_name)
                 pages_visited.add(page_name)
             except urllib.error.HTTPError:
+                print("HTTPError")
                 pages_visited.add(page_name)
                 break
             except:
@@ -71,7 +75,9 @@ for sub in subgenres:
 
             table = soup.find_all('script')
 
-            table_line = str(table[-3]).split("\n")[1]
+            # if errors occur here, try changing the -4 to another number closely around that -
+            # they seem to be changing their website layout sometimes
+            table_line = str(table[-4]).split("\n")[1]
 
             json_data = table_line.split(' = ')[-1][0:-1]  # ends with ;
 

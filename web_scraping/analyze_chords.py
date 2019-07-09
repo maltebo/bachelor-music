@@ -69,7 +69,7 @@ for url in urls:
             break
 
     if not result:
-        print("WTF")
+        print("Did not find a data entry")
         continue
 
     json_data = ' = '.join(result.split(' = ')[1:])[0:-1]  # ends with ;

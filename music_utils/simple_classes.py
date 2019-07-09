@@ -17,8 +17,8 @@ class NoteList(list):
         self.id = float('inf')
 
     def sort(self, **kwargs):
-        super().sort(key=attrgetter('pitch'), reverse=True)
         super().sort(key=attrgetter('length'), reverse=True)
+        super().sort(key=attrgetter('pitch'), reverse=True)
         return super().sort(key=attrgetter('offset'))
 
     @property

@@ -20,7 +20,7 @@ def make_settings() -> Settings:
     :return: protobuffer with current settings
     '''
     settings = Settings()
-    settings.min_pitch = 49.0
+    settings.min_pitch = 48.0
     settings.max_pitch = 84.0
     settings.delete_part_threshold = 0.65
     settings.delete_stream_threshold = 0.8

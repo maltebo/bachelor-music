@@ -36,7 +36,7 @@ def make_tf_data(settings=c_p.music_settings):
             if len(m.lengths) < min_sequence_length:
                 continue
 
-            pitches = [to_categorical([pitch_to_int(p, settings)], num_classes=37) for p in m.pitches]
+            pitches = [to_categorical([pitch_to_int(p, settings)], num_classes=38) for p in m.pitches]
             lengths = [to_categorical([length_to_int(l)], num_classes=16) for l in m.lengths]
             offsets = [offset_to_binary_array(o) for o in m.offsets]
 
@@ -52,11 +52,11 @@ def make_tf_data(settings=c_p.music_settings):
     lengths_input = pad_sequences(lengths_input, maxlen=c_m.sequence_length, dtype='float32')
     offsets_input = pad_sequences(offsets_input, maxlen=c_m.sequence_length, dtype='float32')
 
-    pitches_input = np.reshape(pitches_input, (-1, c_m.sequence_length, 37))
+    pitches_input = np.reshape(pitches_input, (-1, c_m.sequence_length, 38))
     lengths_input = np.reshape(lengths_input, (-1, c_m.sequence_length, 16))
     offsets_input = np.reshape(offsets_input, (-1, c_m.sequence_length, 4))
 
-    pitches_output = np.reshape(pitches_output, (-1, 37))
+    pitches_output = np.reshape(pitches_output, (-1, 38))
     lengths_output = np.reshape(lengths_output, (-1, 16))
 
     return pitches_input, lengths_input, offsets_input, pitches_output, lengths_output

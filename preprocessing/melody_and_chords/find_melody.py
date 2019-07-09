@@ -220,11 +220,9 @@ def skyline_advanced(song: simple.Song, split: bool,
         mean_pitch = mean([n.pitch for n in all_notes])
         stdev_pitch = stdev([n.pitch for n in all_notes])
 
-        # throw out all very low volume and low note parts
+        # throw out all very low volume or low note parts
         for avg_vol, avg_pitch, part in zip(average_volumes, average_pitches, parts):
-            if avg_vol > mean_volume - stdev_volume:
-                probable_melody_parts.append(part)
-            elif avg_pitch > mean_pitch - stdev_pitch:
+            if avg_vol > mean_volume - 1.5 * stdev_volume and avg_pitch > mean_pitch - 1.5 * stdev_pitch:
                 probable_melody_parts.append(part)
 
     # parts in probable_melody_parts are now considered to be the ones most likely containing the piece's melody
@@ -300,7 +298,6 @@ def skyline_advanced(song: simple.Song, split: bool,
 
     all_notes.sort()
 
-    # todo
     # print([i[0][-1] for i in probable_melody_parts])
 
     check = False

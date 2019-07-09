@@ -204,8 +204,8 @@ def make_melody_data_from_file(nr_files=None):
             offsets_input = [o % 16 for o in melody.offsets]
             # -1 because shortest possible length is 1
             lengths = [e - 1 for e in melody.lengths]
-            # 200 is a break (coded as pitch 200), values range in between 49 and 84 - values from 0 to 36
-            pitches = [(n - 48) % (200 - 48) for n in melody.pitches]
+            # 200 is a break (coded as pitch 200), values range in between 48 and 84 - values from 0 to 37
+            pitches = [(n - 47) % (200 - 47) for n in melody.pitches]
 
             for i in range(len(melody.pitches)):
                 current_offsets = offsets_input[max(0, i - (c_m.sequence_length)): i]
@@ -265,10 +265,10 @@ def melody_data_generator(data, batch_size):
                 index = 0
 
         length_sequences = [to_categorical(length, num_classes=16) for length in length_sequences]
-        pitch_sequences = [to_categorical(pitch, num_classes=37) for pitch in pitch_sequences]
+        pitch_sequences = [to_categorical(pitch, num_classes=38) for pitch in pitch_sequences]
         offset_sequences = [[offset_to_binary_array(o) for o in offset] for offset in offset_sequences]
 
-        next_pitches = [to_categorical(pitch, num_classes=37) for pitch in next_pitches]
+        next_pitches = [to_categorical(pitch, num_classes=38) for pitch in next_pitches]
         next_lengths = [to_categorical(length, num_classes=16) for length in next_lengths]
 
         assert len(length_sequences) == len(pitch_sequences)
@@ -307,7 +307,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
     ################# MODEL
     ##########################################################################################
 
-    pitch_input = Input(shape=(c_m.sequence_length, 37), dtype='float32', name='pitch_input')
+    pitch_input = Input(shape=(c_m.sequence_length, 38), dtype='float32', name='pitch_input')
     length_input = Input(shape=(c_m.sequence_length, 16), dtype='float32', name='length_input')
     offset_input = Input(shape=(c_m.sequence_length, 4), dtype='float32', name='offset_input')
 
@@ -317,7 +317,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
     lstm_layer = LSTM(256)(masked_input)
 
-    pitch_output = Dense(37, activation='softmax', name='pitch_output')(lstm_layer)
+    pitch_output = Dense(38, activation='softmax', name='pitch_output')(lstm_layer)
     length_output = Dense(16, activation='softmax', name='length_output')(lstm_layer)
 
     model = Model(inputs=[pitch_input, length_input, offset_input],
@@ -404,8 +404,8 @@ def make_chord_data_from_file(nr_files=None):
         start_list = np.zeros(8 * len(chords))
 
         for melody in song_data.melodies:
-            # 200 is a break (coded as pitch 200), values range in between 49 and 84 - values from 0 to 36
-            pitches = [(n - 48) % (200 - 48) for n in melody.pitches]
+            # 200 is a break (coded as pitch 200), values range in between 48 and 84 - values from 0 to 37
+            pitches = [(n - 47) % (200 - 47) for n in melody.pitches]
 
             for pitch, length, offset in zip(pitches, melody.lengths, melody.offsets):
                 melody_list[offset:offset + length] = pitch
@@ -461,10 +461,10 @@ def chord_data_generator(data, batch_size):
 
         chords = [to_categorical(chord, num_classes=25) for chord in chords]
 
-        melody = [to_categorical(pitch, num_classes=37) for pitch in melody]
+        melody = [to_categorical(pitch, num_classes=38) for pitch in melody]
         chords = pad_sequences(chords, maxlen=c_m.chord_sequence_length, dtype='float32')
 
-        melody = np.reshape(melody, (-1, 8 * 37))
+        melody = np.reshape(melody, (-1, 8 * 38))
 
         labels = [to_categorical(label, num_classes=25) for label in labels]
 
@@ -492,7 +492,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, ca
     ##########################################################################################
 
     chord_input = Input(shape=(c_m.chord_sequence_length, 25), dtype='float32', name='chord_input')
-    melody_input = Input(shape=(8 * 37,), dtype='float32', name='melody_input')
+    melody_input = Input(shape=(8 * 38,), dtype='float32', name='melody_input')
     start_input = Input(shape=(8,), dtype='float32', name='start_input')
     on_full_beat_input = Input(shape=(2,), dtype='float32', name='on_full_beat_input')
 
