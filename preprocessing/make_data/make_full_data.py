@@ -113,7 +113,6 @@ def make_pb_for_all_files():
 
         with open(new_filename, 'xb') as fp:
             fp.write(song_pb.SerializeToString())
-        break
 
 
 def make_pb_for_lyrics_files():
