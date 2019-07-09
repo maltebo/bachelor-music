@@ -237,6 +237,7 @@ def make_protobuffer_for_all_data():
             song_data.ParseFromString(fp.read())
 
     try:
+        os.makedirs(c.TRANSFORMED_PROTO_BUFFER_PATH, exist_ok=True)
         with open(os.path.join(c.project_folder,
                                "data/preprocessed_data/data_{y}_{m}_{d}.pb".format(y=proto_buffer.year,
                                                                                    m=proto_buffer.month,
