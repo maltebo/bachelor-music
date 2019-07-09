@@ -108,10 +108,10 @@ melodies_done = 0
 
 for root, dirs, files in os.walk(MXL_DATA_FOLDER):
     for file in files:
-        if file.split('.')[0].split(b'_tf_skyline')[0] in mxl_dict:
-            mxl_dict[file.split('.')[0].split(b'_tf_skyline')[0]].append(os.path.join(root, file))
+        if file.split('.')[0].split('_tf_skyline')[0] in mxl_dict:
+            mxl_dict[file.split('.')[0].split('_tf_skyline')[0]].append(os.path.join(root, file))
         else:
-            mxl_dict[file.split('.')[0].split(b'_tf_skyline')[0]] = [os.path.join(root, file)]
+            mxl_dict[file.split('.')[0].split('_tf_skyline')[0]] = [os.path.join(root, file)]
         # if file.endswith('.mxl'):
         #     mxl_work_queue.put(os.path.join(root, file))
         # if file.endswith('.pb'):
@@ -120,6 +120,11 @@ for root, dirs, files in os.walk(MXL_DATA_FOLDER):
         #     melody_work_queue.put(os.path.join(root, file))
         # take for every song only one version into account!
         # break
+
+for root, dirs, files in os.walk("/home/malte/PycharmProjects/BachelorMusic/data/protobuffer"):
+    for file in files:
+        if file.endswith('.pb'):
+            proto_buffer_work_queue.put(os.path.join(root, file))
 
 mxl_start_time = time.time()
 
@@ -130,6 +135,11 @@ melodies_to_do = melody_work_queue.qsize()
 melodies_start_time = mxl_start_time
 
 del_list = []
+
+if __name__ == '__main__':
+    check_ex = input("Do you want to check existence and delete data from protobuffer? Y/n")
+else:
+    check_ex = False
 
 for file in mxl_dict:
     mxl_files = []
@@ -149,7 +159,6 @@ for file in mxl_dict:
         elif f.endswith('.melody_pb'):
             melody_files.append(f.split('.')[0].split('_tf_skyline')[0])
 
-    check_ex = input("Do you want to check existence and delete data from protobuffer? Y/n")
     if check_ex == 'Y':
 
         if done:
@@ -171,8 +180,8 @@ for file in mxl_dict:
                             f.ClearField('max_metronome')
                             f.ClearField('key_correlation')
                             f.ClearField('parts')
-                            with open(PROTOCOL_BUFFER_LOCATION, 'wb') as fp:
-                                fp.write(music_protocol_buffer.SerializeToString())
+                            # with open(PROTOCOL_BUFFER_LOCATION, 'wb') as fp:
+                            #     fp.write(music_protocol_buffer.SerializeToString())
                             break
                     # raise ValueError("There should be at least one protobuffer in this case")
 
