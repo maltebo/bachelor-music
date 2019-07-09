@@ -216,21 +216,21 @@ def make_pb_for_lyrics_files():
 
 def make_protobuffer_for_all_data():
     all_files = []
-    for folder, _, files in os.walk(c_c.MXL_DATA_FOLDER):
+    for folder, _, files in os.walk(c_c.TRANSFORMED_PROTO_BUFFER_PATH):
         for file in files:
             if file.endswith('.pb_full'):
                 all_files.append(os.path.join(folder, file))
 
     proto_buffer = music_info.AllData()
 
-    import datetime
-    proto_buffer.day = datetime.datetime.now().day
-    proto_buffer.month = datetime.datetime.now().month
-    proto_buffer.year = datetime.datetime.now().year
+    # import datetime
+    # proto_buffer.day = datetime.datetime.now().day
+    # proto_buffer.month = datetime.datetime.now().month
+    # proto_buffer.year = datetime.datetime.now().year
 
     for i, file in enumerate(all_files):
-        print("Processing", file)
-        print("{p} percent done".format(p=(i / len(all_files)) * 100))
+        # print("Processing", file)
+        # print("{p} percent done".format(p=(i / len(all_files)) * 100))
 
         song_data = proto_buffer.songs.add()
         with open(file, 'rb') as fp:
@@ -660,7 +660,7 @@ if __name__ == '__main__':
     # make_pb_for_lyrics_files()
     # chord_model(nr_files=None, callbacks=False)
     # melody_model(nr_files=5, callbacks=False)
-    os.makedirs(os.path.join(c.project_folder, 'data/protobuffer_data'), exist_ok=True)
-    make_pb_for_all_files()
+    # os.makedirs(os.path.join(c.project_folder, 'data/protobuffer_data'), exist_ok=True)
+    # make_pb_for_all_files()
 
-    # make_protobuffer_for_all_data()
+    make_protobuffer_for_all_data()
