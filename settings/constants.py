@@ -19,5 +19,7 @@ MXL_DATA_FOLDER = os.path.join(project_folder, "data/MXL/lmd_matched_mxl")
 MUSIC_INFO_FOLDER_PATH = os.path.join(project_folder, "data/music_info_pb")
 MELODY_FILE_PATH = os.path.join(project_folder, "data/melody_files/melody_info.json")
 DELETED_PIECES_PATH = os.path.join(project_folder, "data/MXL/deleted_pieces")
+PROTO_BUFFER_PATH = os.path.join(project_folder, "data/protobuffer")
+TRANSFORMED_PROTO_BUFFER_PATH = os.path.join(project_folder, "data/protobuffer_data")
 
 print("finished setup in {sec} seconds".format(sec=str(round(time.time() - start_time, 2))))
