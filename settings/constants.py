@@ -22,4 +22,11 @@ DELETED_PIECES_PATH = os.path.join(project_folder, "data/MXL/deleted_pieces")
 PROTO_BUFFER_PATH = os.path.join(project_folder, "data/protobuffer")
 TRANSFORMED_PROTO_BUFFER_PATH = os.path.join(project_folder, "data/protobuffer_data")
 
+os.makedirs(MXL_DATA_FOLDER, exist_ok=True)
+os.makedirs(MUSIC_INFO_FOLDER_PATH, exist_ok=True)
+os.makedirs(MELODY_FILE_PATH, exist_ok=True)
+os.makedirs(DELETED_PIECES_PATH, exist_ok=True)
+os.makedirs(PROTO_BUFFER_PATH, exist_ok=True)
+os.makedirs(TRANSFORMED_PROTO_BUFFER_PATH, exist_ok=True)
+
 print("finished setup in {sec} seconds".format(sec=str(round(time.time() - start_time, 2))))
