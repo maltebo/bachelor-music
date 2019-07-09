@@ -11,14 +11,14 @@ from tensorflow.python.keras.optimizers import Adam
 from tensorflow.python.keras.preprocessing.sequence import pad_sequences
 from tensorflow.python.keras.utils import to_categorical
 
+import settings.constants as c
+import settings.constants_preprocessing as c_p
+import settings.constants_chords as c_c
+import settings.constants_model as c_m
 import music_utils.simple_classes as simple
 import preprocessing.melody_and_chords.find_chords as chords
 import preprocessing.melody_and_chords.find_melody as melody
-import settings.constants as c
-import settings.constants_chords as c_c
-import settings.constants_model as c_m
 import settings.music_info_pb2 as music_info
-import settings.constants_preprocessing as c_p
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU
