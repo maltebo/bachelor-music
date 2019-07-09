@@ -109,9 +109,11 @@ def make_pb_for_all_files():
             song_pb.chords.extend(song_chords)
 
         new_filename = filename.replace('.pb', '.pb_full_final')
+        new_filename = new_filename.replace('protobuffer', 'protobuffer_data')
 
         with open(new_filename, 'xb') as fp:
             fp.write(song_pb.SerializeToString())
+        break
 
 
 def make_pb_for_lyrics_files():
@@ -657,6 +659,7 @@ if __name__ == '__main__':
     # make_pb_for_lyrics_files()
     # chord_model(nr_files=None, callbacks=False)
     # melody_model(nr_files=5, callbacks=False)
-    # make_pb_for_all_files()
+    os.makedirs(os.path.join(c.project_folder, 'data/protobuffer_data'), exist_ok=True)
+    make_pb_for_all_files()
 
-    make_protobuffer_for_all_data()
+    # make_protobuffer_for_all_data()

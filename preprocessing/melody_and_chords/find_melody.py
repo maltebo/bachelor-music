@@ -4,6 +4,7 @@ from statistics import mean, stdev
 
 import music_utils.simple_classes as simple
 import settings.constants as c
+import settings.constants_preprocessing as c_p
 
 
 def simple_skyline_algorithm_from_simple(song_or_part_or_parts_list,
@@ -55,7 +56,7 @@ def simple_skyline_algorithm_from_simple(song_or_part_or_parts_list,
         # just allow pitches in the specified range
         # also immediately removes rests, which have per definition a pitch of 200
         # this is because protocol buffers have problems handling negative ints efficiently
-        if not (c.music_settings.min_pitch <= pitch <= c.music_settings.max_pitch):
+        if not (c_p.music_settings.min_pitch <= pitch <= c_p.music_settings.max_pitch):
             continue
 
         # no jumps down greater than an octave!

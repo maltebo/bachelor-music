@@ -121,7 +121,7 @@ for root, dirs, files in os.walk(MXL_DATA_FOLDER):
         # take for every song only one version into account!
         # break
 
-for root, dirs, files in os.walk("/home/malte/PycharmProjects/BachelorMusic/data/protobuffer"):
+for root, dirs, files in os.walk(os.path.join(project_folder, "data/protobuffer")):
     for file in files:
         if file.endswith('.pb'):
             proto_buffer_work_queue.put(os.path.join(root, file))
