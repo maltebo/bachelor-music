@@ -218,7 +218,7 @@ def make_protobuffer_for_all_data():
     all_files = []
     for folder, _, files in os.walk(c_c.TRANSFORMED_PROTO_BUFFER_PATH):
         for file in files:
-            if file.endswith('.pb_full'):
+            if file.endswith('.pb_full_final'):
                 all_files.append(os.path.join(folder, file))
 
     proto_buffer = music_info.AllData()
