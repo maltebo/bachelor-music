@@ -322,7 +322,7 @@ if __name__ == '__main__':
             else:
                 nr_s = int(sys.argv[i + 1])
             i += 2
-        elif sys.argv[i] == '-call_backs':
+        elif sys.argv[i] == '-cb':
             cb = True
             i += 1
         else:
