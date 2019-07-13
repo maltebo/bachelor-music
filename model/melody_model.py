@@ -296,9 +296,36 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
 if __name__ == '__main__':
 
-    # melody_model(0.1, 10, 2, 3, False)
-    if len(sys.argv) > 1:
-        if sys.argv[1] == '-f':
-            force = True
+    vs = 0.2
+    bs = 10
+    ep = 2
+    nr_s = 10
+    cb = False
 
-    melody_model(0.2, 32, 1, 10, False)
+    i = 1
+    while i < len(sys.argv):
+        if sys.argv[i] == '-f':
+            force = True
+            i += 1
+        elif sys.argv[i] == '-vs':
+            vs = float(sys.argv[i + 1])
+            i += 2
+        elif sys.argv[i] == '-bs':
+            bs = float(sys.argv[i + 1])
+            i += 2
+        elif sys.argv[i] == '-ep':
+            ep = int(sys.argv[i + 1])
+            i += 2
+        elif sys.argv[i] == '-nr_s':
+            if sys.argv[i + 1] == 'all':
+                nr_s = None
+            else:
+                nr_s = int(sys.argv[i + 1])
+            i += 2
+        elif sys.argv[i] == '-cb':
+            cb = True
+            i += 1
+        else:
+            raise ValueError("option not understood:", sys.argv[i])
+
+    melody_model(vs, bs, ep, nr_s, cb)
