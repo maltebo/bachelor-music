@@ -12,6 +12,9 @@ try:
 
     chord_to_id = {name: i for (i, name) in enumerate(chord_and_transition_dict.keys())}
     chord_to_id['None'] = len(chord_to_id)
+
+    id_to_chord = {i: name for name, i in chord_to_id.items()}
+
 except FileNotFoundError:
     print("No chord frequencies or transitions exists. Please make sure to create such a file " \
           "and save it at 'web_scraping/chord_frequencies_and_transitions_full.json'")
