@@ -206,6 +206,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
         import datetime
         time = datetime.datetime.now().strftime("%Y%m%d_%H%M")
         filepath = os.path.join(c.project_folder, "data/tf_weights/chords-weights-improvement{t}.hdf5".format(t=time))
+        os.makedirs(os.path.split(filepath)[0], exist_ok=True)
         checkpoint = call_backs.ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=True, mode='min')
 
         early_stopping = call_backs.EarlyStopping(monitor='val_loss', min_delta=0, patience=5,
