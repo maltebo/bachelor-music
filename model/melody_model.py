@@ -1,5 +1,6 @@
 import os
 import random
+import sys
 
 import numpy as np
 import tensorflow as tf
@@ -22,6 +23,7 @@ config.log_device_placement = False  # to log device placement (on which device 
 sess = tf.compat.v1.Session(config=config)
 set_session(sess)
 
+force = False
 
 def offset_to_binary_array(offset):
     return [int(x) for x in format(int(offset), '04b')[:]]
@@ -201,10 +203,12 @@ length_weights = {
 }
 
 def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, callbacks=False):
-    fit = input("Fit melody model? Y/n")
+    if not force:
 
-    if fit != 'Y':
-        return
+        fit = input("Fit melody model? Y/n")
+
+        if fit != 'Y':
+            return
 
     offset_sequences_o, length_sequences_o, pitch_sequences_o, next_pitches_o, next_lengths_o = \
         make_melody_data_from_file(nr_files=nr_files)
@@ -293,4 +297,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 if __name__ == '__main__':
 
     # melody_model(0.1, 10, 2, 3, False)
-    melody_model(0.2, 32, 1, None, False)
+    melody_model(0.2, 32, 1, 10, False)
+    if len(sys.argv) == 2:
+        if sys.argv[1] == '-f':
+            force = True
