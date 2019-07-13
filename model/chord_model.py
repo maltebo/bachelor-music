@@ -15,6 +15,7 @@ from keras.utils import to_categorical
 import settings.constants as c
 import settings.constants_model as c_m
 import settings.music_info_pb2 as music_info
+from model.custom_callbacks import ModelCheckpointBatches
 
 config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU
@@ -215,12 +216,14 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
         tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
                                              histogram_freq=1, batch_size=32, write_graph=True, write_grads=True,
                                              write_images=True, embeddings_freq=0, embeddings_layer_names=None,
-                                             embeddings_metadata=None, embeddings_data=None)
+                                             embeddings_metadata=None, embeddings_data=None, update_freq=5000)
+
+        batches_checkpoint = ModelCheckpointBatches(filepath, monitor='val_loss', period=5000)
 
         reduce_lr = call_backs.ReduceLROnPlateau(monitor='val_loss', factor=0.2,
                                                  patience=3, min_lr=0.001)
 
-        callbacks = [terminate_on_nan, checkpoint, early_stopping, tensorboard, reduce_lr]
+        callbacks = [terminate_on_nan, checkpoint, batches_checkpoint, early_stopping, tensorboard, reduce_lr]
     else:
         callbacks = []
 
