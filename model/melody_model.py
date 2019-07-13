@@ -3,13 +3,13 @@ import random
 
 import numpy as np
 import tensorflow as tf
-import tensorflow.keras.callbacks as cb
-from tensorflow.keras.backend import set_session
-from tensorflow.keras.layers import Input, LSTM, Dense, concatenate, Masking
-from tensorflow.keras.models import Model
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.utils import to_categorical
+import keras.callbacks as cb
+from keras.backend import set_session
+from keras.layers import Input, LSTM, Dense, concatenate, Masking
+from keras.models import Model
+from keras.optimizers import Adam
+from keras.preprocessing.sequence import pad_sequences
+from keras.utils import to_categorical
 
 import settings.constants as c
 import settings.constants_model as c_m
@@ -77,6 +77,7 @@ def make_melody_data_from_file(nr_files=None):
                 next_pitches.append(pitches[i])
                 next_lengths.append(lengths[i])
                 # chord_sequences.append([chord_list])
+    del all_data
 
     return offset_sequences, length_sequences, pitch_sequences, next_pitches, next_lengths  # , chord_sequences
 
@@ -139,6 +140,65 @@ def melody_data_generator(data, batch_size):
 
         yield out_data, labels_out
 
+pitch_weights = {
+    0: 0.7999507265060386,
+    20: 0.8185322468244942,
+    17: 0.8292360160956724,
+    13: 0.841119535307133,
+    25: 0.8488605807980031,
+    15: 0.8582555876853357,
+    22: 0.8863788241731292,
+    27: 0.8918502331707752,
+    29: 0.8923198793798044,
+    18: 0.9014639635420608,
+    8: 0.9024220125238418,
+    32: 0.9391996525640948,
+    24: 0.9745647640821913,
+    10: 0.9930600229183225,
+    12: 1.0331210235688348,
+    30: 1.050019183417216,
+    5: 1.1379724404914993,
+    34: 1.2007564988097825,
+    37: 1.2580090850260426,
+    3: 1.2940959553613365,
+    6: 1.3503431009315179,
+    1: 1.3697163397791114,
+    36: 1.6210836585055795,
+    19: 1.7683765926254322,
+    23: 1.89817399775069,
+    16: 2.5121499400675606,
+    11: 2.546669807170125,
+    21: 2.6078503908422057,
+    31: 2.8659467508269483,
+    28: 3.2121569690252016,
+    26: 3.9196649078378947,
+    7: 4.067941763030685,
+    14: 4.431945064252602,
+    35: 4.449871418243051,
+    9: 5.030418532753124,
+    33: 6.157359727145053,
+    4: 10.127682030108325,
+    2: 23.629527447651384,
+}
+
+length_weights = {
+    1: 0.7860357684290993,
+    0: 0.831938095056652,
+    3: 0.8358509920358522,
+    2: 1.0827286247127685,
+    7: 1.1440977637838259,
+    15: 1.197249393757025,
+    5: 1.2413911402067268,
+    11: 1.935575513196481,
+    9: 2.4774023671167322,
+    4: 3.5105788402709495,
+    13: 4.444900654383272,
+    6: 5.6677847654729465,
+    8: 9.305130565430844,
+    10: 13.286630178615724,
+    14: 15.812639716840536,
+    12: 16.905740489130437,
+}
 
 def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, callbacks=False):
     fit = input("Fit melody model? Y/n")
@@ -209,11 +269,19 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
     zipped_data = list(zip(offset_sequences_o, length_sequences_o, pitch_sequences_o,
                            next_pitches_o, next_lengths_o))
 
+    del offset_sequences_o
+    del length_sequences_o
+    del pitch_sequences_o
+    del next_pitches_o
+    del next_lengths_o
+
     assert validation_split < 1 and validation_split >= 0
 
     random.shuffle(zipped_data)
     test_data = zipped_data[:int(len(zipped_data) * validation_split)]
     train_data = zipped_data[int(len(zipped_data) * validation_split):]
+
+    del zipped_data
 
     model.fit_generator(generator=melody_data_generator(train_data, batch_size),
                         steps_per_epoch=len(train_data) // batch_size,
@@ -221,6 +289,8 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
                         validation_steps=len(test_data) // batch_size, max_queue_size=30, callbacks=callbacks)
 
 
+
 if __name__ == '__main__':
 
-    melody_model(0.1, 10, 2, 3, False)
+    # melody_model(0.1, 10, 2, 3, False)
+    melody_model(0.2, 32, 1, None, False)

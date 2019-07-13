@@ -126,6 +126,33 @@ def chord_data_generator(data, batch_size):
 
         yield out_data, labels
 
+chord_weights = {
+    0: 0.7752530943367402,
+    2: 0.7945722994766353,
+    1: 0.8102732598537633,
+    3: 0.9171759917393365,
+    5: 0.9463738057655562,
+    24: 1.2944299467950342,
+    9: 1.3230306666666667,
+    6: 1.3361606655755591,
+    10: 1.63064956596252,
+    8: 2.13950210151956,
+    13: 2.4511525728679384,
+    4: 3.3421170084439087,
+    12: 3.4492708690190703,
+    20: 3.585594409788868,
+    7: 3.815427960057061,
+    21: 4.207546259050684,
+    16: 5.921191205425508,
+    15: 6.365945592777383,
+    19: 7.084587967305374,
+    11: 9.201024311762602,
+    23: 20.655275789473684,
+    22: 24.45864092276831,
+    18: 24.61422513881878,
+    17: 26.85437879624517,
+    14: 41.22519691780822,
+}
 
 def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, callbacks=False):
     fit = input("Fit chord model? Y/n")
@@ -212,7 +239,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
                         steps_per_epoch=len(train_data) // batch_size,
                         epochs=epochs, verbose=1, validation_data=chord_data_generator(test_data, batch_size),
                         validation_steps=len(test_data) // batch_size, max_queue_size=30,
-                        callbacks=callbacks)
+                        callbacks=callbacks, class_weight=chord_weights)
 
 
 if __name__ == '__main__':
