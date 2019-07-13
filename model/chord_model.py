@@ -3,11 +3,12 @@ import random
 import sys
 
 import numpy as np
+import time
 import tensorflow as tf
 import keras.callbacks as call_backs
 from keras.backend import set_session
 from keras.layers import Input, LSTM, Dense, concatenate, Masking
-from keras.models import Model
+from keras.models import Model, load_model
 from keras.optimizers import Adam
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
@@ -158,7 +159,7 @@ chord_weights = {
     14: 41.22519691780822,
 }
 
-def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, callbacks=False):
+def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, callbacks=False, walltime=0):
 
     if not force:
         fit = input("Fit chord model? Y/n")
@@ -172,30 +173,40 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
     ################# MODEL
     ##########################################################################################
 
-    chord_input = Input(shape=(c_m.chord_sequence_length, 25), dtype='float32', name='chord_input')
-    melody_input = Input(shape=(8 * 38,), dtype='float32', name='melody_input')
-    start_input = Input(shape=(8,), dtype='float32', name='start_input')
-    on_full_beat_input = Input(shape=(2,), dtype='float32', name='on_full_beat_input')
 
-    concatenate_pre = concatenate([melody_input, start_input, on_full_beat_input], axis=-1)
+    try:
+        if os.environ['REDO'] == 'True':
+            model = load_model(os.path.join(c.project_folder, "data/tf_weights/weights_saved_wall_time.hdf5"))
+            initial_epoch = int(os.environ['EPOCH'])
+        else:
+            raise Exception()
+    except:
+        initial_epoch = 0
 
-    dense_pre = Dense(32, activation='relu', name='dense_pre')(concatenate_pre)
+        chord_input = Input(shape=(c_m.chord_sequence_length, 25), dtype='float32', name='chord_input')
+        melody_input = Input(shape=(8 * 38,), dtype='float32', name='melody_input')
+        start_input = Input(shape=(8,), dtype='float32', name='start_input')
+        on_full_beat_input = Input(shape=(2,), dtype='float32', name='on_full_beat_input')
 
-    masked_input = Masking(0.0)(chord_input)
+        concatenate_pre = concatenate([melody_input, start_input, on_full_beat_input], axis=-1)
 
-    lstm = LSTM(64)(masked_input)
+        dense_pre = Dense(32, activation='relu', name='dense_pre')(concatenate_pre)
 
-    concatenate_final = concatenate([dense_pre, lstm], axis=-1)
+        masked_input = Masking(0.0)(chord_input)
 
-    dense_final = Dense(25, activation='softmax', name='dense_final')(concatenate_final)
+        lstm = LSTM(64)(masked_input)
 
-    model = Model(inputs=[chord_input, melody_input, start_input, on_full_beat_input],
-                  outputs=[dense_final])
+        concatenate_final = concatenate([dense_pre, lstm], axis=-1)
 
-    model.compile(loss={'dense_final': 'categorical_crossentropy'},
-                  optimizer=Adam())
+        dense_final = Dense(25, activation='softmax', name='dense_final')(concatenate_final)
 
-    print(model.summary(90))
+        model = Model(inputs=[chord_input, melody_input, start_input, on_full_beat_input],
+                      outputs=[dense_final])
+
+        model.compile(loss={'dense_final': 'categorical_crossentropy'},
+                      optimizer=Adam())
+
+        print(model.summary(90))
 
     ##########################################################################################
     ################# CALLBACKS
@@ -205,8 +216,9 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
         terminate_on_nan = call_backs.TerminateOnNaN()
 
         import datetime
-        time = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-        filepath = os.path.join(c.project_folder, "data/tf_weights/chords-weights-improvement{t}.hdf5".format(t=time))
+        temp_time = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+        filepath = os.path.join(c.project_folder, "data/tf_weights/chords-weights-improvement-{t}.hdf5".format(t=temp_time))
+        batch_filepath = filepath.replace('improvement', 'improvement-batched')
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
         checkpoint = call_backs.ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=True, mode='min')
 
@@ -214,11 +226,10 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
                                                   verbose=0, mode='auto', baseline=None)
 
         tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
-                                             histogram_freq=1, batch_size=32, write_graph=True, write_grads=True,
-                                             write_images=True, embeddings_freq=0, embeddings_layer_names=None,
-                                             embeddings_metadata=None, embeddings_data=None, update_freq=5000)
+                                             #update_freq=5000
+                                             )
 
-        batches_checkpoint = ModelCheckpointBatches(filepath, monitor='val_loss', period=5000)
+        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=50, walltime=walltime)
 
         reduce_lr = call_backs.ReduceLROnPlateau(monitor='val_loss', factor=0.2,
                                                  patience=3, min_lr=0.001)
@@ -246,18 +257,25 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
 
     model.fit_generator(generator=chord_data_generator(train_data, batch_size),
                         steps_per_epoch=len(train_data) // batch_size,
-                        epochs=epochs, verbose=0, validation_data=chord_data_generator(test_data, batch_size),
+                        epochs=epochs, verbose=1, validation_data=chord_data_generator(test_data, batch_size),
                         validation_steps=len(test_data) // batch_size, max_queue_size=30,
-                        callbacks=callbacks, class_weight=chord_weights)
+                        callbacks=callbacks, class_weight=chord_weights, initial_epoch=initial_epoch)
+
+    if batches_checkpoint.reached_wall_time:
+        from subprocess import call
+        recallParameter = 'qsub -v REDO=True,EPOCH=' + str(
+            batches_checkpoint.last_epoch) + ' chord_model.sge'
+        call(recallParameter, shell=True)
 
 
 if __name__ == '__main__':
 
     vs = 0.2
     bs = 10
-    ep = 2
+    ep = 20
     nr_s = 10
-    cb = False
+    cb = True
+    wall_time = 30
 
     i = 1
     while i < len(sys.argv):
@@ -282,7 +300,13 @@ if __name__ == '__main__':
         elif sys.argv[i] == '-cb':
             cb = True
             i += 1
+        elif sys.argv[i] == '-wt':
+            h,m,s = sys.argv[i+1].split(':')
+            h = int(h)
+            m = int(m)
+            s = int(s)
+            wall_time = s + 60*m + 3600*h
         else:
             raise ValueError("option not understood:", sys.argv[i])
 
-    chord_model(vs, bs, ep, nr_s, cb)
+    chord_model(vs, bs, ep, nr_s, cb, walltime=wall_time)

@@ -4,9 +4,10 @@ from __future__ import print_function
 
 import numpy as np
 import warnings
+import os
 
+import time
 from keras.callbacks import Callback
-
 
 
 class ModelCheckpointBatches(Callback):
@@ -43,7 +44,7 @@ class ModelCheckpointBatches(Callback):
 
     def __init__(self, filepath, monitor='val_loss', verbose=0,
                  save_best_only=True, save_weights_only=False,
-                 mode='auto', period=1000):
+                 mode='auto', period=1000, walltime=0, last_epoch=0):
         super(ModelCheckpointBatches, self).__init__()
         self.monitor = monitor
         self.verbose = verbose
@@ -52,6 +53,14 @@ class ModelCheckpointBatches(Callback):
         self.save_weights_only = save_weights_only
         self.period = period
         self.batches_since_last_save = 0
+
+        self.start_time = time.time()
+        self.last_time = time.time()
+        self.average_time = 0
+        self.reached_wall_time = False
+        self.walltime = walltime
+        self.time_filepath = os.path.join(os.path.split(filepath)[0], "weights_saved_wall_time.hdf5")
+        self.last_epoch = last_epoch
 
         if mode not in ['auto', 'min', 'max']:
             warnings.warn('ModelCheckpoint mode %s is unknown, '
@@ -107,3 +116,19 @@ class ModelCheckpointBatches(Callback):
                     self.model.save_weights(filepath, overwrite=True)
                 else:
                     self.model.save(filepath, overwrite=True)
+
+            if self.walltime:
+                used_time = time.time() - self.last_time
+                if self.average_time > 0:
+                    self.average_time = (self.average_time + used_time) / 2
+                else:
+                    self.average_time = used_time
+                if (time.time() - self.start_time + 3*self.average_time) > self.walltime:
+                    self.reached_wall_time = True
+                    self.model.stop_training = True
+                    self.model.save(self.time_filepath, overwrite=True)
+
+                self.last_time = time.time()
+
+    def on_epoch_end(self, epoch, logs=None):
+        self.last_epoch += 1
