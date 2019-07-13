@@ -4,7 +4,7 @@ import sys
 
 import numpy as np
 import tensorflow as tf
-import keras.callbacks as cb
+import keras.callbacks as call_backs
 from keras.backend import set_session
 from keras.layers import Input, LSTM, Dense, concatenate, Masking
 from keras.models import Model
@@ -244,22 +244,22 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
     ##########################################################################################
 
     if callbacks:
-        terminate_on_nan = cb.TerminateOnNaN()
+        terminate_on_nan = call_backs.TerminateOnNaN()
 
         import datetime
         time = datetime.datetime.now().strftime("%Y%m%d_%H%M")
         filepath = "data/tf_weights/melody-weights-improvement{t}.hdf5".format(t=time)
-        checkpoint = cb.ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=True, mode='min')
+        checkpoint = call_backs.ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=True, mode='min')
 
-        early_stopping = cb.EarlyStopping(monitor='val_loss', min_delta=0, patience=5,
+        early_stopping = call_backs.EarlyStopping(monitor='val_loss', min_delta=0, patience=5,
                                           verbose=0, mode='auto', baseline=None)
 
-        tensorboard = cb.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
+        tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
                                      histogram_freq=1, batch_size=32, write_graph=True, write_grads=True,
                                      write_images=True, embeddings_freq=0, embeddings_layer_names=None,
                                      embeddings_metadata=None, embeddings_data=None)
 
-        reduce_lr = cb.ReduceLROnPlateau(monitor='val_loss', factor=0.2,
+        reduce_lr = call_backs.ReduceLROnPlateau(monitor='val_loss', factor=0.2,
                                          patience=3, min_lr=0.001)
 
         callbacks = [terminate_on_nan, checkpoint, early_stopping, tensorboard, reduce_lr]
@@ -322,7 +322,7 @@ if __name__ == '__main__':
             else:
                 nr_s = int(sys.argv[i + 1])
             i += 2
-        elif sys.argv[i] == '-cb':
+        elif sys.argv[i] == '-call_backs':
             cb = True
             i += 1
         else:
