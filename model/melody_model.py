@@ -297,7 +297,8 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 if __name__ == '__main__':
 
     # melody_model(0.1, 10, 2, 3, False)
-    melody_model(0.2, 32, 1, 10, False)
-    if len(sys.argv) == 2:
+    if len(sys.argv) > 1:
         if sys.argv[1] == '-f':
             force = True
+
+    melody_model(0.2, 32, 1, 10, False)
