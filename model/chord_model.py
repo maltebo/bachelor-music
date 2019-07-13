@@ -1,15 +1,16 @@
 import os
 import random
+import sys
 
 import numpy as np
 import tensorflow as tf
-import tensorflow.keras.callbacks as cb
-from tensorflow.keras.backend import set_session
-from tensorflow.keras.layers import Input, LSTM, Dense, concatenate, Masking
-from tensorflow.keras.models import Model
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.utils import to_categorical
+import keras.callbacks as cb
+from keras.backend import set_session
+from keras.layers import Input, LSTM, Dense, concatenate, Masking
+from keras.models import Model
+from keras.optimizers import Adam
+from keras.preprocessing.sequence import pad_sequences
+from keras.utils import to_categorical
 
 import settings.constants as c
 import settings.constants_model as c_m
@@ -22,6 +23,8 @@ config.log_device_placement = False  # to log device placement (on which device 
 sess = tf.compat.v1.Session(config=config)
 set_session(sess)
 
+# for automated chord model training
+force=True
 
 def make_chord_data_from_file(nr_songs=None):
     all_files = []
@@ -155,9 +158,11 @@ chord_weights = {
 }
 
 def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, callbacks=False):
-    fit = input("Fit chord model? Y/n")
-    if fit != 'Y':
-        return
+
+    if not force:
+        fit = input("Fit chord model? Y/n")
+        if fit != 'Y':
+            return
 
     chord_sequences, melody_sequences, start_sequences, on_full_beat, next_chords \
         = make_chord_data_from_file(nr_songs=nr_songs)
@@ -243,5 +248,9 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
 
 
 if __name__ == '__main__':
+
+    if len(sys.argv) > 1:
+        if sys.argv[1] == '-f':
+            force = True
 
     chord_model(0.1, 10, 2, 10, False)
