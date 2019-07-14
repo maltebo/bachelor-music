@@ -262,7 +262,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         terminate_on_nan = call_backs.TerminateOnNaN()
 
         filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-{epoch:02d}.hdf5")
-        batch_filepath = filepath.replace('improvement', 'improvement_batch')
+        batch_filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-batch.hdf5")
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
         checkpoint = call_backs.ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=True, mode='min')
 
