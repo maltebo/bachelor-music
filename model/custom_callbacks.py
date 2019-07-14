@@ -77,9 +77,9 @@ class ModelCheckpointBatches(Callback):
 
     def on_train_begin(self, logs=None):
         if self.walltime:
-            sys.stdout.write("Start training with the following walltime: %d" % self.walltime)
+            sys.stdout.write("Start training with the following walltime: %d\n" % self.walltime)
         else:
-            sys.stdout.write("Start training without specified walltime")
+            sys.stdout.write("Start training without specified walltime\n")
         sys.stdout.flush()
 
     def on_batch_end(self, batch, logs=None):
@@ -132,5 +132,5 @@ class ModelCheckpointBatches(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         self.last_epoch += 1
-        sys.stdout.write("Epoch %05d: model is saved!" % epoch+1)
+        sys.stdout.write("Epoch %d: model is saved!\n" % (self.last_epoch))
         sys.stdout.flush()

@@ -246,6 +246,8 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
         model.compile(loss={'pitch_output': 'categorical_crossentropy',
                             'length_output': 'categorical_crossentropy'},
+                      metrics={'pitch_output': 'accuracy',
+                               'length_output': 'accuracy'},
                       optimizer=Adam())
 
         print(model.summary(90))
@@ -310,9 +312,9 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 if __name__ == '__main__':
 
     vs = 0.2
-    bs = 32
-    ep = 20
-    nr_s = 20
+    bs = 10
+    ep = 10
+    nr_s = 10
     cb = True
     wall_time = 1550
 
