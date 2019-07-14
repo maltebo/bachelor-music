@@ -229,7 +229,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
                                              #update_freq=5000
                                              )
 
-        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=50, walltime=walltime)
+        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=5000, walltime=walltime)
 
         reduce_lr = call_backs.ReduceLROnPlateau(monitor='val_loss', factor=0.2,
                                                  patience=3, min_lr=0.001)
@@ -261,11 +261,12 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
                         validation_steps=len(test_data) // batch_size, max_queue_size=30,
                         callbacks=callbacks, class_weight=chord_weights, initial_epoch=initial_epoch)
 
-    if batches_checkpoint.reached_wall_time:
-        from subprocess import call
-        recallParameter = 'qsub -v REDO=True,EPOCH=' + str(
-            batches_checkpoint.last_epoch) + ' chord_model.sge'
-        call(recallParameter, shell=True)
+    if callbacks and walltime:
+        if batches_checkpoint.reached_wall_time:
+            from subprocess import call
+            recallParameter = 'qsub -v REDO=True,EPOCH=' + str(
+                batches_checkpoint.last_epoch) + ' chord_model.sge'
+            call(recallParameter, shell=True)
 
 
 if __name__ == '__main__':
@@ -275,7 +276,7 @@ if __name__ == '__main__':
     ep = 20
     nr_s = 10
     cb = True
-    wall_time = 30
+    wall_time = 0
 
     i = 1
     while i < len(sys.argv):

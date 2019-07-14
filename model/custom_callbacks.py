@@ -11,15 +11,7 @@ from keras.callbacks import Callback
 
 
 class ModelCheckpointBatches(Callback):
-    """Save the model after every epoch.
-
-    `filepath` can contain named formatting options,
-    which will be filled the value of `epoch` and
-    keys in `logs` (passed in `on_epoch_end`).
-
-    For example: if `filepath` is `weights.{epoch:02d}-{val_loss:.2f}.hdf5`,
-    then the model checkpoints will be saved with the epoch number and
-    the validation loss in the filename.
+    """Save the model after every batch.
 
     # Arguments
         filepath: string, path to save the model file.
@@ -39,7 +31,7 @@ class ModelCheckpointBatches(Callback):
         save_weights_only: if True, then only the model's weights will be
             saved (`model.save_weights(filepath)`), else the full model
             is saved (`model.save(filepath)`).
-        period: Interval (number of epochs) between checkpoints.
+        period: Interval (number of batches) between checkpoints.
     """
 
     def __init__(self, filepath, monitor='val_loss', verbose=0,

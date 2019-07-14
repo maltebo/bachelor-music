@@ -7,7 +7,7 @@ import tensorflow as tf
 import keras.callbacks as call_backs
 from keras.backend import set_session
 from keras.layers import Input, LSTM, Dense, concatenate, Masking
-from keras.models import Model
+from keras.models import Model, load_model
 from keras.optimizers import Adam
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
@@ -203,7 +203,7 @@ length_weights = {
     12: 16.905740489130437,
 }
 
-def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, callbacks=False):
+def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, callbacks=False, walltime=0):
     if not force:
 
         fit = input("Fit melody model? Y/n")
@@ -218,27 +218,36 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
     ################# MODEL
     ##########################################################################################
 
-    pitch_input = Input(shape=(c_m.sequence_length, 38), dtype='float32', name='pitch_input')
-    length_input = Input(shape=(c_m.sequence_length, 16), dtype='float32', name='length_input')
-    offset_input = Input(shape=(c_m.sequence_length, 4), dtype='float32', name='offset_input')
+    try:
+        if os.environ['REDO'] == 'True':
+            model = load_model(os.path.join(c.project_folder, "data/tf_weights/weights_saved_wall_time.hdf5"))
+            initial_epoch = int(os.environ['EPOCH'])
+        else:
+            raise Exception()
+    except:
+        initial_epoch = 0
 
-    concatenated_input = concatenate([pitch_input, length_input, offset_input], axis=-1)
+        pitch_input = Input(shape=(c_m.sequence_length, 38), dtype='float32', name='pitch_input')
+        length_input = Input(shape=(c_m.sequence_length, 16), dtype='float32', name='length_input')
+        offset_input = Input(shape=(c_m.sequence_length, 4), dtype='float32', name='offset_input')
 
-    masked_input = Masking(0.0)(concatenated_input)
+        concatenated_input = concatenate([pitch_input, length_input, offset_input], axis=-1)
 
-    lstm_layer = LSTM(256)(masked_input)
+        masked_input = Masking(0.0)(concatenated_input)
 
-    pitch_output = Dense(38, activation='softmax', name='pitch_output')(lstm_layer)
-    length_output = Dense(16, activation='softmax', name='length_output')(lstm_layer)
+        lstm_layer = LSTM(256)(masked_input)
 
-    model = Model(inputs=[pitch_input, length_input, offset_input],
-                  outputs=[pitch_output, length_output])
+        pitch_output = Dense(38, activation='softmax', name='pitch_output')(lstm_layer)
+        length_output = Dense(16, activation='softmax', name='length_output')(lstm_layer)
 
-    model.compile(loss={'pitch_output': 'categorical_crossentropy',
-                        'length_output': 'categorical_crossentropy'},
-                  optimizer=Adam())
+        model = Model(inputs=[pitch_input, length_input, offset_input],
+                      outputs=[pitch_output, length_output])
 
-    print(model.summary(90))
+        model.compile(loss={'pitch_output': 'categorical_crossentropy',
+                            'length_output': 'categorical_crossentropy'},
+                      optimizer=Adam())
+
+        print(model.summary(90))
 
     ##########################################################################################
     ################# CALLBACKS
@@ -254,7 +263,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
         checkpoint = call_backs.ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=True, mode='min')
 
-        batches_checkpoint = ModelCheckpointBatches(filepath, monitor='loss', period=5000)
+        batches_checkpoint = ModelCheckpointBatches(filepath, monitor='loss', period=5000, walltime=walltime)
 
         early_stopping = call_backs.EarlyStopping(monitor='val_loss', min_delta=0, patience=5,
                                           verbose=0, mode='auto', baseline=None)
@@ -328,7 +337,13 @@ if __name__ == '__main__':
         elif sys.argv[i] == '-cb':
             cb = True
             i += 1
+        elif sys.argv[i] == '-wt':
+            h,m,s = sys.argv[i+1].split(':')
+            h = int(h)
+            m = int(m)
+            s = int(s)
+            wall_time = s + 60*m + 3600*h
         else:
             raise ValueError("option not understood:", sys.argv[i])
 
-    melody_model(vs, bs, ep, nr_s, cb)
+    melody_model(vs, bs, ep, nr_s, cb, walltime=wall_time)
