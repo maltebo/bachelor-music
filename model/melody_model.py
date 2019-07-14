@@ -345,6 +345,7 @@ if __name__ == '__main__':
             m = int(m)
             s = int(s)
             wall_time = s + 60*m + 3600*h
+            i += 2
         else:
             raise ValueError("option not understood:", sys.argv[i])
 
