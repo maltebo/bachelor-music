@@ -174,7 +174,6 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
     ################# MODEL
     ##########################################################################################
 
-
     try:
         if os.environ['REDO'] == 'True':
             model = load_model(os.path.join(c.project_folder, "data/tf_weights/weights_saved_wall_time.hdf5"))
@@ -205,7 +204,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
                       outputs=[dense_final])
 
         model.compile(loss={'dense_final': 'categorical_crossentropy'},
-                      metrics='accuracy',
+                      metrics=['accuracy'],
                       optimizer=Adam())
 
         print(model.summary(90))
