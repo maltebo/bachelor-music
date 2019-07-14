@@ -74,6 +74,10 @@ class ModelCheckpointBatches(Callback):
                 self.monitor_op = np.less
                 self.best = np.Inf
 
+    def on_train_begin(self, logs=None):
+        if self.walltime:
+            print("Start training with the following walltime: %d" % self.walltime)
+
     def on_batch_end(self, batch, logs=None):
         logs = logs or {}
         self.batches_since_last_save += 1
@@ -83,8 +87,8 @@ class ModelCheckpointBatches(Callback):
             if self.save_best_only:
                 current = logs.get(self.monitor)
                 if current is None:
-                    warnings.warn('Can save best model only with %s available, '
-                                  'skipping.' % (self.monitor), RuntimeWarning)
+                    print('Can save best model only with %s available, '
+                          'skipping.' % (self.monitor))
                 else:
                     if self.monitor_op(current, self.best):
                         if self.verbose > 0:
@@ -124,3 +128,4 @@ class ModelCheckpointBatches(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         self.last_epoch += 1
+        print("Epoch %05d: model is saved!")
