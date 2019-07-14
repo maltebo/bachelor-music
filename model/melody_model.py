@@ -257,7 +257,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         terminate_on_nan = call_backs.TerminateOnNaN()
 
         import datetime
-        time = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+        time = datetime.datetime.now().strftime("%Y%m%d_%H")
         filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-{t}.hdf5".format(t=time))
         batch_filepath = filepath.replace('improvement', 'improvement_batch')
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
@@ -265,13 +265,13 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
         batches_checkpoint = ModelCheckpointBatches(filepath, monitor='loss', period=5000, walltime=walltime)
 
-        early_stopping = call_backs.EarlyStopping(monitor='val_loss', min_delta=0, patience=5,
+        early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=5,
                                           verbose=0, mode='auto', baseline=None)
 
         tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
                                      update_freq=5000)
 
-        reduce_lr = call_backs.ReduceLROnPlateau(monitor='val_loss', factor=0.2,
+        reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.2,
                                          patience=3, min_lr=0.001)
 
         callbacks = [terminate_on_nan, checkpoint, batches_checkpoint, early_stopping, tensorboard, reduce_lr]
@@ -313,6 +313,7 @@ if __name__ == '__main__':
     ep = 2
     nr_s = 10
     cb = False
+    wall_time = 0
 
     i = 1
     while i < len(sys.argv):
