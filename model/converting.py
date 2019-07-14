@@ -1,6 +1,6 @@
-pitch_to_id = {i+1 : i+48 for i in range(37)}
-pitch_to_id[0] = 200
-id_to_pitch = {y: x for x, y in pitch_to_id.items()}
+id_to_pitch = {i+1 : i+48 for i in range(37)}
+id_to_pitch[0] = 200
+pitch_to_id = {y: x for x, y in id_to_pitch.items()}
 
 length_to_id = {i+1: i for i in range(16)}
 id_to_length = {y: x for x, y in length_to_id.items()}

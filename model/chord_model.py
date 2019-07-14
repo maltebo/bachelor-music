@@ -27,7 +27,7 @@ sess = tf.compat.v1.Session(config=config)
 set_session(sess)
 
 # for automated chord model training
-force=True
+force=False
 
 def make_chord_data_from_file(nr_songs=None):
     all_files = []
@@ -223,16 +223,16 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
         checkpoint = call_backs.ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=True, mode='min')
 
-        early_stopping = call_backs.EarlyStopping(monitor='val_loss', min_delta=0, patience=5,
+        early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=5,
                                                   verbose=0, mode='auto', baseline=None)
 
         tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
                                              #update_freq=5000
                                              )
 
-        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=5000, walltime=walltime)
+        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=2000, walltime=walltime)
 
-        reduce_lr = call_backs.ReduceLROnPlateau(monitor='val_loss', factor=0.2,
+        reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.2,
                                                  patience=3, min_lr=0.001)
 
         callbacks = [terminate_on_nan, checkpoint, batches_checkpoint, early_stopping, tensorboard, reduce_lr]
@@ -259,7 +259,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
     model.fit_generator(generator=chord_data_generator(train_data, batch_size),
                         steps_per_epoch=len(train_data) // batch_size,
                         epochs=epochs, verbose=0, validation_data=chord_data_generator(test_data, batch_size),
-                        validation_steps=len(test_data) // batch_size, max_queue_size=30,
+                        validation_steps=len(test_data) // batch_size, max_queue_size=100,
                         callbacks=callbacks, class_weight=chord_weights, initial_epoch=initial_epoch)
 
     if callbacks and walltime:
@@ -275,9 +275,9 @@ if __name__ == '__main__':
     vs = 0.2
     bs = 10
     ep = 20
-    nr_s = 10
+    nr_s = 20
     cb = True
-    wall_time = 0
+    wall_time = 5000
 
     i = 1
     while i < len(sys.argv):

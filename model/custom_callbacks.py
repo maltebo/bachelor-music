@@ -79,7 +79,7 @@ class ModelCheckpointBatches(Callback):
         self.batches_since_last_save += 1
         if self.batches_since_last_save >= self.period:
             self.batches_since_last_save = 0
-            filepath = self.filepath.format(epoch=batch + 1, **logs)
+            filepath = self.filepath # .format(epoch=batch + 1, **logs)
             if self.save_best_only:
                 current = logs.get(self.monitor)
                 if current is None:
@@ -115,7 +115,7 @@ class ModelCheckpointBatches(Callback):
                     self.average_time = (self.average_time * 7 + used_time) / 8
                 else:
                     self.average_time = used_time
-                if (time.time() - self.start_time + 10*self.average_time) > self.walltime:
+                if ((time.time() - self.start_time) + 10*self.average_time) > self.walltime:
                     self.reached_wall_time = True
                     self.model.stop_training = True
                     self.model.save(self.time_filepath, overwrite=True)

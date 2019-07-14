@@ -264,7 +264,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
         checkpoint = call_backs.ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=True, mode='min')
 
-        batches_checkpoint = ModelCheckpointBatches(filepath, monitor='loss', period=5000, walltime=walltime)
+        batches_checkpoint = ModelCheckpointBatches(filepath, monitor='loss', period=2000, walltime=walltime)
 
         early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=5,
                                           verbose=0, mode='auto', baseline=None)
@@ -303,18 +303,18 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
     model.fit_generator(generator=melody_data_generator(train_data, batch_size),
                         steps_per_epoch=len(train_data) // batch_size,
                         epochs=epochs, verbose=0, validation_data=melody_data_generator(test_data, batch_size),
-                        validation_steps=len(test_data) // batch_size, max_queue_size=30, callbacks=callbacks)
+                        validation_steps=len(test_data) // batch_size, max_queue_size=100, callbacks=callbacks)
 
 
 
 if __name__ == '__main__':
 
     vs = 0.2
-    bs = 10
-    ep = 2
-    nr_s = 10
-    cb = False
-    wall_time = 0
+    bs = 32
+    ep = 20
+    nr_s = 20
+    cb = True
+    wall_time = 1550
 
     i = 1
     while i < len(sys.argv):
