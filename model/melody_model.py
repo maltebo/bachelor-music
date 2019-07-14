@@ -16,6 +16,7 @@ import settings.constants as c
 import settings.constants_model as c_m
 import settings.music_info_pb2 as music_info
 from model.custom_callbacks import ModelCheckpointBatches
+import model.converting as converter
 
 config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU
@@ -52,9 +53,9 @@ def make_melody_data_from_file(nr_files=None):
             offsets = list(melody.offsets)
             offsets_input = [o % 16 for o in melody.offsets]
             # -1 because shortest possible length is 1
-            lengths = [e - 1 for e in melody.lengths]
+            lengths = [converter.length_to_id[e] for e in melody.lengths]
             # 200 is a break (coded as pitch 200), values range in between 48 and 84 - values from 0 to 37
-            pitches = [(n - 47) % (200 - 47) for n in melody.pitches]
+            pitches = [converter.pitch_to_id[n] for n in melody.pitches]
 
             for i in range(len(melody.pitches)):
                 current_offsets = offsets_input[max(0, i - (c_m.sequence_length)): i]

@@ -12,7 +12,7 @@ sess = tf.Session(config=config)
 set_session(sess)
 
 import settings.constants_model as c
-import model.make_tf_structure as tf_struct
+import old.make_tf_structure as tf_struct
 
 pitch_in, length_in, offset_in, pitch_out, length_out = tf_struct.make_tf_data()
 

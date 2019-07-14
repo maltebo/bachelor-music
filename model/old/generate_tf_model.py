@@ -12,7 +12,7 @@ from tensorflow.python.keras.models import Model
 from tensorflow.python.keras.optimizers import Adam
 from tensorflow.python.keras.preprocessing.sequence import pad_sequences
 
-import model.make_tf_structure as make_tf
+import old.make_tf_structure as make_tf
 
 from tensorflow.python.keras.utils import to_categorical
 

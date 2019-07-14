@@ -2,7 +2,7 @@ import numpy as np
 from tensorflow.python.keras.preprocessing.sequence import pad_sequences
 from tensorflow.python.keras.utils import to_categorical
 
-import converter.melody_converter as mc
+import melody_converter as mc
 import settings.constants_model as c_m
 import settings.constants_preprocessing as c_p
 import settings.music_info_pb2 as music_info

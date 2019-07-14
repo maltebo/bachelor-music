@@ -17,6 +17,7 @@ import settings.constants as c
 import settings.constants_model as c_m
 import settings.music_info_pb2 as music_info
 from model.custom_callbacks import ModelCheckpointBatches
+import model.converting as converter
 
 config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU
@@ -58,7 +59,7 @@ def make_chord_data_from_file(nr_songs=None):
 
         for melody in song_data.melodies:
             # 200 is a break (coded as pitch 200), values range in between 48 and 84 - values from 0 to 37
-            pitches = [(n - 47) % (200 - 47) for n in melody.pitches]
+            pitches = [converter.pitch_to_id[n] for n in melody.pitches]
 
             for pitch, length, offset in zip(pitches, melody.lengths, melody.offsets):
                 melody_list[offset:offset + length] = pitch

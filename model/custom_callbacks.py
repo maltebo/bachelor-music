@@ -112,10 +112,10 @@ class ModelCheckpointBatches(Callback):
             if self.walltime:
                 used_time = time.time() - self.last_time
                 if self.average_time > 0:
-                    self.average_time = (self.average_time + used_time) / 2
+                    self.average_time = (self.average_time * 7 + used_time) / 8
                 else:
                     self.average_time = used_time
-                if (time.time() - self.start_time + 3*self.average_time) > self.walltime:
+                if (time.time() - self.start_time + 10*self.average_time) > self.walltime:
                     self.reached_wall_time = True
                     self.model.stop_training = True
                     self.model.save(self.time_filepath, overwrite=True)
