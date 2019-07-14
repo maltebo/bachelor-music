@@ -219,7 +219,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
         import datetime
         temp_time = datetime.datetime.now().strftime("%Y%m%d_%H%M")
         filepath = os.path.join(c.project_folder, "data/tf_weights/chords-weights-improvement-{t}.hdf5".format(t=temp_time))
-        batch_filepath = filepath.replace('improvement', 'improvement-batched')
+        batch_filepath = filepath.replace('improvement', 'improvement-batch')
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
         checkpoint = call_backs.ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=True, mode='min')
 
@@ -227,10 +227,10 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
                                                   verbose=0, mode='auto', baseline=None)
 
         tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
-                                             #update_freq=5000
+                                             update_freq=500
                                              )
 
-        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=2000, walltime=walltime)
+        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=500, walltime=walltime)
 
         reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.2,
                                                  patience=3, min_lr=0.001)
