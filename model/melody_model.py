@@ -193,12 +193,13 @@ length_weights = {
 }
 
 def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, callbacks=False, walltime=0):
-    # if not force:
-    #
-    #     fit = input("Fit melody model? Y/n")
-    #
-    #     if fit != 'Y':
-    #         return
+
+    if not force:
+
+        fit = input("Fit melody model? Y/n")
+
+        if fit != 'Y':
+            return
 
     offsets_o, length_sequences_o, pitch_sequences_o, next_pitches_o, next_lengths_o = \
         make_melody_data_from_file(nr_files=nr_files)
@@ -264,6 +265,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-{epoch:02d}.hdf5")
         batch_filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-batch.hdf5")
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
+
         checkpoint = call_backs.ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
                                                 mode='min')
 
@@ -273,7 +275,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
                                           verbose=1, mode='auto', baseline=None)
 
         tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
-                                     update_freq=500)
+                                     update_freq=1000)
 
         reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.2, verbose=1,
                                          patience=3, min_lr=0.001)
@@ -303,20 +305,32 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
     del zipped_data
 
+    verbose = 0
+    if force:
+        verbose = 0
+
     model.fit_generator(generator=melody_data_generator(train_data, batch_size),
                         steps_per_epoch=len(train_data) // batch_size,
-                        epochs=epochs, verbose=0, validation_data=melody_data_generator(test_data, batch_size),
-                        validation_steps=len(test_data) // batch_size, max_queue_size=100, callbacks=callbacks)
+                        epochs=epochs, verbose=verbose, validation_data=melody_data_generator(test_data, batch_size),
+                        validation_steps=len(test_data) // batch_size, max_queue_size=100,
+                        callbacks=callbacks, class_weight=[pitch_weights, length_weights],
+                        initial_epoch=initial_epoch)
 
+    if callbacks and walltime:
+        if batches_checkpoint.reached_wall_time:
+            from subprocess import call
+            recallParameter = 'qsub -v REDO=True,EPOCH=' + str(
+                batches_checkpoint.last_epoch) + ' melody_model.sge'
+            call(recallParameter, shell=True)
 
 
 if __name__ == '__main__':
 
     vs = 0.2
     bs = 32
-    ep = 10
-    nr_s = 10
-    cb = False
+    ep = 3
+    nr_s = 2
+    cb = True
     wall_time = 1550
 
     i = 1
