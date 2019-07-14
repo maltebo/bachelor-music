@@ -134,3 +134,7 @@ class ModelCheckpointBatches(Callback):
         self.last_epoch += 1
         sys.stdout.write("Epoch %d: model is saved!\n" % (self.last_epoch))
         sys.stdout.flush()
+
+    def on_train_end(self, logs=None):
+        sys.stdout.write("Training finished!")
+        sys.stdout.flush()
