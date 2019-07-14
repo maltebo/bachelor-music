@@ -5,6 +5,7 @@ from __future__ import print_function
 import numpy as np
 import warnings
 import os
+import sys
 
 import time
 from keras.callbacks import Callback
@@ -76,7 +77,10 @@ class ModelCheckpointBatches(Callback):
 
     def on_train_begin(self, logs=None):
         if self.walltime:
-            print("Start training with the following walltime: %d" % self.walltime)
+            sys.stdout.write("Start training with the following walltime: %d" % self.walltime)
+        else:
+            sys.stdout.write("Start training without specified walltime")
+        sys.stdout.flush()
 
     def on_batch_end(self, batch, logs=None):
         logs = logs or {}
@@ -128,4 +132,5 @@ class ModelCheckpointBatches(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         self.last_epoch += 1
-        print("Epoch %05d: model is saved!")
+        sys.stdout.write("Epoch %05d: model is saved!" % epoch+1)
+        sys.stdout.flush()
