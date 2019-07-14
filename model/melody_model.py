@@ -228,11 +228,11 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
         dropout_1 = Dropout(rate=0.2)(lstm_layer_1)
 
-        lstm_layer_2 = LSTM(128, return_sequences=True)(dropout_1)
+        lstm_layer_2 = LSTM(128, return_sequences=True, input_shape=(50, 128))(dropout_1)
 
         dropout_2 = Dropout(rate=0.2)(lstm_layer_2)
 
-        lstm_layer_3 = LSTM(128, return_sequences=False)(dropout_2)
+        lstm_layer_3 = LSTM(128, return_sequences=False, input_shape=(50, 128))(dropout_2)
 
         dropout_3 = Dropout(rate=0.2)(lstm_layer_3)
 
@@ -314,9 +314,9 @@ if __name__ == '__main__':
 
     vs = 0.2
     bs = 32
-    ep = 30
-    nr_s = 30
-    cb = True
+    ep = 10
+    nr_s = 10
+    cb = False
     wall_time = 1550
 
     i = 1
