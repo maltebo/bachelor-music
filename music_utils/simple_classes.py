@@ -111,7 +111,7 @@ class Part:
 
 class Note(list):
 
-    def __init__(self, offset, length, pitch=200, volume=0, part=2 ** 32):
+    def __init__(self, offset, length, pitch=200, volume=120, part=2 ** 32):
         super().__init__([offset, length, pitch, volume, part])
         self._m21_note = None
 

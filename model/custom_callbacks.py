@@ -35,7 +35,7 @@ class ModelCheckpointBatches(Callback):
         period: Interval (number of batches) between checkpoints.
     """
 
-    def __init__(self, filepath, monitor='val_loss', verbose=0,
+    def __init__(self, filepath, monitor='loss', verbose=0,
                  save_best_only=True, save_weights_only=False,
                  mode='auto', period=1000, walltime=0, last_epoch=0):
         super(ModelCheckpointBatches, self).__init__()
@@ -107,11 +107,11 @@ class ModelCheckpointBatches(Callback):
                             self.model.save(filepath, overwrite=True)
                     else:
                         if self.verbose > 0:
-                            print('\nEpoch %05d: %s did not improve from %0.5f' %
+                            print('\nBatch %05d: %s did not improve from %0.5f' %
                                   (batch + 1, self.monitor, self.best))
             else:
                 if self.verbose > 0:
-                    print('\nEpoch %05d: saving model to %s' % (batch + 1, filepath))
+                    print('\nBatch %05d: saving model to %s' % (batch + 1, filepath))
                 if self.save_weights_only:
                     self.model.save_weights(filepath, overwrite=True)
                 else:

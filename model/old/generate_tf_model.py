@@ -81,6 +81,7 @@ for melody_nr in range(1):
                                      truncating='post', value=0.0)
 
     for i in range(100):
+
         pitch_pred, length_pred = model.predict([pitch_input_pad, length_input_pad, offset_input_pad], verbose=0)
 
         pitch_idx = np.random.choice(a=len(pitch_pred[0]), size=1, p=pitch_pred[0])[0]

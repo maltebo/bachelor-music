@@ -47,6 +47,7 @@ def make_chord_data_from_file(nr_songs=None):
     melody_sequences = []
     start_sequences = []
     next_chords = []
+    on_full_beat = []
 
     if nr_songs is None:
         nr_songs = len(all_data.songs)
@@ -73,13 +74,14 @@ def make_chord_data_from_file(nr_songs=None):
             assert len(current_pitches) == 8
             assert len(current_starts) == 8
 
-            chord_sequences.append(current_chords)
-            melody_sequences.append(current_pitches)
-            start_sequences.append(current_starts)
+            if np.sum(current_pitches) != 0:
 
-            next_chords.append(chords[i])
+                chord_sequences.append(current_chords)
+                melody_sequences.append(current_pitches)
+                start_sequences.append(current_starts)
+                on_full_beat.append([i % 2, (i + 1) % 2])
 
-    on_full_beat = [[i % 2, (i + 1) % 2] for i in range(len(chord_sequences))]
+                next_chords.append(chords[i])
     # 0,1 is full beat, 1,0 is half beat
 
     return chord_sequences, melody_sequences, start_sequences, on_full_beat, next_chords
@@ -190,11 +192,11 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
 
         concatenate_pre = concatenate([melody_input, start_input, on_full_beat_input], axis=-1)
 
-        dense_pre = Dense(32, activation='relu', name='dense_pre')(concatenate_pre)
+        dense_pre = Dense(64, activation='relu', name='dense_pre')(concatenate_pre)
 
         masked_input = Masking(0.0)(chord_input)
 
-        lstm = LSTM(64)(masked_input)
+        lstm = LSTM(256)(masked_input)
 
         concatenate_final = concatenate([dense_pre, lstm], axis=-1)
 
@@ -225,7 +227,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
 
         batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=500, walltime=walltime)
 
-        early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=5,
+        early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=10,
                                                   verbose=0, mode='auto', baseline=None)
 
         tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
@@ -233,7 +235,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
                                              )
 
         reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.2,
-                                                 patience=3, min_lr=0.001)
+                                                 patience=3, min_lr=0.000008)
 
         callbacks = [terminate_on_nan, checkpoint, batches_checkpoint, early_stopping, tensorboard, reduce_lr]
     else:
@@ -254,17 +256,22 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
 
     assert validation_split < 1 and validation_split >= 0
 
-    random.shuffle(zipped_data)
     test_data = zipped_data[:int(len(zipped_data) * validation_split)]
     train_data = zipped_data[int(len(zipped_data) * validation_split):]
+
+    del zipped_data
 
     ##########################################################################################
     ################# MODEL FITTING
     ##########################################################################################
 
+    verbose = 1
+    if force:
+        verbose = 0
+
     model.fit_generator(generator=chord_data_generator(train_data, batch_size),
                         steps_per_epoch=len(train_data) // batch_size,
-                        epochs=epochs, verbose=0, validation_data=chord_data_generator(test_data, batch_size),
+                        epochs=epochs, verbose=verbose, validation_data=chord_data_generator(test_data, batch_size),
                         validation_steps=len(test_data) // batch_size, max_queue_size=100,
                         callbacks=callbacks, class_weight=chord_weights, initial_epoch=initial_epoch)
 
@@ -279,10 +286,10 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
 if __name__ == '__main__':
 
     vs = 0.2
-    bs = 10
-    ep = 20
-    nr_s = 20
-    cb = True
+    bs = 32
+    ep = 100
+    nr_s = 10
+    cb = False
     wall_time = 5000
 
     i = 1
@@ -318,4 +325,4 @@ if __name__ == '__main__':
         else:
             raise ValueError("option not understood:", sys.argv[i])
 
-    chord_model(vs, bs, ep, nr_s, cb, walltime=wall_time)
+    chord_model(vs, bs, ep, nr_s, cb, walltime=0)

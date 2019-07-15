@@ -5,7 +5,7 @@ import sys
 import numpy as np
 import tensorflow as tf
 import keras.callbacks as call_backs
-from keras.backend import set_session, reshape
+from keras.backend import set_session
 from keras.layers import Input, LSTM, Dense, concatenate, Masking, Dropout, Reshape
 from keras.models import Model, load_model
 from keras.optimizers import Adam
@@ -26,9 +26,6 @@ sess = tf.compat.v1.Session(config=config)
 set_session(sess)
 
 force = False
-
-def offset_to_binary_array(offset):
-    return [int(x) for x in format(int(offset), '04b')[:]]
 
 
 def make_melody_data_from_file(nr_files=None):
@@ -107,7 +104,7 @@ def melody_data_generator(data, batch_size):
 
         length_sequences = [to_categorical(length, num_classes=16) for length in length_sequences]
         pitch_sequences = [to_categorical(pitch, num_classes=38) for pitch in pitch_sequences]
-        offsets = [offset_to_binary_array(o) for o in offsets]
+        offsets = [converter.offset_to_binary_array(o) for o in offsets]
 
         next_pitches = [to_categorical(pitch, num_classes=38) for pitch in next_pitches]
         next_lengths = [to_categorical(length, num_classes=16) for length in next_lengths]
@@ -192,12 +189,10 @@ length_weights = {
     12: 16.905740489130437,
 }
 
-def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, callbacks=False, walltime=0):
+def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, callbacks=False, walltime=0, temp=1.0):
 
     if not force:
-
         fit = input("Fit melody model? Y/n")
-
         if fit != 'Y':
             return
 
@@ -233,7 +228,8 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
         dropout_2 = Dropout(rate=0.2)(lstm_layer_2)
 
-        lstm_layer_3 = LSTM(128, return_sequences=False, input_shape=(50, 128))(dropout_2)
+        lstm_layer_3 = LSTM(128, return_sequences=False, input_shape=(50, 128),
+                            activation='tanh', recurrent_activation='hard_sigmoid')(dropout_2)
 
         dropout_3 = Dropout(rate=0.2)(lstm_layer_3)
 
@@ -278,7 +274,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
                                      update_freq=1000)
 
         reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.2, verbose=1,
-                                         patience=3, min_lr=0.001)
+                                         patience=3, min_lr=0.000008)
 
         callbacks = [terminate_on_nan, checkpoint, batches_checkpoint, early_stopping, tensorboard, reduce_lr]
     else:
@@ -299,13 +295,12 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
     assert validation_split < 1 and validation_split >= 0
 
-    random.shuffle(zipped_data)
     test_data = zipped_data[:int(len(zipped_data) * validation_split)]
     train_data = zipped_data[int(len(zipped_data) * validation_split):]
 
     del zipped_data
 
-    verbose = 0
+    verbose = 1
     if force:
         verbose = 0
 
