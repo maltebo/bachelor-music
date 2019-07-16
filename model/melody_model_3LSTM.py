@@ -258,14 +258,15 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
     if callbacks:
         terminate_on_nan = call_backs.TerminateOnNaN()
 
-        filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-{epoch:02d}.hdf5")
+        filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-3LSTM-improvement-{epoch:02d}-"
+                                                  "vl-{val_loss:0.5f}-pacc-{pitch_output_acc:0.5f}-lacc-{length_output_acc:0.5f}.hdf5")
         batch_filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-batch.hdf5")
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
 
         checkpoint = call_backs.ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
                                                 mode='min')
 
-        batches_checkpoint = ModelCheckpointBatches(filepath, monitor='loss', period=500, walltime=walltime)
+        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=500, walltime=walltime)
 
         early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=10,
                                           verbose=1, mode='auto', baseline=None)
@@ -298,6 +299,11 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
     test_data = zipped_data[:int(len(zipped_data) * validation_split)]
     train_data = zipped_data[int(len(zipped_data) * validation_split):]
 
+    print("Number of data points in training data:", len(train_data))
+    print("Number of data points in validaion data:", len(test_data))
+    print("Batch size:", batch_size)
+    print("Steps in an epoch:", len(train_data) // batch_size)
+
     del zipped_data
 
     verbose = 1
@@ -324,7 +330,7 @@ if __name__ == '__main__':
     vs = 0.2
     bs = 32
     ep = 3
-    nr_s = 2
+    nr_s = 5
     cb = True
     wall_time = 1550
 

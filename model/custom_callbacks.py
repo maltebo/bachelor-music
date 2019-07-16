@@ -90,6 +90,7 @@ class ModelCheckpointBatches(Callback):
             filepath = self.filepath # .format(epoch=batch + 1, **logs)
             if self.save_best_only:
                 current = logs.get(self.monitor)
+                print("In batch %d: %s is %0.5f" % (batch+1, self.monitor, current))
                 if current is None:
                     print('Can save best model only with %s available, '
                           'skipping.' % (self.monitor))
@@ -129,11 +130,6 @@ class ModelCheckpointBatches(Callback):
                     self.model.save(self.time_filepath, overwrite=True)
 
                 self.last_time = time.time()
-
-    def on_epoch_end(self, epoch, logs=None):
-        self.last_epoch += 1
-        sys.stdout.write("Epoch %d: model is saved!\n" % (self.last_epoch))
-        sys.stdout.flush()
 
     def on_train_end(self, logs=None):
         sys.stdout.write("Training finished!")
