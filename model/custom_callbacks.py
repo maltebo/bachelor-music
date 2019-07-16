@@ -90,17 +90,17 @@ class ModelCheckpointBatches(Callback):
             filepath = self.filepath # .format(epoch=batch + 1, **logs)
             if self.save_best_only:
                 current = logs.get(self.monitor)
-                print("In batch %d: %s is %0.5f" % (batch+1, self.monitor, current))
+                print("In batch %d: %s is %0.5f" % (batch+1, self.monitor, current), flush=True)
                 if current is None:
                     print('Can save best model only with %s available, '
-                          'skipping.' % (self.monitor))
+                          'skipping.' % (self.monitor), flush=True)
                 else:
                     if self.monitor_op(current, self.best):
                         if self.verbose > 0:
                             print('\nBatch %05d: %s improved from %0.5f to %0.5f,'
                                   ' saving model to %s'
                                   % (batch + 1, self.monitor, self.best,
-                                     current, filepath))
+                                     current, filepath), flush=True)
                         self.best = current
                         if self.save_weights_only:
                             self.model.save_weights(filepath, overwrite=True)
@@ -109,10 +109,10 @@ class ModelCheckpointBatches(Callback):
                     else:
                         if self.verbose > 0:
                             print('\nBatch %05d: %s did not improve from %0.5f' %
-                                  (batch + 1, self.monitor, self.best))
+                                  (batch + 1, self.monitor, self.best), flush=True)
             else:
                 if self.verbose > 0:
-                    print('\nBatch %05d: saving model to %s' % (batch + 1, filepath))
+                    print('\nBatch %05d: saving model to %s' % (batch + 1, filepath), flush=True)
                 if self.save_weights_only:
                     self.model.save_weights(filepath, overwrite=True)
                 else:
@@ -128,7 +128,7 @@ class ModelCheckpointBatches(Callback):
                     self.reached_wall_time = True
                     self.model.stop_training = True
                     self.model.save(self.time_filepath, overwrite=True)
-                    print("Wall time is reached, restart model!")
+                    print("Wall time is reached, restart model!", flush=True)
 
                 self.last_time = time.time()
 
@@ -210,12 +210,12 @@ class ModelCheckpoint(Callback):
         if self.epochs_since_last_save >= self.period:
             self.epochs_since_last_save = 0
             try:
-                print("specified filepath:", self.filepath)
-                print("current logs are:", logs)
+                print("specified filepath:", self.filepath, flush=True)
+                print("current logs are:", logs, flush=True)
                 filepath = self.filepath.format(epoch=epoch + 1, **logs)
             except:
-                print("specified filepath:", self.filepath)
-                print("current logs are:", logs)
+                print("specified filepath:", self.filepath, flush=True)
+                print("current logs are:", logs, flush=True)
                 raise KeyError("Why did this happen?")
             if self.save_best_only:
                 current = logs.get(self.monitor)
@@ -228,7 +228,7 @@ class ModelCheckpoint(Callback):
                             print('\nEpoch %05d: %s improved from %0.5f to %0.5f,'
                                   ' saving model to %s'
                                   % (epoch + 1, self.monitor, self.best,
-                                     current, filepath))
+                                     current, filepath), flush=True)
                         self.best = current
                         if self.save_weights_only:
                             self.model.save_weights(filepath, overwrite=True)
@@ -237,10 +237,10 @@ class ModelCheckpoint(Callback):
                     else:
                         if self.verbose > 0:
                             print('\nEpoch %05d: %s did not improve from %0.5f' %
-                                  (epoch + 1, self.monitor, self.best))
+                                  (epoch + 1, self.monitor, self.best), flush=True)
             else:
                 if self.verbose > 0:
-                    print('\nEpoch %05d: saving model to %s' % (epoch + 1, filepath))
+                    print('\nEpoch %05d: saving model to %s' % (epoch + 1, filepath), flush=True)
                 if self.save_weights_only:
                     self.model.save_weights(filepath, overwrite=True)
                 else:
