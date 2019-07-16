@@ -260,7 +260,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         verbose = 0
 
     model.fit_generator(generator=melody_data_generator(train_data, batch_size),
-                        steps_per_epoch=len(train_data) // batch_size,
+                        steps_per_epoch=min(5000,len(train_data) // batch_size),
                         epochs=epochs, verbose=verbose, validation_data=melody_data_generator(test_data, batch_size),
                         validation_steps=len(test_data) // batch_size, max_queue_size=100,
                         callbacks=callbacks, class_weight=[pitch_weights, length_weights],
