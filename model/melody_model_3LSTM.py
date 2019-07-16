@@ -207,7 +207,9 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         if os.environ['REDO'] == 'True':
             model = load_model(os.path.join(c.project_folder, "data/tf_weights/weights_saved_wall_time.hdf5"))
             initial_epoch = int(os.environ['EPOCH'])
+            print("Model retraining starting in epoch %d" % initial_epoch)
         else:
+            print("Initial model building")
             raise Exception()
     except:
         initial_epoch = 0
@@ -266,7 +268,8 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
                                                 mode='min')
 
-        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=500, walltime=walltime)
+        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=500, walltime=walltime,
+                                                    start_epoch=initial_epoch)
 
         early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=10,
                                           verbose=1, mode='auto', baseline=None)
@@ -321,7 +324,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         if batches_checkpoint.reached_wall_time:
             from subprocess import call
             recallParameter = 'qsub -v REDO=True,EPOCH=' + str(
-                batches_checkpoint.last_epoch) + ' 3w_melody_model.sge'
+                batches_checkpoint.start_epoch) + ' 3w_melody_model.sge'
             call(recallParameter, shell=True)
 
 

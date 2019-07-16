@@ -37,7 +37,7 @@ class ModelCheckpointBatches(Callback):
 
     def __init__(self, filepath, monitor='loss', verbose=0,
                  save_best_only=True, save_weights_only=False,
-                 mode='auto', period=1000, walltime=0, last_epoch=0):
+                 mode='auto', period=1000, walltime=0, start_epoch=0):
         super(ModelCheckpointBatches, self).__init__()
         self.monitor = monitor
         self.verbose = verbose
@@ -53,7 +53,7 @@ class ModelCheckpointBatches(Callback):
         self.reached_wall_time = False
         self.walltime = walltime
         self.time_filepath = os.path.join(os.path.split(filepath)[0], "weights_saved_wall_time.hdf5")
-        self.last_epoch = last_epoch
+        self.start_epoch = start_epoch
 
         if mode not in ['auto', 'min', 'max']:
             warnings.warn('ModelCheckpoint mode %s is unknown, '
@@ -131,6 +131,9 @@ class ModelCheckpointBatches(Callback):
                     print("Wall time is reached, restart model!")
 
                 self.last_time = time.time()
+
+    def on_epoch_end(self, epoch, logs=None):
+        self.start_epoch += 1
 
     def on_train_end(self, logs=None):
         sys.stdout.write("Training finished!")
