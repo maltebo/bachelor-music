@@ -209,6 +209,7 @@ class ModelCheckpoint(Callback):
             try:
                 filepath = self.filepath.format(epoch=epoch + 1, **logs)
             except:
+                print("specified filepath:", self.filepath)
                 print("current logs are:", logs)
                 raise KeyError("Why did this happen?")
             if self.save_best_only:

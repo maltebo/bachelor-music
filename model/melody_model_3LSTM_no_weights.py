@@ -248,7 +248,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
     print("Number of data points in training data:", len(train_data))
     print("Number of data points in validaion data:", len(test_data))
     print("Batch size:", batch_size)
-    print("Steps in an epoch:", len(train_data) // batch_size)
+    print("Steps in an epoch:", int(len(train_data) // batch_size))
 
     del zipped_data
 
