@@ -268,7 +268,7 @@ if __name__ == '__main__':
     bs = 32
     ep = 3
     nr_s = 5
-    cb = False
+    cb = True
     wall_time = 1550
 
     i = 1
