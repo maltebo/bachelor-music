@@ -321,7 +321,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         if batches_checkpoint.reached_wall_time:
             from subprocess import call
             recallParameter = 'qsub -v REDO=True,EPOCH=' + str(
-                batches_checkpoint.last_epoch) + ' melody_model.sge'
+                batches_checkpoint.last_epoch) + ' 3w_melody_model.sge'
             call(recallParameter, shell=True)
 
 
