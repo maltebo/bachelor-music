@@ -253,7 +253,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
         filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-1LSTMw-improvement-{epoch:02d}-"
                                                   "vl-{val_loss:.5f}-vpacc-{val_pitch_output_acc:.5f}-vlacc-{val_length_output_acc:.5f}.hdf5")
-        batch_filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-batch.hdf5")
+        batch_filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-1w-batch.hdf5")
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
 
         checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
