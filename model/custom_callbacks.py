@@ -124,7 +124,7 @@ class ModelCheckpointBatches(Callback):
                     self.average_time = (self.average_time * 7 + used_time) / 8
                 else:
                     self.average_time = used_time
-                if ((time.time() - self.start_time) + 4*self.average_time) > self.walltime:
+                if ((time.time() - self.start_time) + 3*self.average_time) > self.walltime:
                     self.reached_wall_time = True
                     self.model.stop_training = True
                     self.model.save(self.time_filepath, overwrite=True)
@@ -133,6 +133,8 @@ class ModelCheckpointBatches(Callback):
                 self.last_time = time.time()
 
     def on_epoch_end(self, epoch, logs=None):
+        if not 'val_loss' in logs:
+            return
         self.start_epoch += 1
 
     def on_train_end(self, logs=None):
@@ -205,6 +207,8 @@ class ModelCheckpoint(Callback):
                 self.best = np.Inf
 
     def on_epoch_end(self, epoch, logs=None):
+        if not 'val_loss' in logs:
+            return
         logs = logs or {}
         self.epochs_since_last_save += 1
         if self.epochs_since_last_save >= self.period:
