@@ -7,7 +7,7 @@ import settings.music_info_pb2 as music_info
 ##################################################################
 
 sequence_length = 50
-chord_sequence_length = 20
+chord_sequence_length = 30
 
 all_files = []
 for folder, _, files in os.walk(os.path.join(project_folder, "data/preprocessed_data")):

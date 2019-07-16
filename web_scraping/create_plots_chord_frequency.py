@@ -170,79 +170,109 @@ simple_counts = collections.Counter(simple_chord_list)
 #             if inner_elem not in relevant_chords:
 #                 del simple_transitions[elem][inner_elem]
 
-chord_number = 0
+# chord_number = 0
+#
+# for elem in simple_transitions:
+#     frequency = sum(simple_transitions[elem].values())
+#     chord_number += frequency
+#     for inner_elem in simple_transitions[elem]:
+#         simple_transitions[elem][inner_elem] /= frequency
+#
+#     simple_transitions[elem]["frequency"] = frequency
+#
+# for elem in simple_transitions:
+#     simple_transitions[elem]["frequency"] /= chord_number
 
-for elem in simple_transitions:
-    frequency = sum(simple_transitions[elem].values())
-    chord_number += frequency
-    for inner_elem in simple_transitions[elem]:
-        simple_transitions[elem][inner_elem] /= frequency
+print("Progression Counter:")
+cc = collections.Counter(progression_list)
+print(len(cc))
+print(collections.Counter([x for x in progression_list]).most_common(100))
 
-    simple_transitions[elem]["frequency"] = frequency
+lengths = [len(x.split(',')) for x in progression_list]
+long_sequences = [len(x.split(',')) for x in progression_list if len(x.split(',')) > 20]
 
-for elem in simple_transitions:
-    simple_transitions[elem]["frequency"] /= chord_number
+print(collections.Counter([x for x in progression_list if len(x.split(',')) > 20]).most_common(10))
 
-# print("Progression Counter:")
-# print(len(collections.Counter(progression_list)))
-# print(collections.Counter([x for x in progression_list if len(x.split(",")) > 4]).most_common(100))
-
-# normalize so that ech value is at least 0.01:
-for elem in simple_transitions:
-    simple_transitions[elem]["frequency"] = (simple_transitions[elem]["frequency"] + 0.07) / (
-            1 + 0.07 * len(simple_transitions))
-    for chord in idx_to_chord:
-        if chord not in simple_transitions[elem]:
-            simple_transitions[elem][chord] = 0.0
-        if chord + 'm' not in simple_transitions[elem]:
-            simple_transitions[elem][chord + 'm'] = 0.0
-    for chord in simple_transitions[elem]:
-        if chord == elem:
-            assert simple_transitions[elem][chord] == 0
-            del simple_transitions[elem][chord]
-            break
-    for temp_elem in simple_transitions[elem]:
-        simple_transitions[elem][temp_elem] = (simple_transitions[elem][temp_elem] + 0.007) / (
-                1 + 0.007 * (len(simple_transitions[elem]) - 1))
-
-# print(json.dumps(simple_transitions,indent=2))
-
-save = input("Save data and possibly overwrite existing data? Y/n")
-if save == 'Y':
-    with open(os.path.join(c.project_folder, "web_scraping/chord_frequencies_and_transitions_full.json"), 'w') as fp:
-        fp.write(json.dumps(simple_transitions, indent=2))
-
-plot = input("Do you want to plot the results? Y/n")
-if plot != 'Y':
-    import sys
-
-    sys.exit()
-
-import matplotlib.pylab as plt
-
-simple_lists = sorted(zip(simple_counts.values(), simple_counts.keys()), reverse=True) # sorted by key, return a list of tuples
-
-simple_x, simple_y = zip(*simple_lists)  # unpack a list of pairs into two tuples
-
-plt.xlabel("most common chords in {} C major pieces not including complex chords".format(simple_nr))
-plt.ylabel("total number of occurrences")
-plt.xticks(rotation='vertical')
-plt.plot(simple_y, simple_x)
-# plt.plot(y, [xt / sum(x) for xt in x])
-plt.show()
+print(len(long_sequences) / len(lengths))
 
 
-complex_lists = sorted(zip(complex_counts.values(), complex_counts.keys()), reverse=True) # sorted by key, return a list of tuples
+# import matplotlib.pyplot as plt
+#
+# # import matplotlib as mpl
+# # mpl.use("pgf")
+# # pgf_with_rc_fonts = {
+# #     "font.serif": ['cmr10'],                   # use latex default serif font
+# #     "pgf.preamble": [
+# #              "\\usepackage{musicography}",
+# #              ]
+# # }
+# # mpl.rcParams.update(pgf_with_rc_fonts)
+#
+# plt.figure(figsize=(4,3))
+# plt.hist(lengths, bins=max(lengths)-1)
+# plt.xlabel("Lengths of chord progressions")
+# plt.ylabel("Occurences in data")
+# plt.tight_layout()
+# # plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/chord_progression_lengths.pdf')
+# # plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/chord_progression_lengths.pgf')
+# plt.show()
 
-complex_vals, complex_keys = zip(*complex_lists[:20]) # unpack a list of pairs into two tuples
-
-plt.xlabel("20 most common chords in {} C major pieces including complex chords".format(complex_nr))
-plt.ylabel("total number of occurrences")
-plt.xticks(rotation='vertical')
-plt.plot(complex_keys, complex_vals)
-# plt.plot(y, [xt / sum(x) for xt in x])
-plt.ticklabel_format()
-plt.show()
+# # normalize so that each value is at least 0.005:
+# for elem in simple_transitions:
+#     simple_transitions[elem]["frequency"] = (simple_transitions[elem]["frequency"] + 0.07) / (
+#             1 + 0.07 * len(simple_transitions))
+#     for chord in idx_to_chord:
+#         if chord not in simple_transitions[elem]:
+#             simple_transitions[elem][chord] = 0.0
+#         if chord + 'm' not in simple_transitions[elem]:
+#             simple_transitions[elem][chord + 'm'] = 0.0
+#     for chord in simple_transitions[elem]:
+#         if chord == elem:
+#             assert simple_transitions[elem][chord] == 0
+#             del simple_transitions[elem][chord]
+#             break
+#     for temp_elem in simple_transitions[elem]:
+#         simple_transitions[elem][temp_elem] = (simple_transitions[elem][temp_elem] + 0.007) / (
+#                 1 + 0.007 * (len(simple_transitions[elem]) - 1))
+#
+# # print(json.dumps(simple_transitions,indent=2))
+#
+# save = input("Save data and possibly overwrite existing data? Y/n")
+# if save == 'Y':
+#     with open(os.path.join(c.project_folder, "web_scraping/chord_frequencies_and_transitions_full.json"), 'w') as fp:
+#         fp.write(json.dumps(simple_transitions, indent=2))
+#
+# plot = input("Do you want to plot the results? Y/n")
+# if plot != 'Y':
+#     import sys
+#
+#     sys.exit()
+#
+# import matplotlib.pylab as plt
+#
+# simple_lists = sorted(zip(simple_counts.values(), simple_counts.keys()), reverse=True) # sorted by key, return a list of tuples
+#
+# simple_x, simple_y = zip(*simple_lists)  # unpack a list of pairs into two tuples
+#
+# plt.xlabel("most common chords in {} C major pieces not including complex chords".format(simple_nr))
+# plt.ylabel("total number of occurrences")
+# plt.xticks(rotation='vertical')
+# plt.plot(simple_y, simple_x)
+# # plt.plot(y, [xt / sum(x) for xt in x])
+# plt.show()
+#
+#
+# complex_lists = sorted(zip(complex_counts.values(), complex_counts.keys()), reverse=True) # sorted by key, return a list of tuples
+#
+# complex_vals, complex_keys = zip(*complex_lists[:20]) # unpack a list of pairs into two tuples
+#
+# plt.xlabel("20 most common chords in {} C major pieces including complex chords".format(complex_nr))
+# plt.ylabel("total number of occurrences")
+# plt.xticks(rotation='vertical')
+# plt.plot(complex_keys, complex_vals)
+# # plt.plot(y, [xt / sum(x) for xt in x])
+# plt.ticklabel_format()
+# plt.show()
 
 # # pat = r"([A-G][b#]{0,1})([mM]{0,1})     (dim){0,1}     \d+{0,1}    (b\d){0,1}     (min){0,1}     (aug){0,1}   (maj\d+){0,1}     (sus\d*){0,1}     (add\d+){0,1}    "
 #
