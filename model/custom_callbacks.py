@@ -207,6 +207,8 @@ class ModelCheckpoint(Callback):
         if self.epochs_since_last_save >= self.period:
             self.epochs_since_last_save = 0
             try:
+                print("specified filepath:", self.filepath)
+                print("current logs are:", logs)
                 filepath = self.filepath.format(epoch=epoch + 1, **logs)
             except:
                 print("specified filepath:", self.filepath)
