@@ -15,7 +15,7 @@ from keras.utils import to_categorical
 import settings.constants as c
 import settings.constants_model as c_m
 import settings.music_info_pb2 as music_info
-from model.custom_callbacks import ModelCheckpointBatches
+from model.custom_callbacks import ModelCheckpointBatches, ModelCheckpoint
 import model.converting as converter
 
 config = tf.compat.v1.ConfigProto()
@@ -209,7 +209,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         batch_filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-batch.hdf5")
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
 
-        checkpoint = call_backs.ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
+        checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
                                                 mode='min')
 
         batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=500, walltime=walltime)
