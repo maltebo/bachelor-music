@@ -267,7 +267,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
         if batches_checkpoint.reached_wall_time:
             from subprocess import call
             recallParameter = 'qsub -v REDO=True,EPOCH=' + str(
-                batches_checkpoint.start_epoch) + ' chord_model_nw.sge'
+                batches_checkpoint.start_epoch) + ' nw_chord_model.sge'
             call(recallParameter, shell=True)
 
 
