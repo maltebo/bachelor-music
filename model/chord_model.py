@@ -7,7 +7,7 @@ import time
 import tensorflow as tf
 import keras.callbacks as call_backs
 from keras.backend import set_session
-from keras.layers import Input, LSTM, Dense, concatenate, Masking, Embedding
+from keras.layers import Input, LSTM, Dense, concatenate, Masking, Dropout, Embedding
 from keras.models import Model, load_model
 from keras.optimizers import Adam
 from keras.preprocessing.sequence import pad_sequences
@@ -198,9 +198,13 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
 
         lstm = LSTM(256)(masked_input)
 
-        concatenate_final = concatenate([dense_pre, lstm], axis=-1)
+        dropout = Dropout(0.2)(lstm)
 
-        dense_final = Dense(25, activation='softmax', name='dense_final')(concatenate_final)
+        concatenate_final = concatenate([dense_pre, dropout], axis=-1)
+
+        dense_prefinal = Dense(25, activation='softmax', name='dense_prefinal')(concatenate_final)
+
+        dense_final = Dropout(0.2, name='dense_final')(dense_prefinal)
 
         model = Model(inputs=[chord_input, melody_input, start_input, on_full_beat_input],
                       outputs=[dense_final])
@@ -292,7 +296,7 @@ if __name__ == '__main__':
 
     vs = 0.2
     bs = 32
-    ep = 100
+    ep = 1
     nr_s = 10
     cb = False
     wall_time = 5000
