@@ -215,7 +215,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
 
         model.compile(loss={'dense_final': 'categorical_crossentropy'},
                       metrics=['accuracy'],
-                      optimizer=Adam())
+                      optimizer=Adam(0.001))
 
         print(model.summary(90))
 
