@@ -226,7 +226,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
     if callbacks:
         terminate_on_nan = call_backs.TerminateOnNaN()
 
-        filepath = os.path.join(c.project_folder, "data/tf_weights/chord-weights-w-improvement-{epoch:02d}-"
+        filepath = os.path.join(c.project_folder, "data/tf_weights/cw/chord-weights-w-improvement-{epoch:02d}-"
                                                   "vl-{val_loss:.5}-vacc-{val_acc:.5}.hdf5")
         batch_filepath = os.path.join(c.project_folder, "data/tf_weights/chord-w-weights-improvement-batch.hdf5")
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
@@ -240,8 +240,8 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
         early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=25,
                                                   verbose=1, mode='auto', baseline=None)
 
-        os.makedirs(os.path.join(c.project_folder, "data/tensorboard_logs/chords"), exist_ok=True)
-        tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/chords"))
+        os.makedirs(os.path.join(c.project_folder, "data/tensorboard_logs/cw"), exist_ok=True)
+        tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/cw"))
 
         reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.8, verbose=1,
                                                  patience=3, min_lr=0.000008)

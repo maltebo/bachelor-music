@@ -253,7 +253,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
     if callbacks:
         terminate_on_nan = call_backs.TerminateOnNaN()
 
-        filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-1LSTMw-improvement-{epoch:02d}-"
+        filepath = os.path.join(c.project_folder, "data/tf_weights/m1w/melody-weights-1LSTMw-improvement-{epoch:02d}-"
                                                   "vl-{val_loss:.5f}-vpacc-{val_pitch_output_acc:.5f}-vlacc-{val_length_output_acc:.5f}.hdf5")
         batch_filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-1w-batch.hdf5")
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
@@ -267,8 +267,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=25,
                                           verbose=1, mode='auto', baseline=None)
 
-        tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
-                                     update_freq=1000)
+        tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/m1w"))
 
         reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.8, verbose=1,
                                          patience=3, min_lr=0.000008)
