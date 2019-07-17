@@ -72,6 +72,8 @@ def generate(filepath, num_songs=1, length_songs=200, save=False, show=True, inp
             pitch_idx = np.random.choice(a=len(pitch_pred[0]), size=1, p=pitch_pred[0])[0]
             length_idx = np.random.choice(a=len(length_pred[0]), size=1, p=length_pred[0])[0]
             # length of last note
+            # pitch_idx = np.argmax(pitch_pred)
+            # length_idx = np.argmax(length_pred)
 
             pitch = converter.id_to_pitch[pitch_idx]
             length = converter.id_to_quarter_length[length_idx]
@@ -109,5 +111,5 @@ def generate(filepath, num_songs=1, length_songs=200, save=False, show=True, inp
             raise ValueError("Function not available yet")
 
 if __name__ == '__main__':
-    generate(filepath="/home/malte/PycharmProjects/BachelorMusic/data/tf_weights/melody-weights-improvement-23.hdf5",
-             length_songs=200, input_notes=[(72,1.0)])
+    generate(filepath="/home/malte/PycharmProjects/BachelorMusic/data/tf_weights/melody-weights-1LSTMw-improvement-65-vl-2.80965-vpacc-0.45727-vlacc-0.64255.hdf5",
+             length_songs=200, input_notes=[(72,1.0), (74,0.5), (76,0.25), (77,0.25),(79,3.25)])

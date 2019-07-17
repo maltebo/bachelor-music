@@ -170,30 +170,31 @@ simple_counts = collections.Counter(simple_chord_list)
 #             if inner_elem not in relevant_chords:
 #                 del simple_transitions[elem][inner_elem]
 
-# chord_number = 0
+chord_number = 0
+
+for elem in simple_transitions:
+    frequency = sum(simple_transitions[elem].values())
+    # print("FREQUENCY",frequency)
+    chord_number += frequency
+    for inner_elem in simple_transitions[elem]:
+        simple_transitions[elem][inner_elem] /= frequency
+
+    simple_transitions[elem]["frequency"] = frequency
+
+for elem in simple_transitions:
+    simple_transitions[elem]["frequency"] /= chord_number
+
+# print("Progression Counter:")
+# cc = collections.Counter(progression_list)
+# print(len(cc))
+# print(collections.Counter([x for x in progression_list]).most_common(100))
 #
-# for elem in simple_transitions:
-#     frequency = sum(simple_transitions[elem].values())
-#     chord_number += frequency
-#     for inner_elem in simple_transitions[elem]:
-#         simple_transitions[elem][inner_elem] /= frequency
+# lengths = [len(x.split(',')) for x in progression_list]
+# long_sequences = [len(x.split(',')) for x in progression_list if len(x.split(',')) > 20]
 #
-#     simple_transitions[elem]["frequency"] = frequency
+# print(collections.Counter([x for x in progression_list if len(x.split(',')) > 20]).most_common(10))
 #
-# for elem in simple_transitions:
-#     simple_transitions[elem]["frequency"] /= chord_number
-
-print("Progression Counter:")
-cc = collections.Counter(progression_list)
-print(len(cc))
-print(collections.Counter([x for x in progression_list]).most_common(100))
-
-lengths = [len(x.split(',')) for x in progression_list]
-long_sequences = [len(x.split(',')) for x in progression_list if len(x.split(',')) > 20]
-
-print(collections.Counter([x for x in progression_list if len(x.split(',')) > 20]).most_common(10))
-
-print(len(long_sequences) / len(lengths))
+# print(len(long_sequences) / len(lengths))
 
 
 # import matplotlib.pyplot as plt
@@ -217,30 +218,28 @@ print(len(long_sequences) / len(lengths))
 # # plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/chord_progression_lengths.pgf')
 # plt.show()
 
-# # normalize so that each value is at least 0.005:
-# for elem in simple_transitions:
-#     simple_transitions[elem]["frequency"] = (simple_transitions[elem]["frequency"] + 0.07) / (
-#             1 + 0.07 * len(simple_transitions))
-#     for chord in idx_to_chord:
-#         if chord not in simple_transitions[elem]:
-#             simple_transitions[elem][chord] = 0.0
-#         if chord + 'm' not in simple_transitions[elem]:
-#             simple_transitions[elem][chord + 'm'] = 0.0
-#     for chord in simple_transitions[elem]:
-#         if chord == elem:
-#             assert simple_transitions[elem][chord] == 0
-#             del simple_transitions[elem][chord]
-#             break
-#     for temp_elem in simple_transitions[elem]:
-#         simple_transitions[elem][temp_elem] = (simple_transitions[elem][temp_elem] + 0.007) / (
-#                 1 + 0.007 * (len(simple_transitions[elem]) - 1))
-#
-# # print(json.dumps(simple_transitions,indent=2))
-#
-# save = input("Save data and possibly overwrite existing data? Y/n")
-# if save == 'Y':
-#     with open(os.path.join(c.project_folder, "web_scraping/chord_frequencies_and_transitions_full.json"), 'w') as fp:
-#         fp.write(json.dumps(simple_transitions, indent=2))
+# normalize so that each value is at least 0.05:
+for elem in idx_to_chord:
+    simple_transitions[elem]["frequency"] = (simple_transitions[elem]["frequency"] + 0.007) / (
+            1 + 0.007 * (len(idx_to_chord)-1))
+    for chord in idx_to_chord:
+        if chord not in simple_transitions[elem]:
+            simple_transitions[elem][chord] = 0.0
+        if chord + 'm' not in simple_transitions[elem]:
+            simple_transitions[elem][chord + 'm'] = 0.0
+    for chord in simple_transitions[elem]:
+        if chord == elem:
+            assert simple_transitions[elem][chord] == 0
+            del simple_transitions[elem][chord]
+            break
+    for temp_elem in simple_transitions[elem]:
+        simple_transitions[elem][temp_elem] = (simple_transitions[elem][temp_elem] + 0.007) / (
+                1 + 0.007 * (len(simple_transitions[elem]) - 1))
+
+save = input("Save data and possibly overwrite existing data? Y/n")
+if save == 'Y':
+    with open(os.path.join(c.project_folder, "web_scraping/chord_frequencies_and_transitions_full.json"), 'w') as fp:
+        fp.write(json.dumps(simple_transitions, indent=2))
 #
 # plot = input("Do you want to plot the results? Y/n")
 # if plot != 'Y':

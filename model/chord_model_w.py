@@ -180,9 +180,11 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
         if os.environ['REDO'] == 'True':
             model = load_model(os.path.join(c.project_folder, "data/tf_weights/weights_saved_wall_time.hdf5"))
             initial_epoch = int(os.environ['EPOCH'])
+            print("Model retraining starting in epoch %d" % initial_epoch)
         else:
             raise Exception()
     except:
+        print("Initial model building")
         initial_epoch = 0
 
         chord_input = Input(shape=(c_m.chord_sequence_length, 25), dtype='float32', name='chord_input')
@@ -222,23 +224,24 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
     if callbacks:
         terminate_on_nan = call_backs.TerminateOnNaN()
 
-        filepath = os.path.join(c.project_folder, "data/tf_weights/chord-weights-improvement-{epoch:02d}.hdf5")
+        filepath = os.path.join(c.project_folder, "data/tf_weights/chord-weights-w-improvement-{epoch:02d}-"
+                                                  "vl-{val_loss:.5}-vacc-{val_acc:.5}.hdf5")
         batch_filepath = os.path.join(c.project_folder, "data/tf_weights/chord-weights-improvement-batch.hdf5")
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
 
         checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
                                                 mode='min')
 
-        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=500, walltime=walltime)
+        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=500, walltime=walltime,
+                                                    start_epoch=initial_epoch)
 
-        early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=10,
-                                                  verbose=0, mode='auto', baseline=None)
+        early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=25,
+                                                  verbose=1, mode='auto', baseline=None)
 
-        tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
-                                             update_freq=1000
-                                             )
+        os.makedirs(os.path.join(c.project_folder, "data/tensorboard_logs/chords"), exist_ok=True)
+        tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/chords"))
 
-        reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.2,
+        reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.8, verbose=1,
                                                  patience=3, min_lr=0.000008)
 
         callbacks = [terminate_on_nan, checkpoint, batches_checkpoint, early_stopping, tensorboard, reduce_lr]
@@ -279,16 +282,17 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
         verbose = 0
 
     model.fit_generator(generator=chord_data_generator(train_data, batch_size),
-                        steps_per_epoch=len(train_data) // batch_size,
+                        steps_per_epoch=min(5000,len(train_data) // batch_size),
                         epochs=epochs, verbose=verbose, validation_data=chord_data_generator(test_data, batch_size),
                         validation_steps=len(test_data) // batch_size, max_queue_size=100,
-                        callbacks=callbacks, class_weight=chord_weights, initial_epoch=initial_epoch)
+                        callbacks=callbacks, class_weight=chord_weights,
+                        initial_epoch=initial_epoch)
 
     if callbacks and walltime:
         if batches_checkpoint.reached_wall_time:
             from subprocess import call
             recallParameter = 'qsub -v REDO=True,EPOCH=' + str(
-                batches_checkpoint.start_epoch) + ' chord_model.sge'
+                batches_checkpoint.start_epoch) + ' chord_model_w.sge'
             call(recallParameter, shell=True)
 
 
