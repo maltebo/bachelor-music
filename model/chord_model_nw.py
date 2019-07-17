@@ -136,6 +136,8 @@ def chord_data_generator(data, batch_size):
 
 def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, callbacks=False, walltime=0):
 
+    temp_save_path = os.path.join(c.project_folder, "data/tf_weights/weights_chord_nw_saved_wall_time.hdf5")
+
     if not force:
         fit = input("Fit chord model? Y/n")
         if fit != 'Y':
@@ -150,7 +152,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
 
     try:
         if os.environ['REDO'] == 'True':
-            model = load_model(os.path.join(c.project_folder, "data/tf_weights/weights_saved_wall_time.hdf5"))
+            model = load_model(temp_save_path)
             initial_epoch = int(os.environ['EPOCH'])
             print("Model retraining starting in epoch %d" % initial_epoch)
         else:
@@ -198,14 +200,15 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
 
         filepath = os.path.join(c.project_folder, "data/tf_weights/chord-weights-w-improvement-{epoch:02d}-"
                                                   "vl-{val_loss:.5}-vacc-{val_acc:.5}.hdf5")
-        batch_filepath = os.path.join(c.project_folder, "data/tf_weights/chord-weights-improvement-batch.hdf5")
+        batch_filepath = os.path.join(c.project_folder, "data/tf_weights/chord-nw-weights-improvement-batch.hdf5")
+
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
 
         checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
                                                 mode='min')
 
         batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=500, walltime=walltime,
-                                                    start_epoch=initial_epoch)
+                                                    start_epoch=initial_epoch, temp_save_path=temp_save_path)
 
         early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=25,
                                                   verbose=1, mode='auto', baseline=None)

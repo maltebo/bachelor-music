@@ -189,7 +189,9 @@ length_weights = {
     12: 16.905740489130437,
 }
 
-def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, callbacks=False, walltime=0, temp=1.0):
+def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, callbacks=False, walltime=0):
+
+    temp_save_path = os.path.join(c.project_folder, "data/tf_weights/weights_melody_1w_saved_wall_time.hdf5")
 
     if not force:
         fit = input("Fit melody model? Y/n")
@@ -205,13 +207,13 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
     try:
         if os.environ['REDO'] == 'True':
-            model = load_model(os.path.join(c.project_folder, "data/tf_weights/weights_saved_wall_time.hdf5"))
+            model = load_model(temp_save_path)
             initial_epoch = int(os.environ['EPOCH'])
             print("Model retraining starting in epoch %d" % initial_epoch)
         else:
-            print("Initial model building")
             raise Exception()
     except:
+        print("Initial model building")
         initial_epoch = 0
 
         pitch_input = Input(shape=(c_m.sequence_length, 38), dtype='float32', name='pitch_input')
@@ -240,7 +242,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
                             'length_output': 'categorical_crossentropy'},
                       metrics={'pitch_output': 'accuracy',
                                'length_output': 'accuracy'},
-                      optimizer=Adam())
+                      optimizer=Adam(lr=0.1))
 
         print(model.summary(90))
 
@@ -260,15 +262,15 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
                                                 mode='min')
 
         batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=500, walltime=walltime,
-                                                    start_epoch=initial_epoch)
+                                                    start_epoch=initial_epoch, temp_save_path=temp_save_path)
 
-        early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=10,
+        early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=25,
                                           verbose=1, mode='auto', baseline=None)
 
         tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs"),
                                      update_freq=1000)
 
-        reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.2, verbose=1,
+        reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.8, verbose=1,
                                          patience=3, min_lr=0.000008)
 
         callbacks = [terminate_on_nan, checkpoint, batches_checkpoint, early_stopping, tensorboard, reduce_lr]

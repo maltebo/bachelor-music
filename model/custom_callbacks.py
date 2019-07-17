@@ -35,7 +35,7 @@ class ModelCheckpointBatches(Callback):
         period: Interval (number of batches) between checkpoints.
     """
 
-    def __init__(self, filepath, monitor='loss', verbose=0,
+    def __init__(self, filepath, temp_save_path, monitor='loss', verbose=0,
                  save_best_only=True, save_weights_only=False,
                  mode='auto', period=1000, walltime=0, start_epoch=0):
         super(ModelCheckpointBatches, self).__init__()
@@ -52,7 +52,7 @@ class ModelCheckpointBatches(Callback):
         self.average_time = 0
         self.reached_wall_time = False
         self.walltime = walltime
-        self.time_filepath = os.path.join(os.path.split(filepath)[0], "weights_saved_wall_time.hdf5")
+        self.time_filepath = temp_save_path
         self.start_epoch = start_epoch
 
         if mode not in ['auto', 'min', 'max']:
