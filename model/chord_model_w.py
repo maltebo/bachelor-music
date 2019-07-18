@@ -234,7 +234,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
         checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
                                                 mode='min')
 
-        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=200, walltime=walltime,
+        batches_checkpoint = ModelCheckpointBatches(monitor='loss', period=200, walltime=walltime,
                                                     start_epoch=initial_epoch, temp_save_path=temp_save_path)
 
         early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=25,

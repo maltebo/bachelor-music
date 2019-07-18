@@ -35,13 +35,12 @@ class ModelCheckpointBatches(Callback):
         period: Interval (number of batches) between checkpoints.
     """
 
-    def __init__(self, filepath, temp_save_path, monitor='loss', verbose=0,
+    def __init__(self, temp_save_path, monitor='loss', verbose=0,
                  save_best_only=True, save_weights_only=False,
                  mode='auto', period=1000, walltime=0, start_epoch=0):
         super(ModelCheckpointBatches, self).__init__()
         self.monitor = monitor
         self.verbose = verbose
-        self.filepath = filepath
         self.save_best_only = save_best_only
         self.save_weights_only = save_weights_only
         self.period = period
@@ -87,55 +86,55 @@ class ModelCheckpointBatches(Callback):
         self.batches_since_last_save += 1
         if self.batches_since_last_save >= self.period:
             self.batches_since_last_save = 0
-            filepath = self.filepath # .format(epoch=batch + 1, **logs)
-            if self.save_best_only:
-                current = logs.get(self.monitor)
-                print("In batch %d: %s is %0.5f" % (batch+1, self.monitor, current), flush=True)
-                if current is None:
-                    print('Can save best model only with %s available, '
-                          'skipping.' % (self.monitor), flush=True)
-                else:
-                    if self.monitor_op(current, self.best):
-                        if self.verbose > 0:
-                            print('\nBatch %05d: %s improved from %0.5f to %0.5f,'
-                                  ' saving model to %s'
-                                  % (batch + 1, self.monitor, self.best,
-                                     current, filepath), flush=True)
-                        self.best = current
-                        if self.save_weights_only:
-                            self.model.save_weights(filepath, overwrite=True)
-                        else:
-                            self.model.save(filepath, overwrite=True)
-                    else:
-                        if self.verbose > 0:
-                            print('\nBatch %05d: %s did not improve from %0.5f' %
-                                  (batch + 1, self.monitor, self.best), flush=True)
-            else:
-                if self.verbose > 0:
-                    print('\nBatch %05d: saving model to %s' % (batch + 1, filepath), flush=True)
-                if self.save_weights_only:
-                    self.model.save_weights(filepath, overwrite=True)
-                else:
-                    self.model.save(filepath, overwrite=True)
+            # filepath = self.filepath # .format(epoch=batch + 1, **logs)
+            # if self.save_best_only:
+            #     current = logs.get(self.monitor)
+            #     print("In batch %d: %s is %0.5f" % (batch+1, self.monitor, current), flush=True)
+            #     if current is None:
+            #         print('Can save best model only with %s available, '
+            #               'skipping.' % (self.monitor), flush=True)
+            #     else:
+            #         if self.monitor_op(current, self.best):
+            #             if self.verbose > 0:
+            #                 print('\nBatch %05d: %s improved from %0.5f to %0.5f,'
+            #                       ' saving model to %s'
+            #                       % (batch + 1, self.monitor, self.best,
+            #                          current, filepath), flush=True)
+            #             self.best = current
+            #             if self.save_weights_only:
+            #                 self.model.save_weights(filepath, overwrite=True)
+            #             else:
+            #                 self.model.save(filepath, overwrite=True)
+            #         else:
+            #             if self.verbose > 0:
+            #                 print('\nBatch %05d: %s did not improve from %0.5f' %
+            #                       (batch + 1, self.monitor, self.best), flush=True)
+            # else:
+            #     if self.verbose > 0:
+            #         print('\nBatch %05d: saving model to %s' % (batch + 1, filepath), flush=True)
+            #     if self.save_weights_only:
+            #         self.model.save_weights(filepath, overwrite=True)
+            #     else:
+            #         self.model.save(filepath, overwrite=True)
 
             if self.walltime:
                 used_time = time.time() - self.last_time
                 if self.average_time > 0:
-                    self.average_time = (self.average_time * 7 + used_time) / 8
+                    self.average_time = (self.average_time + used_time) / 2
                 else:
                     self.average_time = used_time
-                if ((time.time() - self.start_time) + 3*self.average_time) > self.walltime:
+                if ((time.time() - self.start_time) + 5*self.average_time) > self.walltime:
                     self.reached_wall_time = True
                     self.model.stop_training = True
                     self.model.save(self.time_filepath, overwrite=True)
                     print("Wall time is reached, restart model!", flush=True)
-
                 self.last_time = time.time()
 
     def on_epoch_end(self, epoch, logs=None):
         if not 'val_loss' in logs:
             return
         self.start_epoch += 1
+        print("Epoch %d:" % self.start_epoch, **logs)
 
     def on_train_end(self, logs=None):
         sys.stdout.write("Training finished!")
@@ -214,12 +213,8 @@ class ModelCheckpoint(Callback):
         if self.epochs_since_last_save >= self.period:
             self.epochs_since_last_save = 0
             try:
-                print("specified filepath:", self.filepath, flush=True)
-                print("current logs are:", logs, flush=True)
                 filepath = self.filepath.format(epoch=epoch + 1, **logs)
             except:
-                print("specified filepath:", self.filepath, flush=True)
-                print("current logs are:", logs, flush=True)
                 raise KeyError("Why did this happen?")
             if self.save_best_only:
                 current = logs.get(self.monitor)

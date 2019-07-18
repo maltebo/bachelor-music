@@ -1,9 +1,7 @@
 import os
-import random
 import sys
 
 import numpy as np
-import time
 import tensorflow as tf
 import keras.callbacks as call_backs
 from keras.backend import set_session
@@ -200,14 +198,13 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
 
         filepath = os.path.join(c.project_folder, "data/tf_weights/cnw/chord-weights-nw-improvement-{epoch:02d}-"
                                                   "vl-{val_loss:.5}-vacc-{val_acc:.5}.hdf5")
-        batch_filepath = os.path.join(c.project_folder, "data/tf_weights/chord-nw-weights-improvement-batch.hdf5")
 
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
 
         checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
                                                 mode='min')
 
-        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=10, walltime=walltime,
+        batches_checkpoint = ModelCheckpointBatches(monitor='loss', period=200, walltime=walltime,
                                                     start_epoch=initial_epoch, temp_save_path=temp_save_path)
 
         early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=25,

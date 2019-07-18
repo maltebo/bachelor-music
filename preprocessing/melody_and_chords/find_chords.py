@@ -52,33 +52,6 @@ def make_simple_chord_note_array(name: str):
 potential_chords = dict([(key, make_simple_chord_note_array(key)) for key in c.chord_and_transition_dict.keys()])
 
 
-#
-# chords_to_pitches = [
-#     (0, 4, 7),
-#     (2, 5, 9),
-#     (4, 7, 11),
-#     (5, 9, 0),
-#     (7, 11, 2),
-#     (9, 0, 4),
-#     (11, 2, 5)
-# ]
-#
-# pitches_to_chords = [
-#     [0, 3, 5],
-#     [],
-#     [1, 4, 6],
-#     [],
-#     [0, 2, 5],
-#     [1, 3, 6],
-#     [],
-#     [0, 2, 4],
-#     [],
-#     [1, 3, 5],
-#     [],
-#     [2, 4, 6]
-# ]
-
-
 def split_in_areas(song: simple.Song):
     '''
     splits a song in half measures
@@ -98,16 +71,6 @@ def split_in_areas(song: simple.Song):
 
     full_split_song = [[] for _ in range(bucket_number)]
 
-    # print(pitch_lists)
-    #
-    # current_start = floor(all_notes[0].offset / 2) * 2
-    # pitch_list = []
-    # next_pitch_list = []
-    # next_next_pitch_list = []
-    # chords = []
-    # is_first_chord = True
-    # last_chord = None
-
     for note in all_notes:
 
         assert note.length <= 4.0
@@ -123,81 +86,7 @@ def split_in_areas(song: simple.Song):
             full_split_song[i].append([note.pitch, note.length, note.offset - i * 2.0, note.volume])
             i += 1
 
-    #     if start != current_start:
-    #         chord = CMajChordStruct(pitch_list, last_chord, is_first_chord)
-    #         most_probable = chord.get_most_probable()
-    #         chords.append([current_start, chords_to_pitches[most_probable[0][1]]])
-    #         is_first_chord = False
-    #         current_start = start
-    #         last_chord = most_probable[0][1]
-    #         pitch_list = next_pitch_list
-    #         next_pitch_list = next_next_pitch_list
-    #         next_next_pitch_list = []
-    #
-    #     pitch_list.append([note.pitch, note.length, ((start + 2.0) - note.offset) / note.length, True, note.volume])
-    #
-    #     if note.end() > start + 2.0:
-    #         next_pitch_list.append([note.pitch, note.length, (min(note.end(), start + 4.0) - (start + 2.0)) / note.length,
-    #                            False, note.volume])
-    #
-    #         if note.end() > start + 4.0:
-    #             next_next_pitch_list.append(
-    #                 [note.pitch, note.length, (min(note.end(), start + 6.0) - (start + 4.0)) / note.length,
-    #                  False, note.volume])
-    #
-    # return chords
-
-    # print(full_split_song)
-
     return full_split_song
-
-
-# class CMajChordStruct:
-#     """
-#     How to find the most probable chord:
-#     given:
-#     - list(note_pitch, total_length, length_percentage_in_chord_area, starts_in_area, volume)
-#     - last chord
-#     - if this chord is the first appearing
-#
-#     Calculation:
-#     if this is the first appearing:
-#     - add 10 points to the I chord (C maj in this case)
-#     for each note:
-#     - add total_length * length_percentage_in_chord_area * (volume/127) (* 2 if starts_in_area)
-#         to chords containing the note
-#     if no unambiguous maximum is found:
-#     - add 3 points to the previous chord, 4 points to the descending third, 5 to the descending
-#         fifth and 3 to the ascending second
-#
-#     return max
-#     """
-#     def __init__(self, pitch_list: [int, float, float, bool, int] = None, last_chord=None, is_first_chord: bool = False):
-#
-#         self.pitch_list = []
-#         if pitch_list:
-#             self.pitch_list.extend(pitch_list)
-#
-#         self.is_first_chord = is_first_chord
-#         self.last_chord = last_chord
-#
-#         self.prob_array = [0] * len(chords_to_pitches)
-#
-#         self.calculate_most_probable()
-#
-#     def calculate_most_probable(self):
-#
-#         for pitch, total_length, length_percentage_in_chord_area, starts_in_area, volume in self.pitch_list:
-#
-#             for chord in pitches_to_chords[pitch % 12]:
-#                 factor = 1
-#                 if starts_in_area:
-#                     factor = 2
-#                 self.prob_array[chord] += total_length * length_percentage_in_chord_area * volume * factor
-#
-#     def get_most_probable(self):
-#
-#         return get_max_indexes(self.prob_array)
 
 
 def get_max_indexes(probable_chords) -> list:
@@ -270,8 +159,6 @@ def get_chord(note_list, previous_chord, metric_position):
 
     for chord in potential_chords:
 
-        # if potential_chords[chord][bass_note % 12] > 0.0:
-
         transition_prob = 0.6
         if metric_position == 0:
             transition_prob = 0.5
@@ -316,7 +203,7 @@ def get_chord(note_list, previous_chord, metric_position):
 #     return None
 
 
-def make_simple_part_from_chords(chord_list, bass_list=None):
+def make_simple_part_from_chords(chord_list):
     chord_part = simple.NoteList()
     bass_part = simple.NoteList()
 
@@ -338,13 +225,6 @@ def make_simple_part_from_chords(chord_list, bass_list=None):
         chord_part.append(simple.Note(i * 2, 2.0, root, 60))
         chord_part.append(simple.Note(i * 2, 2.0, third, 50))
         chord_part.append(simple.Note(i * 2, 2.0, fifth, 50))
-
-    if bass_list:
-        for i, bass_note in enumerate(bass_list):
-            if bass_note == 'None':
-                continue
-            bass_part.extend(
-                [simple.Note(i * 2, 2.0, bass_note + 12 * 3, 80), simple.Note(i * 2, 2.0, bass_note + 12 * 4, 80)])
 
     return chord_part, bass_part
 

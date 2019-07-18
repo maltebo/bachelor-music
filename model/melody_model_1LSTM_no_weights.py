@@ -201,20 +201,19 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
         filepath = os.path.join(c.project_folder, "data/tf_weights/m1nw/melody-weights-1LSTMnw-improvement-{epoch:02d}-"
                                                   "vl-{val_loss:0.5f}-vpacc-{val_pitch_output_acc:0.5f}-vlacc-{val_length_output_acc:0.5f}.hdf5")
-        batch_filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-1nw-batch.hdf5")
+        # batch_filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-1nw-batch.hdf5")
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
 
         checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
                                                 mode='min')
 
-        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=500, walltime=walltime,
+        batches_checkpoint = ModelCheckpointBatches(monitor='loss', period=200, walltime=walltime,
                                                     start_epoch=initial_epoch, temp_save_path=temp_save_path)
 
         early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=25,
                                           verbose=1, mode='auto', baseline=None)
 
-        tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/m1nw"),
-                                     update_freq=1000)
+        tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/m1nw"))
 
         reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.8, verbose=1,
                                          patience=3, min_lr=0.000008)

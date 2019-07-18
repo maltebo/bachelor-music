@@ -1,10 +1,7 @@
-import os
 import numpy as np
 import tensorflow as tf
 from keras.backend import set_session
-from keras.layers import Input, LSTM, Dense, concatenate, Masking
-from keras.models import Model, load_model
-from keras.optimizers import Adam
+from keras.models import load_model
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 import settings.constants_model as c
@@ -26,6 +23,8 @@ def generate(filepath, num_songs=1, length_songs=200, save=False, show=True, inp
     model = load_model(filepath)
 
     ########################################################
+
+    note_lists = []
 
     for melody_nr in range(num_songs):
 
@@ -88,19 +87,17 @@ def generate(filepath, num_songs=1, length_songs=200, save=False, show=True, inp
 
             pitch_input_res = np.reshape(pitch_input_pad, (c.sequence_length, 38))
             pitch_input_res = np.concatenate([pitch_input_res, pitch_one_hot], axis=0)
-            pitch_input_res = pitch_input_res[1:]
+            pitch_input_res = pitch_input_res[-c.sequence_length:]
             pitch_input_pad = np.reshape(pitch_input_res, (1, c.sequence_length, 38))
 
             length_input_res = np.reshape(length_input_pad, (c.sequence_length, 16))
             length_input_res = np.concatenate([length_input_res, length_one_hot], axis=0)
-            length_input_res = length_input_res[1:]
+            length_input_res = length_input_res[-c.sequence_length:]
             length_input_pad = np.reshape(length_input_res, (1, c.sequence_length, 16))
 
 
         from music_utils.vanilla_stream import VanillaStream
         import music21 as m21
-
-        print(note_list)
 
         stream = note_list.m21_stream
 
@@ -110,6 +107,10 @@ def generate(filepath, num_songs=1, length_songs=200, save=False, show=True, inp
         if save:
             raise ValueError("Function not available yet")
 
+        note_lists.append(note_list)
+
+    return note_lists
+
 if __name__ == '__main__':
-    generate(filepath="/home/malte/PycharmProjects/BachelorMusic/data/tf_weights/melody-weights-1LSTMw-improvement-65-vl-2.80965-vpacc-0.45727-vlacc-0.64255.hdf5",
-             length_songs=200, input_notes=[(72,1.0), (74,0.5), (76,0.25), (77,0.25),(79,3.25)])
+    generate(filepath="/home/malte/PycharmProjects/BachelorMusic/data/tf_weights/m1w/melody-weights-1LSTMw-improvement-82-vl-2.83063-vpacc-0.45163-vlacc-0.64051.hdf5",
+             length_songs=200, input_notes=[(72,0.25)])
