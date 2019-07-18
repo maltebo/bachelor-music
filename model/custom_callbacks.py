@@ -134,7 +134,7 @@ class ModelCheckpointBatches(Callback):
         if not 'val_loss' in logs:
             return
         self.start_epoch += 1
-        print("Epoch %d:" % self.start_epoch, **logs)
+        print("Epoch %d:" % self.start_epoch, logs)
 
     def on_train_end(self, logs=None):
         sys.stdout.write("Training finished!")
