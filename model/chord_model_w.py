@@ -234,7 +234,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
         checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
                                                 mode='min')
 
-        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=500, walltime=walltime,
+        batches_checkpoint = ModelCheckpointBatches(batch_filepath, monitor='loss', period=200, walltime=walltime,
                                                     start_epoch=initial_epoch, temp_save_path=temp_save_path)
 
         early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=25,
@@ -340,4 +340,4 @@ if __name__ == '__main__':
         else:
             raise ValueError("option not understood:", sys.argv[i])
 
-    chord_model(vs, bs, ep, nr_s, cb, walltime=0)
+    chord_model(vs, bs, ep, nr_s, cb, walltime=wall_time)
