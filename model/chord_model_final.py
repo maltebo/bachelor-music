@@ -201,7 +201,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
     if callbacks:
         terminate_on_nan = call_backs.TerminateOnNaN()
 
-        filepath = os.path.join(c.project_folder, "data/tf_weights/cnw/chord-weights-final-improvement-{epoch:02d}-"
+        filepath = os.path.join(c.project_folder, "data/tf_weights/cf/chord-weights-final-improvement-{epoch:02d}-"
                                                   "vl-{val_loss:.5}-vacc-{val_acc:.5}.hdf5")
 
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
