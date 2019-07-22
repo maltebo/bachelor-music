@@ -2,6 +2,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import json
+
 import numpy as np
 import warnings
 import os
@@ -9,6 +11,7 @@ import sys
 
 import time
 from keras.callbacks import Callback
+import keras.backend as K
 
 
 class ModelCheckpointBatches(Callback):
@@ -244,3 +247,76 @@ class ModelCheckpoint(Callback):
                     self.model.save_weights(filepath, overwrite=True)
                 else:
                     self.model.save(filepath, overwrite=True)
+
+
+class ReduceLREarlyStopping(Callback):
+
+    def __init__(self, file, factor, patience_lr, min_lr, patience_stop):
+        super(ReduceLREarlyStopping, self).__init__()
+
+        self.monitor = 'val_loss'
+        if factor >= 1.0:
+            raise ValueError('ReduceLROnPlateau '
+                             'does not support a factor >= 1.0.')
+        self.data = None
+        self.file = file
+        self.factor = factor
+        self.min_lr = min_lr
+        self.patience_lr = patience_lr
+        self.wait_lr = 0
+        self.wait_total = 0
+        self.patience_stop = patience_stop
+        self.best = 0
+
+    def on_train_begin(self, logs=None):
+        self._setup()
+
+    def _setup(self):
+        if not os.path.exists(self.file):
+            os.makedirs(os.path.split(self.file)[0], exist_ok=True)
+            with open(self.file, 'x') as fp:
+                fp.write(json.dumps({'lr': float(K.get_value(self.model.optimizer.lr)),
+                                     'wait_lr': 0,
+                                     'wait_total': 0,
+                                     'best': float('inf')}))
+
+        with open(self.file, 'r') as fp:
+            self.data = json.loads(fp.read())
+            K.set_value(self.model.optimizer.lr, max(self.min_lr, self.data['lr']))
+            self.wait_lr = int(self.data['wait_lr'])
+            self.wait_total = int(self.data['wait_total'])
+            self.best = float(self.data['best'])
+
+    def on_epoch_end(self, epoch, logs=None):
+
+        if 'val_loss' not in logs:
+            return
+
+        current = logs.get(self.monitor)
+
+        if current <= self.best:
+            self.best = current
+            self.wait_total = 0
+            self.wait_lr = 0
+        else:
+            self.wait_total += 1
+            self.wait_lr += 1
+
+            if self.wait_total >= self.patience_stop:
+                print("Model stopped!", flush=True)
+                self.model.stop_training = True
+            elif self.wait_lr >= self.patience_lr:
+                self.wait_lr = 0
+                old_lr = float(K.get_value(self.model.optimizer.lr))
+                if old_lr > self.min_lr:
+                    new_lr = old_lr * self.factor
+                    new_lr = max(new_lr, self.min_lr)
+                    K.set_value(self.model.optimizer.lr, new_lr)
+                    print("LR changed from %0.5f to %0.5f" % (old_lr, new_lr))
+
+        with open(self.file, 'w') as fp:
+            fp.write(json.dumps({'lr': float(K.get_value(self.model.optimizer.lr)),
+                                 'wait_lr': self.wait_lr,
+                                 'wait_total': self.wait_total,
+                                 'best': self.best}))
+

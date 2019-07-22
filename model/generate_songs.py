@@ -80,16 +80,18 @@ def make_chord_stream(chords):
 
 def generate_random_song():
 
-    melody = gen_melody.generate("/home/malte/PycharmProjects/BachelorMusic/data/tf_weights/m1nw/melody-weights-1LSTMnw-improvement-62-vl-2.67361-vpacc-0.47837-vlacc-0.66299.hdf5",
+    vfl = [(200,3),(67,0.5),(67,0.5),(72,0.75),(71,0.75),(67,0.5),(67,1),(62,0.5),(62,0.5),(62,0.5),
+                                              (64,0.5),(65,0.5),(64,1.5),]
+
+    melody = gen_melody.generate("/home/malte/PycharmProjects/BachelorMusic/data/old_weights/melody-weights-1LSTMnw-improvement-88-vl-2.65555-vpacc-0.48237-vlacc-0.66568.hdf5",
                                  num_songs=1, show=False, length_songs=200,
-                                 input_notes=[(200,3),(67,0.5),(67,0.5),(72,0.75),(71,0.75),(67,0.5),(67,1),(62,0.5),(62,0.5),(62,0.5),
-                                              (64,0.5),(65,0.5),(64,1.5),])[0]
+                                 input_notes=None)[0]
 
     full_stream = m21.stream.Stream()
 
     full_stream.insert(melody.m21_stream)
 
-    chords = gen_chords.generate("/home/malte/PycharmProjects/BachelorMusic/data/tf_weights/cnw/chord-weights-nw-improvement-12-vl-0.73294-vacc-0.76374.hdf5",
+    chords = gen_chords.generate("/home/malte/PycharmProjects/BachelorMusic/data/tf_weights/cnw/chord-weights-nw-improvement-51-vl-0.70464-vacc-0.77493.hdf5",
                                  input_melody=melody)
 
     part = make_chord_stream(chords)
