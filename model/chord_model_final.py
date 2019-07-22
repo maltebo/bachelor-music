@@ -159,7 +159,10 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
         initial_epoch = int(os.environ['EPOCH'])
         print("Model retraining starting in epoch %d" % initial_epoch)
     else:
-        os.remove(os.path.join(c.project_folder, "data/info/cf/info.json"))
+        try:
+            os.remove(os.path.join(c.project_folder, "data/info/cf/info.json"))
+        except FileNotFoundError:
+            pass
 
         print("Initial model building")
         initial_epoch = 0
