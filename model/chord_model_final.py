@@ -216,7 +216,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
                                                     start_epoch=initial_epoch, temp_save_path=temp_save_path)
 
         early_stopping_lr = ReduceLREarlyStopping(file=os.path.join(c.project_folder, "data/info/cf/info.json"),
-                                                  factor=0.8, patience_lr=20, min_lr=0.000008, patience_stop=50)
+                                                  factor=0.2, patience_lr=3, min_lr=0.000008, patience_stop=10)
 
         os.makedirs(os.path.join(c.project_folder, "data/tensorboard_logs/cf"), exist_ok=True)
         tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/cf"))
