@@ -193,7 +193,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
     if callbacks:
         terminate_on_nan = call_backs.TerminateOnNaN()
 
-        filepath = os.path.join(c.project_folder, "data/tf_weights/m1nw/melody-weights-1LSTMnnw-improvement-{epoch:03d}-"
+        filepath = os.path.join(c.project_folder, "data/tf_weights/m1nnw/melody-weights-1LSTMnnw-improvement-{epoch:03d}-"
                                                   "vl-{val_loss:0.5f}-vpacc-{val_pitch_output_acc:0.5f}-vlacc-"
                                                   "{val_length_output_acc:0.5f}-l-{loss:0.5f}.hdf5")
         # batch_filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-1nw-batch.hdf5")
