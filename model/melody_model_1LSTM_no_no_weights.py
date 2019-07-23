@@ -131,7 +131,7 @@ def melody_data_generator(data, batch_size):
 
 def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, callbacks=False, walltime=0, temp=1.0):
 
-    temp_save_path = os.path.join(c.project_folder, "data/tf_weights/weights_melody_1nw_saved_wall_time.hdf5")
+    temp_save_path = os.path.join(c.project_folder, "data/tf_weights/weights_melody_1nnw_saved_wall_time.hdf5")
 
     if not force:
         fit = input("Fit melody model? Y/n")
@@ -193,24 +193,25 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
     if callbacks:
         terminate_on_nan = call_backs.TerminateOnNaN()
 
-        filepath = os.path.join(c.project_folder, "data/tf_weights/m1nw/melody-weights-1LSTMnnw-improvement-{epoch:02d}-"
+        filepath = os.path.join(c.project_folder, "data/tf_weights/m1nw/melody-weights-1LSTMnnw-improvement-{epoch:03d}-"
                                                   "vl-{val_loss:0.5f}-vpacc-{val_pitch_output_acc:0.5f}-vlacc-"
                                                   "{val_length_output_acc:0.5f}-l-{loss:0.5f}.hdf5")
         # batch_filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-1nw-batch.hdf5")
         os.makedirs(os.path.split(filepath)[0], exist_ok=True)
 
-        # checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
-        #                                         mode='min')
-        #
-        # batches_checkpoint = ModelCheckpointBatches(monitor='loss', period=200, walltime=walltime,
-        #                                             start_epoch=initial_epoch, temp_save_path=temp_save_path)
+        checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
+                                                mode='min')
+
+        batches_checkpoint = ModelCheckpointBatches(monitor='loss', period=200, walltime=walltime,
+                                                    start_epoch=initial_epoch, temp_save_path=temp_save_path)
 
         early_stopping_lr = ReduceLREarlyStopping(file=os.path.join(c.project_folder, "data/info/m1nnw/info.json"),
-                                                  factor=0.8, patience_lr=3, min_lr=0.000008, patience_stop=50)
+                                                  factor=0.2, patience_lr=3, min_lr=0.000008, patience_stop=5)
 
-        # tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/m1nw"))
+        tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/m1nnw"),
+                                             histogram_freq=1, batch_size=32, write_grads=True, update_freq=10000)
 
-        callbacks = [terminate_on_nan, early_stopping_lr]
+        callbacks = [terminate_on_nan, early_stopping_lr, checkpoint, batches_checkpoint, tensorboard]
     else:
         callbacks = []
 
@@ -244,18 +245,17 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         verbose = 0
 
     model.fit_generator(generator=melody_data_generator(train_data, batch_size),
-                        steps_per_epoch=min(5000,len(train_data) // batch_size),
-                        epochs=epochs, verbose=verbose, validation_data=melody_data_generator(test_data, batch_size),
-                        validation_steps=len(test_data) // batch_size, max_queue_size=100,
+                        steps_per_epoch=len(train_data) // batch_size,
+                        epochs=epochs, verbose=verbose, validation_data=test_data, max_queue_size=100,
                         callbacks=callbacks, class_weight=None,
                         initial_epoch=initial_epoch)
 
-    # if callbacks and walltime:
-    #     if batches_checkpoint.reached_wall_time:
-    #         from subprocess import call
-    #         recallParameter = 'qsub -v REDO=True,EPOCH=' + str(
-    #             batches_checkpoint.start_epoch) + ' 1nw_melody_model.sge'
-    #         call(recallParameter, shell=True)
+    if callbacks and walltime:
+        if batches_checkpoint.reached_wall_time:
+            from subprocess import call
+            recallParameter = 'qsub -v REDO=True,EPOCH=' + str(
+                batches_checkpoint.start_epoch) + ' 1nnw_melody_model.sge'
+            call(recallParameter, shell=True)
 
 
 if __name__ == '__main__':
