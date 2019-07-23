@@ -327,7 +327,7 @@ class TensorBoardWrapper(TensorBoard):
     def __init__(self, batch_gen, nb_steps, **kwargs):
         super().__init__(**kwargs)
         self.batch_gen = batch_gen # The generator.
-        self.nb_steps = nb_steps     # Number of times to call next() on the generator.
+        self.nb_steps = int(nb_steps) # Number of times to call next() on the generator.
 
     def on_epoch_end(self, epoch, logs=None):
         pitches, lengths, offsets, pitches_out, lengths_out = [], [], [], [], []
