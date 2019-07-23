@@ -321,7 +321,7 @@ class ReduceLREarlyStopping(Callback):
                                  'best': self.best}))
 
 
-class TensorBoardWrapper(TensorBoard):
+class MelodyTensorBoardWrapper(TensorBoard):
     '''Sets the self.validation_data property for use with TensorBoard callback.'''
 
     def __init__(self, batch_gen, nb_steps, **kwargs):

@@ -14,7 +14,7 @@ from keras.utils import to_categorical
 
 import settings.constants as c
 import settings.constants_model as c_m
-from model.custom_callbacks import ModelCheckpointBatches, ModelCheckpoint, ReduceLREarlyStopping, TensorBoardWrapper
+from model.custom_callbacks import ModelCheckpointBatches, ModelCheckpoint, ReduceLREarlyStopping, MelodyTensorBoardWrapper
 import model.converting as converter
 
 config = tf.compat.v1.ConfigProto()
@@ -42,7 +42,12 @@ def make_melody_data_from_file(nr_files=None):
     if nr_files is None:
         nr_files = len(all_data.songs)
 
-    for song_data in list(all_data.songs)[:nr_files]:
+    random.seed(42)
+    all_songs = list(all_data.songs)
+    random.shuffle(all_songs)
+    random.seed()
+
+    for song_data in all_songs[:nr_files]:
 
         for melody in song_data.melodies:
 
@@ -238,13 +243,12 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         early_stopping_lr = ReduceLREarlyStopping(file=os.path.join(c.project_folder, "data/info/m1nnw/info.json"),
                                                   factor=0.2, patience_lr=3, min_lr=0.000008, patience_stop=5)
 
-        tensorboard = TensorBoardWrapper(batch_gen=melody_data_generator(test_data, batch_size),
-                                         nb_steps=len(test_data)//batch_size,
-                                         log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/m1nnw"),
-                                         histogram_freq=1, batch_size=32, write_grads=True, update_freq=10000)
+        # tensorboard = MelodyTensorBoardWrapper(batch_gen=melody_data_generator(test_data, batch_size),
+        #                                        nb_steps=len(test_data)//batch_size,
+        #                                        log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/m1nnw"),
+        #                                        histogram_freq=1, batch_size=32, write_grads=True, update_freq=10000)
 
-        # tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/m1nnw"),
-        #                                      histogram_freq=1, batch_size=32, write_grads=True, update_freq=10000)
+        tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/m1nnw"))
 
         callbacks = [terminate_on_nan, early_stopping_lr, checkpoint, batches_checkpoint, tensorboard]
     else:
