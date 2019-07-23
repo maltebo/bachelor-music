@@ -10,7 +10,7 @@ import os
 import sys
 
 import time
-from keras.callbacks import Callback
+from keras.callbacks import Callback, TensorBoard
 import keras.backend as K
 
 
@@ -319,4 +319,30 @@ class ReduceLREarlyStopping(Callback):
                                  'wait_lr': self.wait_lr,
                                  'wait_total': self.wait_total,
                                  'best': self.best}))
+
+
+class TensorBoardWrapper(TensorBoard):
+    '''Sets the self.validation_data property for use with TensorBoard callback.'''
+
+    def __init__(self, batch_gen, nb_steps, **kwargs):
+        super().__init__(**kwargs)
+        self.batch_gen = batch_gen # The generator.
+        self.nb_steps = nb_steps     # Number of times to call next() on the generator.
+
+    def on_epoch_end(self, epoch, logs=None):
+        pitches, lengths, offsets, pitches_out, lengths_out = [], [], [], [], []
+        for s in range(self.nb_steps):
+            data, label = next(self.batch_gen)
+            pitch, length, offset = data
+            pitch_o, length_o = label
+            for p, l, o, po, lo in zip(pitch, length, offset, pitch_o, length_o):
+                pitches.append(p)
+                lengths.append(l)
+                offsets.append(o)
+                pitches_out.append(po)
+                lengths_out.append(lo)
+        self.validation_data = [np.array(pitches), np.array(lengths), np.array(offsets), np.array(pitches_out), np.array(lengths_out),
+                                         np.ones(len(pitches_out)), np.ones(len(lengths_out)), 0.0]
+        return super().on_epoch_end(epoch, logs)
+
 

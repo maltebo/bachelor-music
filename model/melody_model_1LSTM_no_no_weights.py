@@ -14,8 +14,7 @@ from keras.utils import to_categorical
 
 import settings.constants as c
 import settings.constants_model as c_m
-import settings.music_info_pb2 as music_info
-from model.custom_callbacks import ModelCheckpointBatches, ModelCheckpoint, ReduceLREarlyStopping
+from model.custom_callbacks import ModelCheckpointBatches, ModelCheckpoint, ReduceLREarlyStopping, TensorBoardWrapper
 import model.converting as converter
 
 config = tf.compat.v1.ConfigProto()
@@ -129,6 +128,7 @@ def melody_data_generator(data, batch_size):
 
         yield out_data, labels_out
 
+
 def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, callbacks=False, walltime=0, temp=1.0):
 
     temp_save_path = os.path.join(c.project_folder, "data/tf_weights/weights_melody_1nnw_saved_wall_time.hdf5")
@@ -145,15 +145,16 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
     ################# MODEL
     ##########################################################################################
 
-    try:
-        if os.environ['REDO'] == 'True':
-            model = load_model(temp_save_path)
-            initial_epoch = int(os.environ['EPOCH'])
-            print("Model retraining starting in epoch %d" % initial_epoch)
-        else:
-            print("Initial model building")
-            raise Exception()
-    except:
+    if 'REDO' in os.environ and os.environ['REDO'] == 'True':
+        model = load_model(temp_save_path)
+        initial_epoch = int(os.environ['EPOCH'])
+        print("Model retraining starting in epoch %d" % initial_epoch)
+    else:
+        try:
+            os.remove(os.path.join(c.project_folder, "data/info/m1nnw/info.json"))
+        except FileNotFoundError:
+            pass
+
         initial_epoch = 0
 
         pitch_input = Input(shape=(c_m.sequence_length, 38), dtype='float32', name='pitch_input')
@@ -187,35 +188,6 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         print(model.summary(90))
 
     ##########################################################################################
-    ################# CALLBACKS
-    ##########################################################################################
-
-    if callbacks:
-        terminate_on_nan = call_backs.TerminateOnNaN()
-
-        filepath = os.path.join(c.project_folder, "data/tf_weights/m1nnw/melody-weights-1LSTMnnw-improvement-{epoch:03d}-"
-                                                  "vl-{val_loss:0.5f}-vpacc-{val_pitch_output_acc:0.5f}-vlacc-"
-                                                  "{val_length_output_acc:0.5f}-l-{loss:0.5f}.hdf5")
-        # batch_filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-1nw-batch.hdf5")
-        os.makedirs(os.path.split(filepath)[0], exist_ok=True)
-
-        checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
-                                                mode='min')
-
-        batches_checkpoint = ModelCheckpointBatches(monitor='loss', period=200, walltime=walltime,
-                                                    start_epoch=initial_epoch, temp_save_path=temp_save_path)
-
-        early_stopping_lr = ReduceLREarlyStopping(file=os.path.join(c.project_folder, "data/info/m1nnw/info.json"),
-                                                  factor=0.2, patience_lr=3, min_lr=0.000008, patience_stop=5)
-
-        tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/m1nnw"),
-                                             histogram_freq=1, batch_size=32, write_grads=True, update_freq=10000)
-
-        callbacks = [terminate_on_nan, early_stopping_lr, checkpoint, batches_checkpoint, tensorboard]
-    else:
-        callbacks = []
-
-    ##########################################################################################
     ################# DATA PREPARATION
     ##########################################################################################
 
@@ -240,13 +212,48 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
     del zipped_data
 
-    verbose = 0
+    verbose = 1
     if force:
         verbose = 0
 
+    ##########################################################################################
+    ################# CALLBACKS
+    ##########################################################################################
+
+    if callbacks:
+        terminate_on_nan = call_backs.TerminateOnNaN()
+
+        filepath = os.path.join(c.project_folder, "data/tf_weights/m1nnw/melody-weights-1LSTMnnw-improvement-{epoch:03d}-"
+                                                  "vl-{val_loss:0.5f}-vpacc-{val_pitch_output_acc:0.5f}-vlacc-"
+                                                  "{val_length_output_acc:0.5f}-l-{loss:0.5f}.hdf5")
+        # batch_filepath = os.path.join(c.project_folder, "data/tf_weights/melody-weights-improvement-1nw-batch.hdf5")
+        os.makedirs(os.path.split(filepath)[0], exist_ok=True)
+
+        checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True,
+                                                mode='min')
+
+        batches_checkpoint = ModelCheckpointBatches(monitor='loss', period=200, walltime=walltime,
+                                                    start_epoch=initial_epoch, temp_save_path=temp_save_path)
+
+        early_stopping_lr = ReduceLREarlyStopping(file=os.path.join(c.project_folder, "data/info/m1nnw/info.json"),
+                                                  factor=0.2, patience_lr=3, min_lr=0.000008, patience_stop=5)
+
+        tensorboard = TensorBoardWrapper(batch_gen=melody_data_generator(test_data, batch_size),
+                                         nb_steps=len(test_data)//batch_size,
+                                         log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/m1nnw"),
+                                         histogram_freq=1, batch_size=32, write_grads=True, update_freq=10000)
+
+        # tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/m1nnw"),
+        #                                      histogram_freq=1, batch_size=32, write_grads=True, update_freq=10000)
+
+        callbacks = [terminate_on_nan, early_stopping_lr, checkpoint, batches_checkpoint, tensorboard]
+    else:
+        callbacks = []
+
     model.fit_generator(generator=melody_data_generator(train_data, batch_size),
                         steps_per_epoch=len(train_data) // batch_size,
-                        epochs=epochs, verbose=verbose, validation_data=test_data, max_queue_size=100,
+                        epochs=epochs, verbose=verbose, validation_data=melody_data_generator(test_data, batch_size),
+                        validation_steps= len(test_data)//batch_size,max_queue_size=100,
                         callbacks=callbacks, class_weight=None,
                         initial_epoch=initial_epoch)
 
@@ -262,8 +269,8 @@ if __name__ == '__main__':
 
     vs = 0.2
     bs = 32
-    ep = 300
-    nr_s = 5
+    ep = 10
+    nr_s = 4
     cb = True
     wall_time = 1550
 
