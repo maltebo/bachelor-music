@@ -42,7 +42,7 @@ def make_melody_data_from_file(nr_files=None):
     if nr_files is None:
         nr_files = len(all_data.songs)
 
-    random.seed(42)
+    random.seed(132)
     all_songs = list(all_data.songs)
     random.shuffle(all_songs)
     random.seed()
@@ -241,7 +241,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
                                                     start_epoch=initial_epoch, temp_save_path=temp_save_path)
 
         early_stopping_lr = ReduceLREarlyStopping(file=os.path.join(c.project_folder, "data/info/m1nnw/info.json"),
-                                                  factor=0.2, patience_lr=3, min_lr=0.000008, patience_stop=5)
+                                                  factor=0.2, patience_lr=4, min_lr=0.000008, patience_stop=10)
 
         # tensorboard = MelodyTensorBoardWrapper(batch_gen=melody_data_generator(test_data, batch_size),
         #                                        nb_steps=len(test_data)//batch_size,
