@@ -8,7 +8,7 @@ import keras.callbacks as call_backs
 from keras.backend import set_session
 from keras.layers import Input, LSTM, Dense, concatenate, Masking, Dropout, Reshape
 from keras.models import Model, load_model
-from keras.optimizers import Adam
+from keras.optimizers import RMSprop
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 
@@ -188,7 +188,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
                             'length_output': 'categorical_crossentropy'},
                       metrics={'pitch_output': 'accuracy',
                                'length_output': 'accuracy'},
-                      optimizer=Adam(lr=0.001))
+                      optimizer=RMSprop())
 
         print(model.summary(90))
 
@@ -241,7 +241,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
                                                     start_epoch=initial_epoch, temp_save_path=temp_save_path)
 
         early_stopping_lr = ReduceLREarlyStopping(file=os.path.join(c.project_folder, "data/info/m1nnw/info.json"),
-                                                  factor=0.2, patience_lr=4, min_lr=0.000008, patience_stop=10)
+                                                  factor=0.2, patience_lr=3, min_lr=0.000008, patience_stop=10)
 
         # tensorboard = MelodyTensorBoardWrapper(batch_gen=melody_data_generator(test_data, batch_size),
         #                                        nb_steps=len(test_data)//batch_size,
