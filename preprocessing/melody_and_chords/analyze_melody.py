@@ -83,17 +83,19 @@ if __name__ == '__main__':
 
             part_notes = part.notes(exclude_rests=True)
 
+            # calculate measures with notes
             values = set(map(lambda x: int(x[0] / 4.0), part_notes))
 
-            # print("Values:", values)
+            print("Values:", values)
 
+            # calculate lengths and pitches for each measure
             length_list = [[y[1] for y in part_notes if int(y[0] / 4.0) == x] for x in values]
             pitch_list = [[y[2] % 12 for y in part_notes if int(y[0] / 4.0) == x] for x in values]
             volume_list = [y[3] for y in part_notes]
 
-            # print(length_list)
-            # print(pitch_list)
-            # print(volume_list)
+            print(length_list)
+            print(pitch_list)
+            print(volume_list)
 
             avg_length = average_note_length(part_notes)
             avg_diff_pitch = average_different(pitch_list)
@@ -175,44 +177,44 @@ if __name__ == '__main__':
         overlapping_notes_mel.extend(stat_data[elem]["overlapping_notes_mel"])
         overlapping_notes_har.extend(stat_data[elem]["overlapping_notes_har"])
 
-    fig, ((ax0, ax1), (ax2, ax3), (ax4, ax5), (ax6, ax7)) = plt.subplots(nrows=4, ncols=2, sharex=False, sharey=True)
-
-    ax0.set_title("Average lengths of notes")
-    ax0.plot(avg_lengths_mel, [1] * len(avg_lengths_mel), 'bs', avg_lengths_har, [0] * len(avg_lengths_har), 'g^')
-    ax0.boxplot([avg_lengths_mel, avg_lengths_har], positions=[1, 0], widths=0.4, vert=False)
-
-    ax1.set_title("Average different lengths per bar")
-    ax1.plot(avg_diff_length_mel, [1] * len(avg_diff_length_mel), 'bs', avg_diff_length_har,
-             [0] * len(avg_diff_length_har), 'g^')
-    ax1.boxplot([avg_diff_length_mel, avg_diff_length_har], positions=[1, 0], widths=0.4, vert=False)
-
-    ax2.set_title("Average different pitches per bar")
-    ax2.plot(avg_diff_pitch_mel, [1] * len(avg_diff_pitch_mel), 'bs', avg_diff_pitch_har, [0] * len(avg_diff_pitch_har),
-             'g^')
-    ax2.boxplot([avg_diff_pitch_mel, avg_diff_pitch_har], positions=[1, 0], widths=0.4, vert=False)
-
-    ax3.set_title("Average volume of parts")
-    ax3.plot(avg_volume_mel, [1] * len(avg_volume_mel), 'bs', avg_volume_har, [0] * len(avg_volume_har), 'g^')
-    ax3.boxplot([avg_volume_mel, avg_volume_har], positions=[1, 0], widths=0.4, vert=False)
-
-    ax4.set_title("Average pitch")
-    ax4.plot(avg_pitch_mel, [1] * len(avg_pitch_mel), 'bs', avg_pitch_har, [0] * len(avg_pitch_har), 'g^')
-    ax4.boxplot([avg_pitch_mel, avg_pitch_har], positions=[1, 0], widths=0.4, vert=False)
-
-    ax5.set_title("Percentage of rests")
-    ax5.plot(nr_rests_mel, [1] * len(nr_rests_mel), 'bs', nr_rests_har, [0] * len(nr_rests_har), 'g^')
-    ax5.boxplot([nr_rests_mel, nr_rests_har], positions=[1, 0], widths=0.4, vert=False)
-
-    ax6.set_title("Percentage of overlapping notes")
-    ax6.plot(overlapping_notes_mel, [1] * len(overlapping_notes_mel), 'bs', overlapping_notes_har,
-             [0] * len(overlapping_notes_har), 'g^')
-    ax6.boxplot([overlapping_notes_mel, overlapping_notes_har], positions=[1, 0], widths=0.4, vert=False)
-
-    plt.savefig(os.path.join(c.project_folder, "preprocessing/melody_and_chords/test_figure.png"),
-                dpi=350)
-    plt.show()
-
-    with open(os.path.join(c.project_folder, "preprocessing/melody_and_chords/melody_stat_data.json"), 'w') as fp:
-        fp.write(json.dumps(stat_data, indent=2))
-
-    print("Number of pieces:", i)
+    # fig, ((ax0, ax1), (ax2, ax3), (ax4, ax5), (ax6, ax7)) = plt.subplots(nrows=4, ncols=2, sharex=False, sharey=True)
+    #
+    # ax0.set_title("Average lengths of notes")
+    # ax0.plot(avg_lengths_mel, [1] * len(avg_lengths_mel), 'bs', avg_lengths_har, [0] * len(avg_lengths_har), 'g^')
+    # ax0.boxplot([avg_lengths_mel, avg_lengths_har], positions=[1, 0], widths=0.4, vert=False)
+    #
+    # ax1.set_title("Average different lengths per bar")
+    # ax1.plot(avg_diff_length_mel, [1] * len(avg_diff_length_mel), 'bs', avg_diff_length_har,
+    #          [0] * len(avg_diff_length_har), 'g^')
+    # ax1.boxplot([avg_diff_length_mel, avg_diff_length_har], positions=[1, 0], widths=0.4, vert=False)
+    #
+    # ax2.set_title("Average different pitches per bar")
+    # ax2.plot(avg_diff_pitch_mel, [1] * len(avg_diff_pitch_mel), 'bs', avg_diff_pitch_har, [0] * len(avg_diff_pitch_har),
+    #          'g^')
+    # ax2.boxplot([avg_diff_pitch_mel, avg_diff_pitch_har], positions=[1, 0], widths=0.4, vert=False)
+    #
+    # ax3.set_title("Average volume of parts")
+    # ax3.plot(avg_volume_mel, [1] * len(avg_volume_mel), 'bs', avg_volume_har, [0] * len(avg_volume_har), 'g^')
+    # ax3.boxplot([avg_volume_mel, avg_volume_har], positions=[1, 0], widths=0.4, vert=False)
+    #
+    # ax4.set_title("Average pitch")
+    # ax4.plot(avg_pitch_mel, [1] * len(avg_pitch_mel), 'bs', avg_pitch_har, [0] * len(avg_pitch_har), 'g^')
+    # ax4.boxplot([avg_pitch_mel, avg_pitch_har], positions=[1, 0], widths=0.4, vert=False)
+    #
+    # ax5.set_title("Percentage of rests")
+    # ax5.plot(nr_rests_mel, [1] * len(nr_rests_mel), 'bs', nr_rests_har, [0] * len(nr_rests_har), 'g^')
+    # ax5.boxplot([nr_rests_mel, nr_rests_har], positions=[1, 0], widths=0.4, vert=False)
+    #
+    # ax6.set_title("Percentage of overlapping notes")
+    # ax6.plot(overlapping_notes_mel, [1] * len(overlapping_notes_mel), 'bs', overlapping_notes_har,
+    #          [0] * len(overlapping_notes_har), 'g^')
+    # ax6.boxplot([overlapping_notes_mel, overlapping_notes_har], positions=[1, 0], widths=0.4, vert=False)
+    #
+    # plt.savefig(os.path.join(c.project_folder, "preprocessing/melody_and_chords/test_figure.png"),
+    #             dpi=350)
+    # plt.show()
+    #
+    # with open(os.path.join(c.project_folder, "preprocessing/melody_and_chords/melody_stat_data.json"), 'w') as fp:
+    #     fp.write(json.dumps(stat_data, indent=2))
+    #
+    # print("Number of pieces:", i)
