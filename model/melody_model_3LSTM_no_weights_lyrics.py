@@ -229,12 +229,12 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
         batches_checkpoint = ModelCheckpointBatches(monitor='loss', period=200, walltime=walltime,
                                                     start_epoch=initial_epoch, temp_save_path=temp_save_path)
 
-        early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=25,
+        early_stopping = call_backs.EarlyStopping(monitor='loss', min_delta=0, patience=20,
                                           verbose=1, mode='auto', baseline=None)
 
         tensorboard = call_backs.TensorBoard(log_dir=os.path.join(c.project_folder, "data/tensorboard_logs/m3nwl"))
 
-        reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.8, verbose=1,
+        reduce_lr = call_backs.ReduceLROnPlateau(monitor='loss', factor=0.2, verbose=1,
                                          patience=3, min_lr=0.000008)
 
         callbacks = [terminate_on_nan, checkpoint, batches_checkpoint, early_stopping, tensorboard, reduce_lr]
