@@ -62,7 +62,7 @@ def generate(filepath, input_melody, save=False, show=True):
         new_chord = np.random.choice(len(chord_pred[0]), size=1, p=chord_pred[0])[0]
 
         last_chords.append(new_chord)
-        all_chords.append(new_chord)
+        all_chords.append(int(new_chord))
 
     return all_chords
 

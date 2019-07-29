@@ -134,7 +134,7 @@ def melody_data_generator(data, batch_size):
         yield out_data, labels_out
 
 
-def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, callbacks=False, walltime=0, temp=1.0):
+def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, callbacks=False, walltime=0):
 
     temp_save_path = os.path.join(c.project_folder, "data/tf_weights/weights_melody_1nnw_saved_wall_time.hdf5")
 
@@ -170,7 +170,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
 
         masked_input = Masking(0.0)(concatenated_input)
 
-        lstm_layer_1 = LSTM(512, input_shape=(50,54))(masked_input)
+        lstm_layer_1 = LSTM(256, input_shape=(50,54))(masked_input)
 
         dropout_1 = Dropout(rate=0.2)(lstm_layer_1)
 
@@ -188,7 +188,7 @@ def melody_model(validation_split=0.2, batch_size=32, epochs=1, nr_files=None, c
                             'length_output': 'categorical_crossentropy'},
                       metrics={'pitch_output': 'accuracy',
                                'length_output': 'accuracy'},
-                      optimizer=RMSprop())
+                      optimizer=RMSprop(lr=0.0001))
 
         print(model.summary(90))
 

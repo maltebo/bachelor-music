@@ -99,9 +99,8 @@ def generate(filepath, num_songs=1, length_songs=200, save=False, show=True, inp
         from music_utils.vanilla_stream import VanillaStream
         import music21 as m21
 
-        stream = note_list.m21_stream
-
         if show:
+            stream = note_list.m21_stream
             stream.show('midi')
 
         if save:
