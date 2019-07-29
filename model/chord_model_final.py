@@ -174,7 +174,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
 
         concatenate_pre = concatenate([melody_input, start_input, on_full_beat_input], axis=-1)
 
-        dense_pre = Dense(64, activation='relu', name='dense_pre')(concatenate_pre)
+        dense_pre = Dense(32, activation='relu', name='dense_pre')(concatenate_pre)
 
         dense_pre_dropout = Dropout(0.5)(dense_pre)
 
@@ -193,7 +193,7 @@ def chord_model(validation_split=0.2, batch_size=32, epochs=1, nr_songs=None, ca
 
         model.compile(loss={'dense_final': 'categorical_crossentropy'},
                       metrics=['accuracy'],
-                      optimizer=Adam(lr=0.00001))
+                      optimizer=Adam(lr=0.001))
 
         print(model.summary(90))
 
