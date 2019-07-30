@@ -220,9 +220,9 @@ if __name__ == '__main__':
 
     lengths = [0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0]
     pitches = [200, 60, 67, 72]
-    creation_length = 150
+    creation_length = 200
 
-    for i in range(0):
+    for i in range(4):
         for l in lengths:
             for p in pitches:
                 input_notes = [(p, l)]
