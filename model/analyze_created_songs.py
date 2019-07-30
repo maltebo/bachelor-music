@@ -45,10 +45,24 @@ for root,_,files in os.walk(os.path.join(c.project_folder, "data/created_songs")
                 offsets.append((note.offset % 4) * 4)
             all_chords.extend(chords)
 
+###################################################
+############## MATPLOTLIB SETUP
+###################################################
+
+# import matplotlib as mpl
+# mpl.use("pgf")
+# pgf_with_rc_fonts = {
+#     "font.serif": ['cmr10'],                   # use latex default serif font
+#     "pgf.preamble": [
+#              "\\usepackage{musicography}",
+#              ]
+# }
+# mpl.rcParams.update(pgf_with_rc_fonts)
 
 ###################################################
 ############## PITCHES
 ###################################################
+plt.figure(figsize=(4,4*(3/4)))
 co = Counter(pitches)
 plt.bar(co.keys(), co.values())
 plt.title("Pitches in MIDI notation: self-extracted melodies")
@@ -65,6 +79,7 @@ plt.show()
 ###################################################
 ############## PITCH CLASSES
 ###################################################
+plt.figure(figsize=(4,4*(3/4)))
 c_n = Counter(pitch_classes)
 c_n2 = c_n.most_common()
 labels = [c.idx_to_chord[cc] for cc, _ in c_n2[:9]] + ['Rest']
@@ -90,6 +105,7 @@ plt.show()
 ###################################################
 ############## NOTE LENGTHS
 ###################################################
+plt.figure(figsize=(4,4*(3/4)))
 co = Counter(lengths)
 plt.bar(co.keys(), co.values())
 plt.title("Lengths: melodies created by the model")
@@ -101,7 +117,7 @@ plt.show()
 ###################################################
 ############## OFFSETS
 ###################################################
-
+plt.figure(figsize=(4,4*(3/4)))
 plt.title('Offsets')
 co = Counter(offsets)
 co = sorted(co.items())
@@ -131,7 +147,7 @@ plt.show()
 ###################################################
 ############## REST/NOTE RATIO
 ###################################################
-
+plt.figure(figsize=(4,4*(3/4)))
 c_r = Counter(rests)
 x = ["Rest", "Note"]
 if list(c_r.keys())[0] == 0:
@@ -149,29 +165,8 @@ plt.show()
 ###################################################
 ############## CHORDS
 ###################################################
-
+plt.figure(figsize=(4,4*(3/4)))
 chords_trans = [ch for i, ch in enumerate(all_chords[:-1]) if all_chords[i+1] != ch]
-
-c_c = Counter(all_chords)
-c_c2 = c_c.most_common()
-#
-prop_cycle = plt.rcParams['axes.prop_cycle']
-colors = prop_cycle.by_key()['color']
-
-labels = [converter.id_to_chord[ch] for ch, _ in c_c2[:9]] + ['Rest']
-#
-temp = {ch: co for ch, co in zip(labels, colors)}
-#
-sizes = [ccc for _, ccc in c_c2[:9]] + [sum([ccc for _,ccc in c_c2[9:]])]
-patches, texts = plt.pie(sizes, shadow=True, startangle=90, counterclock=False, colors=colors)
-plt.legend(patches, labels, loc="best", ncol=2)
-plt.axis('equal')
-plt.tight_layout()
-plt.title("Chords created with algorithm")
-plt.tight_layout()
-# plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/chords_all.pdf')
-# plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/chords_all.pgf')
-plt.show()
 
 c_c = Counter(chords_trans)
 c_c2 = c_c.most_common()
@@ -179,6 +174,7 @@ c_c2 = c_c.most_common()
 all_chords = {converter.id_to_chord[n]: x/len(chords_trans) for n, x in c_c2}
 
 labels = [converter.id_to_chord[ch] for ch, _ in c_c2[:9]] + ['Rest']
+labels = [l.replace('b', '$\musFlat{}$') for l in labels]
 colors = []
 for l in labels:
     if l in temp:
@@ -195,3 +191,24 @@ plt.title("Chord transitions created with algorithm")
 # plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/chords_trans.pdf')
 # plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/chords_trans.pgf')
 plt.show()
+
+# c_c = Counter(all_chords)
+# c_c2 = c_c.most_common()
+# #
+# prop_cycle = plt.rcParams['axes.prop_cycle']
+# colors = prop_cycle.by_key()['color']
+#
+# labels = [converter.id_to_chord[ch] for ch, _ in c_c2[:9]] + ['Rest']
+# #
+# temp = {ch: co for ch, co in zip(labels, colors)}
+# #
+# sizes = [ccc for _, ccc in c_c2[:9]] + [sum([ccc for _,ccc in c_c2[9:]])]
+# patches, texts = plt.pie(sizes, shadow=True, startangle=90, counterclock=False, colors=colors)
+# plt.legend(patches, labels, loc="best", ncol=2)
+# plt.axis('equal')
+# plt.tight_layout()
+# plt.title("Chords created with algorithm")
+# plt.tight_layout()
+# # plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/chords_all.pdf')
+# # plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/chords_all.pgf')
+# plt.show()

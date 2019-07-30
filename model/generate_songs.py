@@ -218,25 +218,24 @@ def generate_random_song(input_notes, length):
 
 if __name__ == '__main__':
 
-    lengths = [0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0]
-    pitches = [200, 60, 67, 72]
-    creation_length = 150
-
-    for i in range(4):
-        for l in lengths:
-            for p in pitches:
-                input_notes = [(p, l)]
-                generate_random_song(input_notes, creation_length)
+    # lengths = [0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0]
+    # pitches = [200, 60, 67, 72]
+    # creation_length = 150
+    #
+    # for l in lengths:
+    #     for p in pitches:
+    #         input_notes = [(p, l)]
+    #         generate_random_song(input_notes, creation_length)
 
     # input_notes = [(200, 3)]
     # length = 100
     # for i in range(5):
     #     generate_random_song(input_notes, length)
     #
-    # input_notes = [(60, 2)]
-    # length = 100
-    # for i in range(5):
-    #     generate_random_song(input_notes, length)
+    input_notes = [(60, 1)]
+    length = 200
+    for i in range(5):
+        generate_random_song(input_notes, length)
     #
     # input_notes = [(72, 0.5)]
     # length = 100
