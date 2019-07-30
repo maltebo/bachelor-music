@@ -7,6 +7,7 @@ import settings.constants_model as c
 import json
 import random
 import music_utils.simple_classes as simple
+import matplotlib.pyplot as plt
 
 pitch_to_idx = {
     "C": 0,
@@ -154,7 +155,7 @@ def generate_random_song(input_notes, length):
     vfl = [(200,3),(67,0.5),(67,0.5),(72,0.75),(71,0.75),(67,0.5),(67,1),(62,0.5),(62,0.5),(62,0.5),
                                               (64,0.5),(65,0.5),(64,1.5),]
 
-    melody = gen_melody.generate("/home/malte/PycharmProjects/BachelorMusic/data/tf_weights/m3nw/melody-weights-3LSTMnw-improvement-472-vl-2.64893-vpacc-0.47701-vlacc-0.66466.hdf5",
+    melody = gen_melody.generate(os.path.join(c.project_folder, "data/tf_weights/m3nw/melody-weights-3LSTMnw-improvement-472-vl-2.64893-vpacc-0.47701-vlacc-0.66466.hdf5"),
                                  num_songs=1, show=False, length_songs=length,
                                  input_notes=input_notes)[0]
 
@@ -166,7 +167,7 @@ def generate_random_song(input_notes, length):
 
     full_stream.insert(melody_stream)
 
-    chords = gen_chords.generate("/home/malte/PycharmProjects/BachelorMusic/data/tf_weights/cf/chord-weights-final-improvement-12-vl-0.69104-vacc-0.78332.hdf5",
+    chords = gen_chords.generate(os.path.join(c.project_folder, "data/tf_weights/cf/chord-weights-final-improvement-11-vl-0.68893-vacc-0.78404.hdf5"),
                                  input_melody=melody)
 
     part = make_chord_stream_slow(chords)
@@ -194,29 +195,31 @@ def generate_random_song(input_notes, length):
     with open(final_name.replace('xml','json'), 'w') as fp:
         json.dump(data, fp)
 
-def show_midi(melody, chords):
-    full_stream = m21.stream.Stream()
-
-    melody_stream = melody.m21_stream
-    oboe = m21.instrument.Oboe()
-    melody_stream.insert(0.0, oboe)
-    full_stream.insert(melody_stream)
-
-    part = make_chord_stream_slow(chords)
-    full_stream.insert(part)
-    full_stream.makeNotation()
-
-    full_stream.show('midi')
-
-def list_to_note_list(list):
-    out = simple.NoteList()
-    for elem in list:
-        n = simple.Note(elem[0], elem[1], elem[2], elem[3], elem[4])
-        out.append(n)
-    out.sort()
-    return out
+# def show_midi(melody, chords):
+#     full_stream = m21.stream.Stream()
+#
+#     melody_stream = melody.m21_stream
+#     oboe = m21.instrument.Oboe()
+#     melody_stream.insert(0.0, oboe)
+#     full_stream.insert(melody_stream)
+#
+#     part = make_chord_stream_slow(chords)
+#     full_stream.insert(part)
+#     full_stream.makeNotation()
+#
+#     full_stream.show('midi')
 
 if __name__ == '__main__':
+
+    lengths = [0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0]
+    pitches = [200, 60, 67, 72]
+    creation_length = 150
+
+    for i in range(4):
+        for l in lengths:
+            for p in pitches:
+                input_notes = [(p, l)]
+                generate_random_song(input_notes, creation_length)
 
     # input_notes = [(200, 3)]
     # length = 100
@@ -232,7 +235,7 @@ if __name__ == '__main__':
     # length = 100
     # for i in range(5):
     #     generate_random_song(input_notes, length)
-
+    #
     # for i in range(5):
     #     songs = list(c.all_data.songs)
     #     rand_song = songs[random.randrange(len(songs))]
@@ -250,16 +253,3 @@ if __name__ == '__main__':
     #     length = 100
     #     generate_random_song(input_notes, length)
 
-    for root,_,files in os.walk(os.path.join(c.project_folder, "data/created_songs")):
-        for file in files:
-            if file.endswith('.json'):
-                with open(os.path.join(root, file), 'r') as fp:
-                    data = json.loads(fp.read())
-                melody = data['melody']
-                chords = data['chords']
-
-                melody = list_to_note_list(melody)
-
-                show_midi(melody, chords)
-
-                break
