@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 from matplotlib.patches import Patch
 import statistics as stat
+import model.converting as converter
 
 def list_to_note_list(list):
     out = simple.NoteList()
@@ -64,9 +65,26 @@ plt.show()
 ###################################################
 ############## PITCH CLASSES
 ###################################################
-plt.title('Pitch classes')
-co = Counter(pitch_classes)
-plt.bar(list(co.keys()), list(co.values()))
+c_n = Counter(pitch_classes)
+c_n2 = c_n.most_common()
+labels = [c.idx_to_chord[cc] for cc, _ in c_n2[:9]] + ['Rest']
+
+
+prop_cycle = plt.rcParams['axes.prop_cycle']
+colors = prop_cycle.by_key()['color']
+
+temp = {ch: co for ch, co in zip(labels, colors)}
+# labels = [l.replace('b', '$\musFlat{}$') for l in labels]
+
+sizes = [cc for _,cc in c_n2[:9]] + [sum([cc for _,cc in c_n2[9:]])]
+
+patches, texts = plt.pie(sizes, shadow=True, startangle=90, counterclock=False, colors=colors)
+plt.legend(patches, labels, loc="best")
+plt.axis('equal')
+plt.title("Distribution of notes: self-extracted melodies")
+plt.tight_layout()
+# plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/notes_no_lyrics.pdf')
+# plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/notes_no_lyrics.pgf')
 plt.show()
 
 ###################################################
@@ -111,9 +129,69 @@ plt.tight_layout()
 plt.show()
 
 ###################################################
+############## REST/NOTE RATIO
+###################################################
+
+c_r = Counter(rests)
+x = ["Rest", "Note"]
+if list(c_r.keys())[0] == 0:
+    x = ["Note", "Rest"]
+plt.title("Rest and note distribution")
+plt.bar([1.0, 2.0], [cc/sum(c_r.values()) for cc in c_r.values()],width=0.35, label="self-extracted melodies")
+plt.xticks([1,2], x)
+plt.ylabel("percentage")
+plt.legend()
+plt.tight_layout()
+# plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/rest_note_all.pdf')
+# plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/rest_note_all.pgf')
+plt.show()
+
+###################################################
 ############## CHORDS
 ###################################################
-plt.title('Chords')
-co = Counter(all_chords)
-plt.bar(list(co.keys()), list(co.values()))
+
+chords_trans = [ch for i, ch in enumerate(all_chords[:-1]) if all_chords[i+1] != ch]
+
+c_c = Counter(all_chords)
+c_c2 = c_c.most_common()
+#
+prop_cycle = plt.rcParams['axes.prop_cycle']
+colors = prop_cycle.by_key()['color']
+
+labels = [converter.id_to_chord[ch] for ch, _ in c_c2[:9]] + ['Rest']
+#
+temp = {ch: co for ch, co in zip(labels, colors)}
+#
+sizes = [ccc for _, ccc in c_c2[:9]] + [sum([ccc for _,ccc in c_c2[9:]])]
+patches, texts = plt.pie(sizes, shadow=True, startangle=90, counterclock=False, colors=colors)
+plt.legend(patches, labels, loc="best", ncol=2)
+plt.axis('equal')
+plt.tight_layout()
+plt.title("Chords created with algorithm")
+plt.tight_layout()
+# plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/chords_all.pdf')
+# plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/chords_all.pgf')
+plt.show()
+
+c_c = Counter(chords_trans)
+c_c2 = c_c.most_common()
+
+all_chords = {converter.id_to_chord[n]: x/len(chords_trans) for n, x in c_c2}
+
+labels = [converter.id_to_chord[ch] for ch, _ in c_c2[:9]] + ['Rest']
+colors = []
+for l in labels:
+    if l in temp:
+        colors.append(temp[l])
+    else:
+        colors.append((1,0,0))
+
+sizes = [ccc for _, ccc in c_c2[:9]] + [sum([ccc for _,ccc in c_c2[9:]])]
+patches, texts = plt.pie(sizes, shadow=True, startangle=90, counterclock=False, colors=colors)
+plt.legend(patches, labels, loc=1, ncol=2)
+plt.axis('equal')
+plt.tight_layout()
+plt.title("Chord transitions created with algorithm")
+# plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/chords_trans.pdf')
+# plt.savefig('/home/malte/Documents/Bachelor/BachelorThesis/FirstDraft/figures/chords_trans.pgf')
 plt.show()

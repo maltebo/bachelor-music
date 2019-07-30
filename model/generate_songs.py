@@ -186,7 +186,7 @@ def generate_random_song(input_notes, length):
         if not os.path.exists(final_name):
             break
 
-    print(final_name)
+    print(final_name, flush=True)
 
     os.makedirs(os.path.join(c.project_folder, "data/created_songs"), exist_ok=True)
     full_stream.write('musicxml', fp=final_name)
@@ -194,6 +194,13 @@ def generate_random_song(input_notes, length):
     data = {'melody': melody, 'chords': chords}
     with open(final_name.replace('xml','json'), 'w') as fp:
         json.dump(data, fp)
+
+    del data
+    del full_stream
+    del chords
+    del part
+    del melody
+    del melody_stream
 
 # def show_midi(melody, chords):
 #     full_stream = m21.stream.Stream()
