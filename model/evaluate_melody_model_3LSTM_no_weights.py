@@ -184,13 +184,13 @@ def melody_model(save_path, validation_split=0.1, batch_size=32):
                         steps=len(train_data) // batch_size,
                         max_queue_size=32)
 
-    print("RESULT_TRAIN:", result_train)
+    print("RESULT_TRAIN:", result_train, flush=True)
 
     result_val = model.evaluate_generator(generator=melody_data_generator(test_data, batch_size),
                         steps=len(test_data) // batch_size,
                         max_queue_size=32)
 
-    print("RESULT_VALIDATION:", result_val)
+    print("RESULT_VALIDATION:", result_val, flush=True)
 
 
 if __name__ == '__main__':
