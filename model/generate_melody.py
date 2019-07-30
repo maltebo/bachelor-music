@@ -8,14 +8,14 @@ import settings.constants_model as c
 import music_utils.simple_classes as simple
 import model.converting as converter
 
-def generate(filepath, num_songs=1, length_songs=200, save=False, show=True, input_notes=None):
+config = tf.compat.v1.ConfigProto()
+config.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU
+config.log_device_placement = False  # to log device placement (on which device the operation ran)
+# (nothing gets printed in Jupyter, only if you run it standalone)
+sess = tf.compat.v1.Session(config=config)
+set_session(sess)
 
-    config = tf.compat.v1.ConfigProto()
-    config.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU
-    config.log_device_placement = False  # to log device placement (on which device the operation ran)
-    # (nothing gets printed in Jupyter, only if you run it standalone)
-    sess = tf.compat.v1.Session(config=config)
-    set_session(sess)
+def generate(filepath, num_songs=1, length_songs=200, save=False, show=True, input_notes=None):
 
     if input_notes is None:
         input_notes = [(72,1.0)]
@@ -111,5 +111,6 @@ def generate(filepath, num_songs=1, length_songs=200, save=False, show=True, inp
     return note_lists
 
 if __name__ == '__main__':
-    generate(filepath="/home/malte/PycharmProjects/BachelorMusic/data/tf_weights/m1w/melody-weights-1LSTMw-improvement-82-vl-2.83063-vpacc-0.45163-vlacc-0.64051.hdf5",
-             length_songs=200, input_notes=[(72,0.25)])
+    for i in range(2):
+        generate(filepath="/home/malte/PycharmProjects/BachelorMusic/data/tf_weights/m3nw/melody-weights-3LSTMnw-improvement-472-vl-2.64893-vpacc-0.47701-vlacc-0.66466.hdf5",
+             length_songs=10, input_notes=[(72,0.5)])
