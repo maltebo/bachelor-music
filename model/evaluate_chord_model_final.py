@@ -140,13 +140,6 @@ def chord_data_generator(data, batch_size):
 
 def chord_model(filename, validation_split=0.2, batch_size=32):
 
-    temp_save_path = os.path.join(c.project_folder, "data/tf_weights/weights_chord_final_saved_wall_time.hdf5")
-
-    if not force:
-        fit = input("Fit chord model? Y/n")
-        if fit != 'Y':
-            return
-
     chord_sequences, melody_sequences, start_sequences, on_full_beat, next_chords \
         = make_chord_data_from_file(nr_songs=None)
 
