@@ -1,0 +1,17 @@
+#!/bin/bash
+#$ -N final_chord_model
+#$ -l mem=8G
+#$ -l cuda=1
+#$ -l cuda_cores=2000
+#$ -l h_rt=35:30:00
+
+source .bashrc
+
+conda activate tf_gpu
+
+cd $SCRATCH/bachelor-music
+
+python -m model.chord_model_final -f -vs 0.1 -bs 32 -ep 100 -nr_s all -cb -wt 35:55:00
+
+conda deactivate
+

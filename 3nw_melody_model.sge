@@ -1,0 +1,16 @@
+#!/bin/bash
+#$ -N nw3_melody_model
+#$ -l mem=7G
+#$ -l cuda=1
+#$ -l cuda_cores=2000
+#$ -l h_rt=30:30:00
+
+source .bashrc
+
+conda activate tf_gpu
+
+cd $SCRATCH/bachelor-music
+
+python -m model.melody_model_3LSTM_no_weights -f -vs 0.1 -bs 32 -ep 1000 -nr_s all -cb -wt 35:55:15
+
+conda deactivate
